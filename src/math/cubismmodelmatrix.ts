@@ -5,10 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as csmmap } from '../type/csmmap';
 import { Live2DCubismFramework as cubismmatrix44 } from './cubismmatrix44';
-import csmMap = csmmap.csmMap;
-import iterator = csmmap.iterator;
 import CubismMatrix44 = cubismmatrix44.CubismMatrix44;
 
 export namespace Live2DCubismFramework {
@@ -162,57 +159,39 @@ export namespace Live2DCubismFramework {
      *
      * @param layout レイアウト情報
      */
-    public setupFromLayout(layout: csmMap<string, number>): void {
-      const keyWidth = 'width';
-      const keyHeight = 'height';
-      const keyX = 'x';
-      const keyY = 'y';
-      const keyCenterX = 'center_x';
-      const keyCenterY = 'center_y';
-      const keyTop = 'top';
-      const keyBottom = 'bottom';
-      const keyLeft = 'left';
-      const keyRight = 'right';
-
-      for (
-        const ite: iterator<string, number> = layout.begin();
-        ite.notEqual(layout.end());
-        ite.preIncrement()
-      ) {
-        const key: string = ite.ptr().first;
-        const value: number = ite.ptr().second;
-
-        if (key == keyWidth) {
-          this.setWidth(value);
-        } else if (key == keyHeight) {
-          this.setHeight(value);
-        }
-      }
-
-      for (
-        const ite: iterator<string, number> = layout.begin();
-        ite.notEqual(layout.end());
-        ite.preIncrement()
-      ) {
-        const key: string = ite.ptr().first;
-        const value: number = ite.ptr().second;
-
-        if (key == keyX) {
-          this.setX(value);
-        } else if (key == keyY) {
-          this.setY(value);
-        } else if (key == keyCenterX) {
-          this.centerX(value);
-        } else if (key == keyCenterY) {
-          this.centerY(value);
-        } else if (key == keyTop) {
-          this.top(value);
-        } else if (key == keyBottom) {
-          this.bottom(value);
-        } else if (key == keyLeft) {
-          this.left(value);
-        } else if (key == keyRight) {
-          this.right(value);
+    public setupFromLayout(layout: Record<string, number>): void {
+      for (const [key, value] of Object.entries(layout)) {
+        switch (key) {
+          case 'width':
+            this.setWidth(value);
+            break;
+          case 'height':
+            this.setHeight(value);
+            break;
+          case 'x':
+            this.setX(value);
+            break;
+          case 'y':
+            this.setY(value);
+            break;
+          case 'center_x':
+            this.centerX(value);
+            break;
+          case 'center_y':
+            this.centerY(value);
+            break;
+          case 'top':
+            this.top(value);
+            break;
+          case 'bottom':
+            this.bottom(value);
+            break;
+          case 'left':
+            this.left(value);
+            break;
+          case 'right':
+            this.right(value);
+            break;
         }
       }
     }

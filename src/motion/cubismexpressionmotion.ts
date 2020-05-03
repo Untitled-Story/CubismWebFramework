@@ -6,20 +6,12 @@
  */
 
 import { Live2DCubismFramework as acubismmotion } from './acubismmotion';
-import { Live2DCubismFramework as cubismjson } from '../utils/cubismjson';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
 import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
 import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import { Live2DCubismFramework as cubismmotionqueueentry } from './cubismmotionqueueentry';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
-import JsonFloat = cubismjson.JsonFloat;
-import csmVector = csmvector.csmVector;
 import CubismMotionQueueEntry = cubismmotionqueueentry.CubismMotionQueueEntry;
 import CubismModel = cubismmodel.CubismModel;
 import CubismFramework = cubismframework.CubismFramework;
-import CubismIdHandle = cubismid.CubismIdHandle;
-import CubismJson = cubismjson.CubismJson;
-import Value = cubismjson.Value;
 import ACubismMotion = acubismmotion.ACubismMotion;
 
 export namespace Live2DCubismFramework {
@@ -43,66 +35,48 @@ export namespace Live2DCubismFramework {
   export class CubismExpressionMotion extends ACubismMotion {
     /**
      * インスタンスを作成する。
-     * @param buffer expファイルが読み込まれているバッファ
+     * @param json expファイルが読み込まれているバッファ
      * @param size バッファのサイズ
      * @return 作成されたインスタンス
      */
     public static create(
-      buffer: ArrayBuffer,
+      json: JSONObject,
       size: number
     ): CubismExpressionMotion {
       const expression: CubismExpressionMotion = new CubismExpressionMotion();
 
-      const json: CubismJson = CubismJson.create(buffer, size);
-      const root: Value = json.getRoot();
+      const fadeInTime = json[ExpressionKeyFadeIn] as number;
+      const fadeOutTime = json[ExpressionKeyFadeOut] as number;
 
-      expression.setFadeInTime(
-        root.getValueByString(ExpressionKeyFadeIn).toFloat(DefaultFadeTime)
-      ); // フェードイン
-      expression.setFadeOutTime(
-        root.getValueByString(ExpressionKeyFadeOut).toFloat(DefaultFadeTime)
-      ); // フェードアウト
+      expression.setFadeInTime(fadeInTime !== undefined ? fadeInTime : DefaultFadeTime); // フェードイン
+      expression.setFadeOutTime(fadeOutTime !== undefined ? fadeOutTime : DefaultFadeTime); // フェードアウト
 
       // 各パラメータについて
-      const parameterCount = root
-        .getValueByString(ExpressionKeyParameters)
-        .getSize();
-      expression._parameters.prepareCapacity(parameterCount);
+      const parameters = json[ExpressionKeyParameters] as JSONObject[];
 
-      for (let i = 0; i < parameterCount; ++i) {
-        const param: Value = root
-          .getValueByString(ExpressionKeyParameters)
-          .getValueByIndex(i);
-        const parameterId: CubismIdHandle = CubismFramework.getIdManager().getId(
-          param.getValueByString(ExpressionKeyId).getRawString()
-        ); // パラメータID
+      for (let i = 0; i < parameters.length; ++i) {
+        const param: JSONObject = parameters[i];
+        const parameterId: string = CubismFramework.getIdManager().getId(param[ExpressionKeyId] as string); // パラメータID
 
-        const value: number = param
-          .getValueByString(ExpressionKeyValue)
-          .toFloat(); // 値
+        const value: number = param[ExpressionKeyValue] as number; // 値
 
         // 計算方法の設定
         let blendType: ExpressionBlendType;
 
-        if (
-          param.getValueByString(ExpressionKeyBlend).isNull() ||
-          param.getValueByString(ExpressionKeyBlend).getString() ==
-            BlendValueAdd
-        ) {
-          blendType = ExpressionBlendType.ExpressionBlendType_Add;
-        } else if (
-          param.getValueByString(ExpressionKeyBlend).getString() ==
-          BlendValueMultiply
-        ) {
-          blendType = ExpressionBlendType.ExpressionBlendType_Multiply;
-        } else if (
-          param.getValueByString(ExpressionKeyBlend).getString() ==
-          BlendValueOverwrite
-        ) {
-          blendType = ExpressionBlendType.ExpressionBlendType_Overwrite;
-        } else {
+        switch (param[ExpressionKeyBlend]) {
+          case BlendValueMultiply:
+            blendType = ExpressionBlendType.ExpressionBlendType_Multiply;
+            break;
+
+          case BlendValueOverwrite:
+            blendType = ExpressionBlendType.ExpressionBlendType_Overwrite;
+            break;
+
+          case BlendValueAdd:
           // その他 仕様にない値を設定した時は加算モードにすることで復旧
-          blendType = ExpressionBlendType.ExpressionBlendType_Add;
+          default:
+            blendType = ExpressionBlendType.ExpressionBlendType_Add;
+            break;
         }
 
         // 設定オブジェクトを作成してリストに追加する
@@ -112,10 +86,9 @@ export namespace Live2DCubismFramework {
         item.blendType = blendType;
         item.value = value;
 
-        expression._parameters.pushBack(item);
+        expression._parameters.push(item);
       }
 
-      CubismJson.delete(json); // JSONデータは不要になったら削除する
       return expression;
     }
 
@@ -132,8 +105,8 @@ export namespace Live2DCubismFramework {
       weight: number,
       motionQueueEntry: CubismMotionQueueEntry
     ): void {
-      for (let i = 0; i < this._parameters.getSize(); ++i) {
-        const parameter: ExpressionParameter = this._parameters.at(i);
+      for (let i = 0; i < this._parameters.length; ++i) {
+        const parameter: ExpressionParameter = this._parameters[i];
 
         switch (parameter.blendType) {
           case ExpressionBlendType.ExpressionBlendType_Add: {
@@ -173,10 +146,10 @@ export namespace Live2DCubismFramework {
     constructor() {
       super();
 
-      this._parameters = new csmVector<ExpressionParameter>();
+      this._parameters = [];
     }
 
-    _parameters: csmVector<ExpressionParameter>; // 表情のパラメータ情報リスト
+    _parameters: ExpressionParameter[]; // 表情のパラメータ情報リスト
   }
 
   /**
@@ -192,7 +165,7 @@ export namespace Live2DCubismFramework {
    * 表情のパラメータ情報
    */
   export class ExpressionParameter {
-    parameterId: CubismIdHandle; // パラメータID
+    parameterId: string; // パラメータID
     blendType: ExpressionBlendType; // パラメータの演算種類
     value: number; // 値
   }

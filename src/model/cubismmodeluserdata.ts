@@ -6,14 +6,8 @@
  */
 
 import { Live2DCubismFramework as cubismmodeluserdatajson } from './cubismmodeluserdatajson';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
 import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
 import CubismFramework = cubismframework.CubismFramework;
-import csmVector = csmvector.csmVector;
-import csmString = csmstring.csmString;
-import CubismIdHandle = cubismid.CubismIdHandle;
 import CubismModelUserDataJson = cubismmodeluserdatajson.CubismModelUserDataJson;
 
 export namespace Live2DCubismFramework {
@@ -25,9 +19,9 @@ export namespace Live2DCubismFramework {
    * Jsonから読み込んだユーザーデータを記録しておくための構造体
    */
   export class CubismModelUserDataNode {
-    targetType: CubismIdHandle; // ユーザーデータターゲットタイプ
-    targetId: CubismIdHandle; // ユーザーデータターゲットのID
-    value: csmString; // ユーザーデータ
+    targetType: string; // ユーザーデータターゲットタイプ
+    targetId: string; // ユーザーデータターゲットのID
+    value: string; // ユーザーデータ
   }
 
   /**
@@ -39,17 +33,17 @@ export namespace Live2DCubismFramework {
     /**
      * インスタンスの作成
      *
-     * @param buffer    userdata3.jsonが読み込まれているバッファ
+     * @param json    userdata3.jsonが読み込まれているバッファ
      * @param size      バッファのサイズ
      * @return 作成されたインスタンス
      */
     public static create(
-      buffer: ArrayBuffer,
+      json: JSONObject,
       size: number
     ): CubismModelUserData {
       const ret: CubismModelUserData = new CubismModelUserData();
 
-      ret.parseUserData(buffer, size);
+      ret.parseUserData(json, size);
 
       return ret;
     }
@@ -62,7 +56,6 @@ export namespace Live2DCubismFramework {
     public static delete(modelUserData: CubismModelUserData): void {
       if (modelUserData != null) {
         modelUserData.release();
-        modelUserData = null;
       }
     }
 
@@ -71,19 +64,19 @@ export namespace Live2DCubismFramework {
      *
      * @return ユーザーデータリスト
      */
-    public getArtMeshUserDatas(): csmVector<CubismModelUserDataNode> {
+    public getArtMeshUserDatas(): CubismModelUserDataNode[] {
       return this._artMeshUserDataNode;
     }
 
     /**
      * userdata3.jsonのパース
      *
-     * @param buffer    userdata3.jsonが読み込まれているバッファ
+     * @param data    userdata3.jsonが読み込まれているバッファ
      * @param size      バッファのサイズ
      */
-    public parseUserData(buffer: ArrayBuffer, size: number): void {
+    public parseUserData(data: JSONObject, size: number): void {
       let json: CubismModelUserDataJson = new CubismModelUserDataJson(
-        buffer,
+        data,
         size
       );
 
@@ -97,24 +90,23 @@ export namespace Live2DCubismFramework {
         addNode.targetType = CubismFramework.getIdManager().getId(
           json.getUserDataTargetType(i)
         );
-        addNode.value = new csmString(json.getUserDataValue(i));
-        this._userDataNodes.pushBack(addNode);
+        addNode.value = json.getUserDataValue(i);
+        this._userDataNodes.push(addNode);
 
         if (addNode.targetType == typeOfArtMesh) {
-          this._artMeshUserDataNode.pushBack(addNode);
+          this._artMeshUserDataNode.push(addNode);
         }
       }
 
       json.release();
-      json = void 0;
     }
 
     /**
      * コンストラクタ
      */
     public constructor() {
-      this._userDataNodes = new csmVector<CubismModelUserDataNode>();
-      this._artMeshUserDataNode = new csmVector<CubismModelUserDataNode>();
+      this._userDataNodes = [];
+      this._artMeshUserDataNode = [];
     }
 
     /**
@@ -123,14 +115,10 @@ export namespace Live2DCubismFramework {
      * ユーザーデータ構造体配列を解放する
      */
     public release(): void {
-      for (let i = 0; i < this._userDataNodes.getSize(); ++i) {
-        this._userDataNodes.set(i, null);
-      }
-
       this._userDataNodes = null;
     }
 
-    private _userDataNodes: csmVector<CubismModelUserDataNode>; // ユーザーデータ構造体配列
-    private _artMeshUserDataNode: csmVector<CubismModelUserDataNode>; // 閲覧リストの保持
+    private _userDataNodes: CubismModelUserDataNode[]; // ユーザーデータ構造体配列
+    private _artMeshUserDataNode: CubismModelUserDataNode[]; // 閲覧リストの保持
   }
 }

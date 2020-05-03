@@ -8,11 +8,7 @@
 import { Live2DCubismFramework as cubismmath } from '../math/cubismmath';
 import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import { Live2DCubismFramework as cubismmotionqueueentry } from './cubismmotionqueueentry';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
 import { CSM_ASSERT } from '../utils/cubismdebug';
-import csmVector = csmvector.csmVector;
-import csmString = csmstring.csmString;
 import CubismMotionQueueEntry = cubismmotionqueueentry.CubismMotionQueueEntry;
 import CubismModel = cubismmodel.CubismModel;
 import CubismMath = cubismmath.CubismMath;
@@ -32,8 +28,6 @@ export namespace Live2DCubismFramework {
      */
     public static delete(motion: ACubismMotion): void {
       motion.release();
-      motion = void 0;
-      motion = null;
     }
 
     /**
@@ -44,7 +38,7 @@ export namespace Live2DCubismFramework {
       this._fadeOutSeconds = -1.0;
       this._weight = 1.0;
       this._offsetSeconds = 0.0; // 再生の開始時刻
-      this._firedEventValues = new csmVector<csmString>();
+      this._firedEventValues = [];
     }
 
     /**
@@ -221,7 +215,7 @@ export namespace Live2DCubismFramework {
     public getFiredEvent(
       beforeCheckTimeSeconds: number,
       motionTimeSeconds: number
-    ): csmVector<csmString> {
+    ): string[] {
       return this._firedEventValues;
     }
 
@@ -270,7 +264,7 @@ export namespace Live2DCubismFramework {
     public _weight: number; // モーションの重み
     public _offsetSeconds: number; // モーション再生の開始時間[秒]
 
-    public _firedEventValues: csmVector<csmString>;
+    public _firedEventValues: string[];
 
     // モーション再生終了コールバック関数
     public _onFinishedMotion?: FinishedMotionCallback;

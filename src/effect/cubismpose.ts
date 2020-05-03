@@ -5,18 +5,10 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
-import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
-import { Live2DCubismFramework as cubismjson } from '../utils/cubismjson';
-import CubismIdHandle = cubismid.CubismIdHandle;
-import csmVector = csmvector.csmVector;
-import iterator = csmvector.iterator;
+import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import CubismModel = cubismmodel.CubismModel;
 import CubismFramework = cubismframework.CubismFramework;
-import CubismJson = cubismjson.CubismJson;
-import Value = cubismjson.Value;
 
 export namespace Live2DCubismFramework {
   const Epsilon = 0.001;
@@ -40,16 +32,12 @@ export namespace Live2DCubismFramework {
      * @param size pose3.jsonのデータのサイズ[byte]
      * @return 作成されたインスタンス
      */
-    public static create(pose3json: ArrayBuffer, size: number): CubismPose {
+    public static create(pose3json: JSONObject, size: number): CubismPose {
       const ret: CubismPose = new CubismPose();
-      const json: CubismJson = CubismJson.create(pose3json, size);
-      const root: Value = json.getRoot();
 
       // フェード時間の指定
-      if (!root.getValueByString(FadeIn).isNull()) {
-        ret._fadeTimeSeconds = root
-          .getValueByString(FadeIn)
-          .toFloat(DefaultFadeInSeconds);
+      if (typeof pose3json[FadeIn] === 'number') {
+        ret._fadeTimeSeconds = pose3json[FadeIn] as number;
 
         if (ret._fadeTimeSeconds <= 0.0) {
           ret._fadeTimeSeconds = DefaultFadeInSeconds;
@@ -57,49 +45,45 @@ export namespace Live2DCubismFramework {
       }
 
       // パーツグループ
-      const poseListInfo: Value = root.getValueByString(Groups);
-      const poseCount: number = poseListInfo.getSize();
+      const poseListInfo: JSONArray = pose3json[Groups] as JSONArray;
+      const poseCount: number = poseListInfo.length;
 
       for (let poseIndex = 0; poseIndex < poseCount; ++poseIndex) {
-        const idListInfo: Value = poseListInfo.getValueByIndex(poseIndex);
-        const idCount: number = idListInfo.getSize();
+        const idListInfo: JSONArray = poseListInfo[poseIndex] as JSONArray;
+        const idCount: number = idListInfo.length;
         let groupCount = 0;
 
         for (let groupIndex = 0; groupIndex < idCount; ++groupIndex) {
-          const partInfo: Value = idListInfo.getValueByIndex(groupIndex);
+          const partInfo: JSONObject = idListInfo[groupIndex] as JSONObject;
           const partData: PartData = new PartData();
-          const parameterId: CubismIdHandle = CubismFramework.getIdManager().getId(
-            partInfo.getValueByString(Id).getRawString()
+
+          partData.partId = CubismFramework.getIdManager().getId(
+            partInfo[Id] as string,
           );
 
-          partData.partId = parameterId;
-
           // リンクするパーツの設定
-          if (!partInfo.getValueByString(Link).isNull()) {
-            const linkListInfo: Value = partInfo.getValueByString(Link);
-            const linkCount: number = linkListInfo.getSize();
+          if (partInfo[Link]) {
+            const linkListInfo: JSONArray = partInfo[Link] as JSONArray;
+            const linkCount: number = linkListInfo.length;
 
             for (let linkIndex = 0; linkIndex < linkCount; ++linkIndex) {
               const linkPart: PartData = new PartData();
-              const linkId: CubismIdHandle = CubismFramework.getIdManager().getId(
-                linkListInfo.getValueByIndex(linkIndex).getString()
+
+              linkPart.partId = CubismFramework.getIdManager().getId(
+                linkListInfo[linkIndex] as string,
               );
 
-              linkPart.partId = linkId;
-
-              partData.link.pushBack(linkPart);
+              partData.link.push(linkPart);
             }
           }
 
-          ret._partGroups.pushBack(partData.clone());
+          ret._partGroups.push(partData.clone());
 
           ++groupCount;
         }
 
-        ret._partGroupCounts.pushBack(groupCount);
+        ret._partGroupCounts.push(groupCount);
       }
-
-      CubismJson.delete(json);
 
       return ret;
     }
@@ -138,8 +122,8 @@ export namespace Live2DCubismFramework {
 
       let beginIndex = 0;
 
-      for (let i = 0; i < this._partGroupCounts.getSize(); i++) {
-        const partGroupCount: number = this._partGroupCounts.at(i);
+      for (let i = 0; i < this._partGroupCounts.length; i++) {
+        const partGroupCount: number = this._partGroupCounts[i];
 
         this.doFade(model, deltaTimeSeconds, beginIndex, partGroupCount);
 
@@ -157,14 +141,14 @@ export namespace Live2DCubismFramework {
     public reset(model: CubismModel): void {
       let beginIndex = 0;
 
-      for (let i = 0; i < this._partGroupCounts.getSize(); ++i) {
-        const groupCount: number = this._partGroupCounts.at(i);
+      for (let i = 0; i < this._partGroupCounts.length; ++i) {
+        const groupCount: number = this._partGroupCounts[i];
 
         for (let j: number = beginIndex; j < beginIndex + groupCount; ++j) {
-          this._partGroups.at(j).initialize(model);
+          this._partGroups[j].initialize(model);
 
-          const partsIndex: number = this._partGroups.at(j).partIndex;
-          const paramIndex: number = this._partGroups.at(j).parameterIndex;
+          const partsIndex: number = this._partGroups[j].partIndex;
+          const paramIndex: number = this._partGroups[j].parameterIndex;
 
           if (partsIndex < 0) {
             continue;
@@ -176,10 +160,10 @@ export namespace Live2DCubismFramework {
             j == beginIndex ? 1.0 : 0.0
           );
 
-          for (let k = 0; k < this._partGroups.at(j).link.getSize(); ++k) {
+          for (let k = 0; k < this._partGroups[j].link.length; ++k) {
             this._partGroups
-              .at(j)
-              .link.at(k)
+              [j]
+              .link[k]
               .initialize(model);
           }
         }
@@ -196,24 +180,24 @@ export namespace Live2DCubismFramework {
     public copyPartOpacities(model: CubismModel): void {
       for (
         let groupIndex = 0;
-        groupIndex < this._partGroups.getSize();
+        groupIndex < this._partGroups.length;
         ++groupIndex
       ) {
-        const partData: PartData = this._partGroups.at(groupIndex);
+        const partData: PartData = this._partGroups[groupIndex];
 
-        if (partData.link.getSize() == 0) {
+        if (partData.link.length == 0) {
           continue; // 連動するパラメータはない
         }
 
-        const partIndex: number = this._partGroups.at(groupIndex).partIndex;
+        const partIndex: number = this._partGroups[groupIndex].partIndex;
         const opacity: number = model.getPartOpacityByIndex(partIndex);
 
         for (
           let linkIndex = 0;
-          linkIndex < partData.link.getSize();
+          linkIndex < partData.link.length;
           ++linkIndex
         ) {
-          const linkPart: PartData = partData.link.at(linkIndex);
+          const linkPart: PartData = partData.link[linkIndex];
           const linkPartIndex: number = linkPart.partIndex;
 
           if (linkPartIndex < 0) {
@@ -246,8 +230,8 @@ export namespace Live2DCubismFramework {
 
       // 現在、表示状態になっているパーツを取得
       for (let i: number = beginIndex; i < beginIndex + partGroupCount; ++i) {
-        const partIndex: number = this._partGroups.at(i).partIndex;
-        const paramIndex: number = this._partGroups.at(i).parameterIndex;
+        const partIndex: number = this._partGroups[i].partIndex;
+        const paramIndex: number = this._partGroups[i].parameterIndex;
 
         if (model.getParameterValueByIndex(paramIndex) > Epsilon) {
           if (visiblePartIndex >= 0) {
@@ -273,7 +257,7 @@ export namespace Live2DCubismFramework {
 
       // 表示パーツ、非表示パーツの不透明度を設定する
       for (let i: number = beginIndex; i < beginIndex + partGroupCount; ++i) {
-        const partsIndex: number = this._partGroups.at(i).partIndex;
+        const partsIndex: number = this._partGroups[i].partIndex;
 
         // 表示パーツの設定
         if (visiblePartIndex == i) {
@@ -312,12 +296,12 @@ export namespace Live2DCubismFramework {
     public constructor() {
       this._fadeTimeSeconds = DefaultFadeInSeconds;
       this._lastModel = null;
-      this._partGroups = new csmVector<PartData>();
-      this._partGroupCounts = new csmVector<number>();
+      this._partGroups = [];
+      this._partGroupCounts = [];
     }
 
-    _partGroups: csmVector<PartData>; // パーツグループ
-    _partGroupCounts: csmVector<number>; // それぞれのパーツグループの個数
+    _partGroups: PartData[]; // パーツグループ
+    _partGroupCounts: number[]; // それぞれのパーツグループの個数
     _fadeTimeSeconds: number; // フェード時間[秒]
     _lastModel: CubismModel; // 前回操作したモデル
   }
@@ -332,18 +316,9 @@ export namespace Live2DCubismFramework {
     constructor(v?: PartData) {
       this.parameterIndex = 0;
       this.partIndex = 0;
-      this.link = new csmVector<PartData>();
 
       if (v != undefined) {
-        this.partId = v.partId;
-
-        for (
-          const ite: iterator<PartData> = v.link.begin();
-          ite.notEqual(v.link.end());
-          ite.preIncrement()
-        ) {
-          this.link.pushBack(ite.ptr().clone());
-        }
+        this.assignment(v);
       }
     }
 
@@ -352,14 +327,7 @@ export namespace Live2DCubismFramework {
      */
     public assignment(v: PartData): PartData {
       this.partId = v.partId;
-
-      for (
-        const ite: iterator<PartData> = v.link.begin();
-        ite.notEqual(v.link.end());
-        ite.preIncrement()
-      ) {
-        this.link.pushBack(ite.ptr().clone());
-      }
+      this.link = v.link.map(link => link.clone());
 
       return this;
     }
@@ -384,22 +352,14 @@ export namespace Live2DCubismFramework {
       clonePartData.partId = this.partId;
       clonePartData.parameterIndex = this.parameterIndex;
       clonePartData.partIndex = this.partIndex;
-      clonePartData.link = new csmVector<PartData>();
-
-      for (
-        let ite: iterator<PartData> = this.link.begin();
-        ite.notEqual(this.link.end());
-        ite.increment()
-      ) {
-        clonePartData.link.pushBack(ite.ptr().clone());
-      }
+      clonePartData.link = this.link.map(link => link.clone());
 
       return clonePartData;
     }
 
-    partId: CubismIdHandle; // パーツID
+    partId: string; // パーツID
     parameterIndex: number; // パラメータのインデックス
     partIndex: number; // パーツのインデックス
-    link: csmVector<PartData>; // 連動するパラメータ
+    link: PartData[]; // 連動するパラメータ
   }
 }

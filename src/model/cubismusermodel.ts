@@ -17,8 +17,6 @@ import { Live2DCubismFramework as cubismexpressionmotion } from '../motion/cubis
 import { Live2DCubismFramework as cubismpose } from '../effect/cubismpose';
 import { Live2DCubismFramework as cubismmodeluserdata } from './cubismmodeluserdata';
 import { Live2DCubismFramework as cubismphysics } from '../physics/cubismphysics';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
 import { Live2DCubismFramework as cubismmotionqueuemanager } from '../motion/cubismmotionqueuemanager';
 import { Live2DCubismFramework as cubismbreath } from '../effect/cubismbreath';
 import { Live2DCubismFramework as cubismeyeblink } from '../effect/cubismeyeblink';
@@ -28,9 +26,7 @@ import CubismRenderer_WebGL = cubismrenderer_webgl.CubismRenderer_WebGL;
 import CubismEyeBlink = cubismeyeblink.CubismEyeBlink;
 import CubismBreath = cubismbreath.CubismBreath;
 import CubismMotionQueueManager = cubismmotionqueuemanager.CubismMotionQueueManager;
-import csmString = csmstring.csmString;
 import Constant = cubismframework.Constant;
-import CubismIdHandle = cubismid.CubismIdHandle;
 import CubismPhysics = cubismphysics.CubismPhysics;
 import CubismModelUserData = cubismmodeluserdata.CubismModelUserData;
 import CubismPose = cubismpose.CubismPose;
@@ -165,58 +161,58 @@ export namespace Live2DCubismFramework {
 
     /**
      * モーションデータを読み込む
-     * @param buffer motion3.jsonファイルが読み込まれているバッファ
+     * @param json motion3.jsonファイルが読み込まれているバッファ
      * @param size バッファのサイズ
      * @param name モーションの名前
      * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
      * @return モーションクラス
      */
     public loadMotion = (
-      buffer: ArrayBuffer,
+      json: JSONObject,
       size: number,
       name: string,
       onFinishedMotionHandler?: FinishedMotionCallback
-    ) => CubismMotion.create(buffer, size, onFinishedMotionHandler);
+    ) => CubismMotion.create(json, size, onFinishedMotionHandler);
 
     /**
      * 表情データの読み込み
-     * @param buffer expファイルが読み込まれているバッファ
+     * @param json expファイルが読み込まれているバッファ
      * @param size バッファのサイズ
      * @param name 表情の名前
      */
     public loadExpression(
-      buffer: ArrayBuffer,
+      json: JSONObject,
       size: number,
       name: string
     ): ACubismMotion {
-      return CubismExpressionMotion.create(buffer, size);
+      return CubismExpressionMotion.create(json, size);
     }
 
     /**
      * ポーズデータの読み込み
-     * @param buffer pose3.jsonが読み込まれているバッファ
+     * @param json pose3.jsonが読み込まれているバッファ
      * @param size バッファのサイズ
      */
-    public loadPose(buffer: ArrayBuffer, size: number): void {
-      this._pose = CubismPose.create(buffer, size);
+    public loadPose(json: JSONObject, size: number): void {
+      this._pose = CubismPose.create(json, size);
     }
 
     /**
      * モデルに付属するユーザーデータを読み込む
-     * @param buffer userdata3.jsonが読み込まれているバッファ
+     * @param json userdata3.jsonが読み込まれているバッファ
      * @param size バッファのサイズ
      */
-    public loadUserData(buffer: ArrayBuffer, size: number): void {
-      this._modelUserData = CubismModelUserData.create(buffer, size);
+    public loadUserData(json: JSONObject, size: number): void {
+      this._modelUserData = CubismModelUserData.create(json, size);
     }
 
     /**
      * 物理演算データの読み込み
-     * @param buffer  physics3.jsonが読み込まれているバッファ
+     * @param json  physics3.jsonが読み込まれているバッファ
      * @param size    バッファのサイズ
      */
-    public loadPhysics(buffer: ArrayBuffer, size: number): void {
-      this._physics = CubismPhysics.create(buffer, size);
+    public loadPhysics(json: JSONObject, size: number): void {
+      this._physics = CubismPhysics.create(json, size);
     }
 
     /**
@@ -228,7 +224,7 @@ export namespace Live2DCubismFramework {
      * @return false ヒットしていない
      */
     public isHit(
-      drawableId: CubismIdHandle,
+      drawableId: string,
       pointX: number,
       pointY: number
     ): boolean {
@@ -320,8 +316,8 @@ export namespace Live2DCubismFramework {
      *
      * @param eventValue 発火したイベントの文字列データ
      */
-    public motionEventFired(eventValue: csmString): void {
-      CubismLogInfo('{0}', eventValue.s);
+    public motionEventFired(eventValue: string): void {
+      CubismLogInfo('{0}', eventValue);
     }
 
     /**
@@ -336,7 +332,7 @@ export namespace Live2DCubismFramework {
      */
     public static cubismDefaultMotionEventCallback(
       caller: CubismMotionQueueManager,
-      eventValue: csmString,
+      eventValue: string,
       customData: CubismUserModel
     ): void {
       const model: CubismUserModel = customData;

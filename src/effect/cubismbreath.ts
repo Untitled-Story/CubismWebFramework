@@ -5,12 +5,8 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
 import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import CubismIdHandle = cubismid.CubismIdHandle;
 import CubismModel = cubismmodel.CubismModel;
-import csmVector = csmvector.csmVector;
 
 export namespace Live2DCubismFramework {
   /**
@@ -41,7 +37,7 @@ export namespace Live2DCubismFramework {
      * @param breathParameters 呼吸を紐づけたいパラメータのリスト
      */
     public setParameters(
-      breathParameters: csmVector<BreathParameterData>
+      breathParameters: BreathParameterData[],
     ): void {
       this._breathParameters = breathParameters;
     }
@@ -50,7 +46,7 @@ export namespace Live2DCubismFramework {
      * 呼吸に紐づいているパラメータの取得
      * @return 呼吸に紐づいているパラメータのリスト
      */
-    public getParameters(): csmVector<BreathParameterData> {
+    public getParameters(): BreathParameterData[] {
       return this._breathParameters;
     }
 
@@ -61,19 +57,19 @@ export namespace Live2DCubismFramework {
      */
     public updateParameters(
       model: CubismModel,
-      deltaTimeSeconds: number
+      deltaTimeSeconds: number,
     ): void {
       this._currentTime += deltaTimeSeconds;
 
       const t: number = this._currentTime * 2.0 * 3.14159;
 
-      for (let i = 0; i < this._breathParameters.getSize(); ++i) {
-        const data: BreathParameterData = this._breathParameters.at(i);
+      for (let i = 0; i < this._breathParameters.length; ++i) {
+        const data: BreathParameterData = this._breathParameters[i];
 
         model.addParameterValueById(
           data.parameterId,
           data.offset + data.peak * Math.sin(t / data.cycle),
-          data.weight
+          data.weight,
         );
       }
     }
@@ -85,7 +81,7 @@ export namespace Live2DCubismFramework {
       this._currentTime = 0.0;
     }
 
-    _breathParameters: csmVector<BreathParameterData>; // 呼吸にひもづいているパラメータのリスト
+    _breathParameters: BreathParameterData[]; // 呼吸にひもづいているパラメータのリスト
     _currentTime: number; // 積算時間[秒]
   }
 
@@ -102,11 +98,11 @@ export namespace Live2DCubismFramework {
      * @param weight        パラメータへの重み
      */
     constructor(
-      parameterId?: CubismIdHandle,
+      parameterId?: string,
       offset?: number,
       peak?: number,
       cycle?: number,
-      weight?: number
+      weight?: number,
     ) {
       this.parameterId = parameterId == undefined ? null : parameterId;
       this.offset = offset == undefined ? 0.0 : offset;
@@ -115,7 +111,7 @@ export namespace Live2DCubismFramework {
       this.weight = weight == undefined ? 0.0 : weight;
     }
 
-    parameterId: CubismIdHandle; // 呼吸をひもづけるパラメータID\
+    parameterId: string; // 呼吸をひもづけるパラメータID\
     offset: number; // 呼吸を正弦波としたときの、波のオフセット
     peak: number; // 呼吸を正弦波としたときの、波の高さ
     cycle: number; // 呼吸を正弦波としたときの、波の周期

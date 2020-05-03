@@ -6,10 +6,6 @@
  */
 
 import { Live2DCubismFramework as cubismvector2 } from '../math/cubismvector2';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
-import csmVector = csmvector.csmVector;
-import CubismIdHandle = cubismid.CubismIdHandle;
 import CubismVector2 = cubismvector2.CubismVector2;
 
 export namespace Live2DCubismFramework {
@@ -47,7 +43,7 @@ export namespace Live2DCubismFramework {
    * 物理演算のパラメータ情報
    */
   export class CubismPhysicsParameter {
-    id: CubismIdHandle; // パラメータ
+    id: string; // パラメータ
     targetType: CubismPhysicsTargetType; // 適用先の種類
   }
 
@@ -206,19 +202,19 @@ export namespace Live2DCubismFramework {
    */
   export class CubismPhysicsRig {
     constructor() {
-      this.settings = new csmVector<CubismPhysicsSubRig>();
-      this.inputs = new csmVector<CubismPhysicsInput>();
-      this.outputs = new csmVector<CubismPhysicsOutput>();
-      this.particles = new csmVector<CubismPhysicsParticle>();
+      this.settings = [];
+      this.inputs = [];
+      this.outputs = [];
+      this.particles = [];
       this.gravity = new CubismVector2(0, 0);
       this.wind = new CubismVector2(0, 0);
     }
 
     subRigCount: number; // 物理演算の物理点の個数
-    settings: csmVector<CubismPhysicsSubRig>; // 物理演算の物理点の管理のリスト
-    inputs: csmVector<CubismPhysicsInput>; // 物理演算の入力のリスト
-    outputs: csmVector<CubismPhysicsOutput>; // 物理演算の出力のリスト
-    particles: csmVector<CubismPhysicsParticle>; // 物理演算の物理点のリスト
+    settings: CubismPhysicsSubRig[]; // 物理演算の物理点の管理のリスト
+    inputs: CubismPhysicsInput[]; // 物理演算の入力のリスト
+    outputs: CubismPhysicsOutput[]; // 物理演算の出力のリスト
+    particles: CubismPhysicsParticle[]; // 物理演算の物理点のリスト
     gravity: CubismVector2; // 重力
     wind: CubismVector2; // 風
   }

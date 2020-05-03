@@ -12,20 +12,14 @@ import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
 import { Live2DCubismFramework as cubismmotionqueueentry } from './cubismmotionqueueentry';
 import { Live2DCubismFramework as cubismmath } from '../math/cubismmath';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
 import { CubismLogDebug, CSM_ASSERT } from '../utils/cubismdebug';
-import csmString = csmstring.csmString;
 import CubismMotionData = cubismmotioninternal.CubismMotionData;
 import CubismMotionSegment = cubismmotioninternal.CubismMotionSegment;
 import CubismMotionPoint = cubismmotioninternal.CubismMotionPoint;
 import CubismMotionEvent = cubismmotioninternal.CubismMotionEvent;
 import CubismMotionSegmentType = cubismmotioninternal.CubismMotionSegmentType;
-import CubismIdHandle = cubismid.CubismIdHandle;
 import CubismMotionCurve = cubismmotioninternal.CubismMotionCurve;
 import CubismMotionCurveTarget = cubismmotioninternal.CubismMotionCurveTarget;
-import csmVector = csmvector.csmVector;
 import CubismMath = cubismmath.CubismMath;
 import CubismMotionQueueEntry = cubismmotionqueueentry.CubismMotionQueueEntry;
 import CubismFramework = cubismframework.CubismFramework;
@@ -98,7 +92,7 @@ export namespace Live2DCubismFramework {
     time: number
   ): number {
     // Find segment to evaluate.
-    const curve: CubismMotionCurve = motionData.curves.at(index);
+    const curve: CubismMotionCurve = motionData.curves[index];
 
     let target = -1;
     const totalSegmentCount: number =
@@ -107,27 +101,27 @@ export namespace Live2DCubismFramework {
     for (let i: number = curve.baseSegmentIndex; i < totalSegmentCount; ++i) {
       // Get first point of next segment.
       pointPosition =
-        motionData.segments.at(i).basePointIndex +
-        (motionData.segments.at(i).segmentType ==
+        motionData.segments[i].basePointIndex +
+        (motionData.segments[i].segmentType ==
         CubismMotionSegmentType.CubismMotionSegmentType_Bezier
           ? 3
           : 1);
 
       // Break if time lies within current segment.
-      if (motionData.points.at(pointPosition).time > time) {
+      if (motionData.points[pointPosition].time > time) {
         target = i;
         break;
       }
     }
 
     if (target == -1) {
-      return motionData.points.at(pointPosition).value;
+      return motionData.points[pointPosition].value;
     }
 
-    const segment: CubismMotionSegment = motionData.segments.at(target);
+    const segment: CubismMotionSegment = motionData.segments[target];
 
     return segment.evaluate(
-      motionData.points.get(segment.basePointIndex),
+      motionData.points.slice(segment.basePointIndex),
       time
     );
   }
@@ -141,19 +135,19 @@ export namespace Live2DCubismFramework {
     /**
      * インスタンスを作成する
      *
-     * @param buffer motion3.jsonが読み込まれているバッファ
+     * @param json motion3.jsonが読み込まれているバッファ
      * @param size バッファのサイズ
      * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
      * @return 作成されたインスタンス
      */
     public static create(
-      buffer: ArrayBuffer,
+      json: JSONObject,
       size: number,
       onFinishedMotionHandler?: FinishedMotionCallback
     ): CubismMotion {
       const ret = new CubismMotion();
 
-      ret.parse(buffer, size);
+      ret.parse(json, size);
       ret._sourceFrameRate = ret._motionData.fps;
       ret._loopDurationSeconds = ret._motionData.duration;
       ret._onFinishedMotion = onFinishedMotionHandler;
@@ -204,16 +198,16 @@ export namespace Live2DCubismFramework {
       let eyeBlinkFlags = 0;
 
       //瞬き、リップシンクのターゲット数が上限を超えている場合
-      if (this._eyeBlinkParameterIds.getSize() > MaxTargetSize) {
+      if (this._eyeBlinkParameterIds.length > MaxTargetSize) {
         CubismLogDebug(
           'too many eye blink targets : {0}',
-          this._eyeBlinkParameterIds.getSize()
+          this._eyeBlinkParameterIds.length,
         );
       }
-      if (this._lipSyncParameterIds.getSize() > MaxTargetSize) {
+      if (this._lipSyncParameterIds.length > MaxTargetSize) {
         CubismLogDebug(
           'too many lip sync targets : {0}',
-          this._lipSyncParameterIds.getSize()
+          this._lipSyncParameterIds.length,
         );
       }
 
@@ -244,22 +238,22 @@ export namespace Live2DCubismFramework {
         }
       }
 
-      const curves: csmVector<CubismMotionCurve> = this._motionData.curves;
+      const curves: CubismMotionCurve[] = this._motionData.curves;
 
       // Evaluate model curves.
       for (
         c = 0;
         c < this._motionData.curveCount &&
-        curves.at(c).type ==
+        curves[c].type ==
           CubismMotionCurveTarget.CubismMotionCurveTarget_Model;
         ++c
       ) {
         // Evaluate curve and call handler.
         value = evaluateCurve(this._motionData, c, time);
 
-        if (curves.at(c).id == this._modelCurveIdEyeBlink) {
+        if (curves[c].id == this._modelCurveIdEyeBlink) {
           eyeBlinkValue = value;
-        } else if (curves.at(c).id == this._modelCurveIdLipSync) {
+        } else if (curves[c].id == this._modelCurveIdLipSync) {
           lipSyncValue = value;
         }
       }
@@ -269,14 +263,14 @@ export namespace Live2DCubismFramework {
       for (
         ;
         c < this._motionData.curveCount &&
-        curves.at(c).type ==
+        curves[c].type ==
           CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter;
         ++c
       ) {
         parameterMotionCurveCount++;
 
         // Find parameter index.
-        parameterIndex = model.getParameterIndex(curves.at(c).id);
+        parameterIndex = model.getParameterIndex(curves[c].id);
 
         // Skip curve evaluation if no value in sink.
         if (parameterIndex == -1) {
@@ -293,10 +287,10 @@ export namespace Live2DCubismFramework {
         if (eyeBlinkValue != Number.MAX_VALUE) {
           for (
             let i = 0;
-            i < this._eyeBlinkParameterIds.getSize() && i < MaxTargetSize;
+            i < this._eyeBlinkParameterIds.length && i < MaxTargetSize;
             ++i
           ) {
-            if (this._eyeBlinkParameterIds.at(i) == curves.at(c).id) {
+            if (this._eyeBlinkParameterIds[i] == curves[c].id) {
               value *= eyeBlinkValue;
               eyeBlinkFlags |= 1 << i;
               break;
@@ -307,10 +301,10 @@ export namespace Live2DCubismFramework {
         if (lipSyncValue != Number.MAX_VALUE) {
           for (
             let i = 0;
-            i < this._lipSyncParameterIds.getSize() && i < MaxTargetSize;
+            i < this._lipSyncParameterIds.length && i < MaxTargetSize;
             ++i
           ) {
-            if (this._lipSyncParameterIds.at(i) == curves.at(c).id) {
+            if (this._lipSyncParameterIds[i] == curves[c].id) {
               value += lipSyncValue;
               lipSyncFlags |= 1 << i;
               break;
@@ -321,7 +315,7 @@ export namespace Live2DCubismFramework {
         let v: number;
 
         // パラメータごとのフェード
-        if (curves.at(c).fadeInTime < 0.0 && curves.at(c).fadeOutTime < 0.0) {
+        if (curves[c].fadeInTime < 0.0 && curves[c].fadeOutTime < 0.0) {
           // モーションのフェードを適用
           v = sourceValue + (value - sourceValue) * fadeWeight;
         } else {
@@ -329,28 +323,28 @@ export namespace Live2DCubismFramework {
           let fin: number;
           let fout: number;
 
-          if (curves.at(c).fadeInTime < 0.0) {
+          if (curves[c].fadeInTime < 0.0) {
             fin = tmpFadeIn;
           } else {
             fin =
-              curves.at(c).fadeInTime == 0.0
+              curves[c].fadeInTime == 0.0
                 ? 1.0
                 : CubismMath.getEasingSine(
                     (userTimeSeconds - motionQueueEntry.getFadeInStartTime()) /
-                      curves.at(c).fadeInTime
+                curves[c].fadeInTime
                   );
           }
 
-          if (curves.at(c).fadeOutTime < 0.0) {
+          if (curves[c].fadeOutTime < 0.0) {
             fout = tmpFadeOut;
           } else {
             fout =
-              curves.at(c).fadeOutTime == 0.0 ||
+              curves[c].fadeOutTime == 0.0 ||
               motionQueueEntry.getEndTime() < 0.0
                 ? 1.0
                 : CubismMath.getEasingSine(
                     (motionQueueEntry.getEndTime() - userTimeSeconds) /
-                      curves.at(c).fadeOutTime
+                curves[c].fadeOutTime
                   );
           }
 
@@ -367,11 +361,11 @@ export namespace Live2DCubismFramework {
         if (eyeBlinkValue != Number.MAX_VALUE) {
           for (
             let i = 0;
-            i < this._eyeBlinkParameterIds.getSize() && i < MaxTargetSize;
+            i < this._eyeBlinkParameterIds.length && i < MaxTargetSize;
             ++i
           ) {
             const sourceValue: number = model.getParameterValueById(
-              this._eyeBlinkParameterIds.at(i)
+              this._eyeBlinkParameterIds[i],
             );
 
             // モーションでの上書きがあった時にはまばたきは適用しない
@@ -382,18 +376,18 @@ export namespace Live2DCubismFramework {
             const v: number =
               sourceValue + (eyeBlinkValue - sourceValue) * fadeWeight;
 
-            model.setParameterValueById(this._eyeBlinkParameterIds.at(i), v);
+            model.setParameterValueById(this._eyeBlinkParameterIds[i], v);
           }
         }
 
         if (lipSyncValue != Number.MAX_VALUE) {
           for (
             let i = 0;
-            i < this._lipSyncParameterIds.getSize() && i < MaxTargetSize;
+            i < this._lipSyncParameterIds.length && i < MaxTargetSize;
             ++i
           ) {
             const sourceValue: number = model.getParameterValueById(
-              this._lipSyncParameterIds.at(i)
+              this._lipSyncParameterIds[i],
             );
 
             // モーションでの上書きがあった時にはリップシンクは適用しない
@@ -404,7 +398,7 @@ export namespace Live2DCubismFramework {
             const v: number =
               sourceValue + (lipSyncValue - sourceValue) * fadeWeight;
 
-            model.setParameterValueById(this._lipSyncParameterIds.at(i), v);
+            model.setParameterValueById(this._lipSyncParameterIds[i], v);
           }
         }
       }
@@ -412,12 +406,12 @@ export namespace Live2DCubismFramework {
       for (
         ;
         c < this._motionData.curveCount &&
-        curves.at(c).type ==
+        curves[c].type ==
           CubismMotionCurveTarget.CubismMotionCurveTarget_PartOpacity;
         ++c
       ) {
         // Find parameter index.
-        parameterIndex = model.getParameterIndex(curves.at(c).id);
+        parameterIndex = model.getParameterIndex(curves[c].id);
 
         // Skip curve evaluation if no value in sink.
         if (parameterIndex == -1) {
@@ -508,14 +502,14 @@ export namespace Live2DCubismFramework {
      * @param value           フェードインにかかる時間[秒]
      */
     public setParameterFadeInTime(
-      parameterId: CubismIdHandle,
+      parameterId: string,
       value: number
     ): void {
-      const curves: csmVector<CubismMotionCurve> = this._motionData.curves;
+      const curves: CubismMotionCurve[] = this._motionData.curves;
 
       for (let i = 0; i < this._motionData.curveCount; ++i) {
-        if (parameterId == curves.at(i).id) {
-          curves.at(i).fadeInTime = value;
+        if (parameterId == curves[i].id) {
+          curves[i].fadeInTime = value;
           return;
         }
       }
@@ -527,14 +521,14 @@ export namespace Live2DCubismFramework {
      * @param value           フェードアウトにかかる時間[秒]
      */
     public setParameterFadeOutTime(
-      parameterId: CubismIdHandle,
+      parameterId: string,
       value: number
     ): void {
-      const curves: csmVector<CubismMotionCurve> = this._motionData.curves;
+      const curves: CubismMotionCurve[] = this._motionData.curves;
 
       for (let i = 0; i < this._motionData.curveCount; ++i) {
-        if (parameterId == curves.at(i).id) {
-          curves.at(i).fadeOutTime = value;
+        if (parameterId == curves[i].id) {
+          curves[i].fadeOutTime = value;
           return;
         }
       }
@@ -545,12 +539,12 @@ export namespace Live2DCubismFramework {
      * @param    parameterId     パラメータID
      * @return   フェードインにかかる時間[秒]
      */
-    public getParameterFadeInTime(parameterId: CubismIdHandle): number {
-      const curves: csmVector<CubismMotionCurve> = this._motionData.curves;
+    public getParameterFadeInTime(parameterId: string): number {
+      const curves: CubismMotionCurve[] = this._motionData.curves;
 
       for (let i = 0; i < this._motionData.curveCount; ++i) {
-        if (parameterId == curves.at(i).id) {
-          return curves.at(i).fadeInTime;
+        if (parameterId == curves[i].id) {
+          return curves[i].fadeInTime;
         }
       }
 
@@ -563,12 +557,12 @@ export namespace Live2DCubismFramework {
      * @param   parameterId     パラメータID
      * @return   フェードアウトにかかる時間[秒]
      */
-    public getParameterFadeOutTime(parameterId: CubismIdHandle): number {
-      const curves: csmVector<CubismMotionCurve> = this._motionData.curves;
+    public getParameterFadeOutTime(parameterId: string): number {
+      const curves: CubismMotionCurve[] = this._motionData.curves;
 
       for (let i = 0; i < this._motionData.curveCount; ++i) {
-        if (parameterId == curves.at(i).id) {
-          return curves.at(i).fadeOutTime;
+        if (parameterId == curves[i].id) {
+          return curves[i].fadeOutTime;
         }
       }
 
@@ -581,8 +575,8 @@ export namespace Live2DCubismFramework {
      * @param lipSyncParameterIds     リップシンクがかかっているパラメータIDのリスト
      */
     public setEffectIds(
-      eyeBlinkParameterIds: csmVector<CubismIdHandle>,
-      lipSyncParameterIds: csmVector<CubismIdHandle>
+      eyeBlinkParameterIds: string[],
+      lipSyncParameterIds: string[],
     ): void {
       this._eyeBlinkParameterIds = eyeBlinkParameterIds;
       this._lipSyncParameterIds = lipSyncParameterIds;
@@ -619,7 +613,7 @@ export namespace Live2DCubismFramework {
      * @param motionJson  motion3.jsonが読み込まれているバッファ
      * @param size        バッファのサイズ
      */
-    public parse(motionJson: ArrayBuffer, size: number): void {
+    public parse(motionJson: JSONObject, size: number): void {
       this._motionData = new CubismMotionData();
 
       let json: CubismMotionJson = new CubismMotionJson(motionJson, size);
@@ -630,83 +624,56 @@ export namespace Live2DCubismFramework {
       this._motionData.fps = json.getMotionFps();
       this._motionData.eventCount = json.getEventCount();
 
-      if (json.isExistMotionFadeInTime()) {
-        this._fadeInSeconds =
-          json.getMotionFadeInTime() < 0.0 ? 1.0 : json.getMotionFadeInTime();
+      const fadeInSeconds = json.getMotionFadeInTime();
+      const fadeOutSeconds = json.getMotionFadeOutTime();
+
+      if (fadeInSeconds !== undefined) {
+        this._fadeInSeconds = fadeInSeconds < 0.0 ? 1.0 : fadeInSeconds;
       } else {
         this._fadeInSeconds = 1.0;
       }
 
-      if (json.isExistMotionFadeOutTime()) {
-        this._fadeOutSeconds =
-          json.getMotionFadeOutTime() < 0.0 ? 1.0 : json.getMotionFadeOutTime();
+      if (fadeOutSeconds !== undefined) {
+        this._fadeOutSeconds = fadeOutSeconds < 0.0 ? 1.0 : fadeOutSeconds;
       } else {
         this._fadeOutSeconds = 1.0;
       }
 
-      this._motionData.curves.updateSize(
-        this._motionData.curveCount,
-        CubismMotionCurve,
-        true
-      );
-      this._motionData.segments.updateSize(
-        json.getMotionTotalSegmentCount(),
-        CubismMotionSegment,
-        true
-      );
-      this._motionData.points.updateSize(
-        json.getMotionTotalPointCount(),
-        CubismMotionPoint,
-        true
-      );
-      this._motionData.events.updateSize(
-        this._motionData.eventCount,
-        CubismMotionEvent,
-        true
-      );
+      this._motionData.curves = Array.from({ length: this._motionData.curveCount }).map(() => new CubismMotionCurve());
+      this._motionData.segments = Array.from({ length: json.getMotionTotalSegmentCount() }).map(() => new CubismMotionSegment());
+      this._motionData.points = Array.from({ length: json.getMotionTotalPointCount() }).map(() => new CubismMotionPoint());
+      this._motionData.events = Array.from({ length: this._motionData.eventCount }).map(() => new CubismMotionEvent());
 
       let totalPointCount = 0;
       let totalSegmentCount = 0;
 
       // Curves
-      for (
-        let curveCount = 0;
-        curveCount < this._motionData.curveCount;
-        ++curveCount
-      ) {
-        if (json.getMotionCurveTarget(curveCount) == TargetNameModel) {
-          this._motionData.curves.at(curveCount).type =
-            CubismMotionCurveTarget.CubismMotionCurveTarget_Model;
-        } else if (
-          json.getMotionCurveTarget(curveCount) == TargetNameParameter
-        ) {
-          this._motionData.curves.at(curveCount).type =
-            CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter;
-        } else if (
-          json.getMotionCurveTarget(curveCount) == TargetNamePartOpacity
-        ) {
-          this._motionData.curves.at(curveCount).type =
-            CubismMotionCurveTarget.CubismMotionCurveTarget_PartOpacity;
+      for (let curveCount = 0; curveCount < this._motionData.curveCount; ++curveCount) {
+        const curve = this._motionData.curves[curveCount];
+
+        switch (json.getMotionCurveTarget(curveCount)) {
+          case TargetNameModel:
+            curve.type = CubismMotionCurveTarget.CubismMotionCurveTarget_Model;
+            break;
+
+          case TargetNameParameter:
+            curve.type = CubismMotionCurveTarget.CubismMotionCurveTarget_Parameter;
+            break;
+
+          case TargetNamePartOpacity:
+            curve.type = CubismMotionCurveTarget.CubismMotionCurveTarget_PartOpacity;
+            break;
         }
 
-        this._motionData.curves.at(curveCount).id = json.getMotionCurveId(
-          curveCount
-        );
+        curve.id = json.getMotionCurveId(curveCount);
 
-        this._motionData.curves.at(
-          curveCount
-        ).baseSegmentIndex = totalSegmentCount;
+        curve.baseSegmentIndex = totalSegmentCount;
 
-        this._motionData.curves.at(
-          curveCount
-        ).fadeInTime = json.isExistMotionCurveFadeInTime(curveCount)
-          ? json.getMotionCurveFadeInTime(curveCount)
-          : -1.0;
-        this._motionData.curves.at(
-          curveCount
-        ).fadeOutTime = json.isExistMotionCurveFadeOutTime(curveCount)
-          ? json.getMotionCurveFadeOutTime(curveCount)
-          : -1.0;
+        const fadeInTime = json.getMotionCurveFadeInTime(curveCount);
+        const fadeOutTime = json.getMotionCurveFadeOutTime(curveCount);
+
+        curve.fadeInTime = fadeInTime !== undefined ? fadeInTime : -1.0;
+        curve.fadeOutTime = fadeOutTime !== undefined ? fadeOutTime : -1.0;
 
         // Segments
         for (
@@ -715,16 +682,10 @@ export namespace Live2DCubismFramework {
 
         ) {
           if (segmentPosition == 0) {
-            this._motionData.segments.at(
-              totalSegmentCount
-            ).basePointIndex = totalPointCount;
+            this._motionData.segments[totalSegmentCount].basePointIndex = totalPointCount;
 
-            this._motionData.points.at(
-              totalPointCount
-            ).time = json.getMotionCurveSegment(curveCount, segmentPosition);
-            this._motionData.points.at(
-              totalPointCount
-            ).value = json.getMotionCurveSegment(
+            this._motionData.points[totalPointCount].time = json.getMotionCurveSegment(curveCount, segmentPosition);
+            this._motionData.points[totalPointCount].value = json.getMotionCurveSegment(
               curveCount,
               segmentPosition + 1
             );
@@ -732,7 +693,7 @@ export namespace Live2DCubismFramework {
             totalPointCount += 1;
             segmentPosition += 2;
           } else {
-            this._motionData.segments.at(totalSegmentCount).basePointIndex =
+            this._motionData.segments[totalSegmentCount].basePointIndex =
               totalPointCount - 1;
           }
 
@@ -742,21 +703,15 @@ export namespace Live2DCubismFramework {
           );
           switch (segment) {
             case CubismMotionSegmentType.CubismMotionSegmentType_Linear: {
-              this._motionData.segments.at(totalSegmentCount).segmentType =
+              this._motionData.segments[totalSegmentCount].segmentType =
                 CubismMotionSegmentType.CubismMotionSegmentType_Linear;
-              this._motionData.segments.at(
-                totalSegmentCount
-              ).evaluate = linearEvaluate;
+              this._motionData.segments[totalSegmentCount].evaluate = linearEvaluate;
 
-              this._motionData.points.at(
-                totalPointCount
-              ).time = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].time = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 1
               );
-              this._motionData.points.at(
-                totalPointCount
-              ).value = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].value = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 2
               );
@@ -767,47 +722,33 @@ export namespace Live2DCubismFramework {
               break;
             }
             case CubismMotionSegmentType.CubismMotionSegmentType_Bezier: {
-              this._motionData.segments.at(totalSegmentCount).segmentType =
+              this._motionData.segments[totalSegmentCount].segmentType =
                 CubismMotionSegmentType.CubismMotionSegmentType_Bezier;
-              this._motionData.segments.at(
-                totalSegmentCount
-              ).evaluate = bezierEvaluate;
+              this._motionData.segments[totalSegmentCount].evaluate = bezierEvaluate;
 
-              this._motionData.points.at(
-                totalPointCount
-              ).time = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].time = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 1
               );
-              this._motionData.points.at(
-                totalPointCount
-              ).value = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].value = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 2
               );
 
-              this._motionData.points.at(
-                totalPointCount + 1
-              ).time = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount + 1].time = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 3
               );
-              this._motionData.points.at(
-                totalPointCount + 1
-              ).value = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount + 1].value = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 4
               );
 
-              this._motionData.points.at(
-                totalPointCount + 2
-              ).time = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount + 2].time = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 5
               );
-              this._motionData.points.at(
-                totalPointCount + 2
-              ).value = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount + 2].value = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 6
               );
@@ -819,21 +760,15 @@ export namespace Live2DCubismFramework {
             }
 
             case CubismMotionSegmentType.CubismMotionSegmentType_Stepped: {
-              this._motionData.segments.at(totalSegmentCount).segmentType =
+              this._motionData.segments[totalSegmentCount].segmentType =
                 CubismMotionSegmentType.CubismMotionSegmentType_Stepped;
-              this._motionData.segments.at(
-                totalSegmentCount
-              ).evaluate = steppedEvaluate;
+              this._motionData.segments[totalSegmentCount].evaluate = steppedEvaluate;
 
-              this._motionData.points.at(
-                totalPointCount
-              ).time = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].time = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 1
               );
-              this._motionData.points.at(
-                totalPointCount
-              ).value = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].value = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 2
               );
@@ -845,21 +780,15 @@ export namespace Live2DCubismFramework {
             }
 
             case CubismMotionSegmentType.CubismMotionSegmentType_InverseStepped: {
-              this._motionData.segments.at(totalSegmentCount).segmentType =
+              this._motionData.segments[totalSegmentCount].segmentType =
                 CubismMotionSegmentType.CubismMotionSegmentType_InverseStepped;
-              this._motionData.segments.at(
-                totalSegmentCount
-              ).evaluate = inverseSteppedEvaluate;
+              this._motionData.segments[totalSegmentCount].evaluate = inverseSteppedEvaluate;
 
-              this._motionData.points.at(
-                totalPointCount
-              ).time = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].time = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 1
               );
-              this._motionData.points.at(
-                totalPointCount
-              ).value = json.getMotionCurveSegment(
+              this._motionData.points[totalPointCount].value = json.getMotionCurveSegment(
                 curveCount,
                 segmentPosition + 2
               );
@@ -875,9 +804,11 @@ export namespace Live2DCubismFramework {
             }
           }
 
-          ++this._motionData.curves.at(curveCount).segmentCount;
+          ++curve.segmentCount;
           ++totalSegmentCount;
         }
+
+        this._motionData.curves.push(curve);
       }
 
       for (
@@ -885,10 +816,10 @@ export namespace Live2DCubismFramework {
         userdatacount < json.getEventCount();
         ++userdatacount
       ) {
-        this._motionData.events.at(userdatacount).fireTime = json.getEventTime(
+        this._motionData.events[userdatacount].fireTime = json.getEventTime(
           userdatacount
         );
-        this._motionData.events.at(userdatacount).value = json.getEventValue(
+        this._motionData.events[userdatacount].value = json.getEventValue(
           userdatacount
         );
       }
@@ -910,18 +841,16 @@ export namespace Live2DCubismFramework {
     public getFiredEvent(
       beforeCheckTimeSeconds: number,
       motionTimeSeconds: number
-    ): csmVector<csmString> {
-      this._firedEventValues.updateSize(0);
+    ): string[] {
+      this._firedEventValues.length = 0;
 
       // イベントの発火チェック
       for (let u = 0; u < this._motionData.eventCount; ++u) {
         if (
-          this._motionData.events.at(u).fireTime > beforeCheckTimeSeconds &&
-          this._motionData.events.at(u).fireTime <= motionTimeSeconds
+          this._motionData.events[u].fireTime > beforeCheckTimeSeconds &&
+          this._motionData.events[u].fireTime <= motionTimeSeconds
         ) {
-          this._firedEventValues.pushBack(
-            new csmString(this._motionData.events.at(u).value.s)
-          );
+          this._firedEventValues.push(this._motionData.events[u].value);
         }
       }
 
@@ -936,10 +865,10 @@ export namespace Live2DCubismFramework {
 
     public _motionData: CubismMotionData; // 実際のモーションデータ本体
 
-    public _eyeBlinkParameterIds: csmVector<CubismIdHandle>; // 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
-    public _lipSyncParameterIds: csmVector<CubismIdHandle>; // リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
+    public _eyeBlinkParameterIds: string[]; // 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
+    public _lipSyncParameterIds: string[]; // リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
 
-    public _modelCurveIdEyeBlink: CubismIdHandle; // モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
-    public _modelCurveIdLipSync: CubismIdHandle; // モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+    public _modelCurveIdEyeBlink: string; // モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+    public _modelCurveIdLipSync: string; // モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
   }
 }

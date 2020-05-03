@@ -5,13 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
-import csmVector = csmvector.csmVector;
-import csmString = csmstring.csmString;
-import CubismIdHandle = cubismid.CubismIdHandle;
-
 export namespace Live2DCubismFramework {
   /**
    * @brief モーションカーブの種類
@@ -93,7 +86,7 @@ export namespace Live2DCubismFramework {
     }
 
     type: CubismMotionCurveTarget; // カーブの種類
-    id: CubismIdHandle; // カーブのID
+    id: string; // カーブのID
     segmentCount: number; // セグメントの個数
     baseSegmentIndex: number; // 最初のセグメントのインデックス
     fadeInTime: number; // フェードインにかかる時間[秒]
@@ -105,7 +98,7 @@ export namespace Live2DCubismFramework {
    */
   export class CubismMotionEvent {
     fireTime = 0.0;
-    value: csmString;
+    value: string;
   }
 
   /**
@@ -121,10 +114,10 @@ export namespace Live2DCubismFramework {
       this.eventCount = 0;
       this.fps = 0.0;
 
-      this.curves = new csmVector<CubismMotionCurve>();
-      this.segments = new csmVector<CubismMotionSegment>();
-      this.points = new csmVector<CubismMotionPoint>();
-      this.events = new csmVector<CubismMotionEvent>();
+      this.curves = [];
+      this.segments = [];
+      this.points = [];
+      this.events = [];
     }
 
     duration: number; // モーションの長さ[秒]
@@ -132,9 +125,9 @@ export namespace Live2DCubismFramework {
     curveCount: number; // カーブの個数
     eventCount: number; // UserDataの個数
     fps: number; // フレームレート
-    curves: csmVector<CubismMotionCurve>; // カーブのリスト
-    segments: csmVector<CubismMotionSegment>; // セグメントのリスト
-    points: csmVector<CubismMotionPoint>; // ポイントのリスト
-    events: csmVector<CubismMotionEvent>; // イベントのリスト
+    curves: CubismMotionCurve[]; // カーブのリスト
+    segments: CubismMotionSegment[]; // セグメントのリスト
+    points: CubismMotionPoint[]; // ポイントのリスト
+    events: CubismMotionEvent[]; // イベントのリスト
   }
 }

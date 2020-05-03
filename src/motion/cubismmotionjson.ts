@@ -5,14 +5,8 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as cubismjson } from '../utils/cubismjson';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
 import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
-import csmString = csmstring.csmString;
 import CubismFramework = cubismframework.CubismFramework;
-import CubismIdHandle = cubismid.CubismIdHandle;
-import CubismJson = cubismjson.CubismJson;
 
 export namespace Live2DCubismFramework {
   // JSON keys
@@ -41,30 +35,26 @@ export namespace Live2DCubismFramework {
   export class CubismMotionJson {
     /**
      * コンストラクタ
-     * @param buffer motion3.jsonが読み込まれているバッファ
+     * @param json motion3.jsonが読み込まれているバッファ
      * @param size バッファのサイズ
      */
-    public constructor(buffer: ArrayBuffer, size: number) {
-      this._json = CubismJson.create(buffer, size);
+    public constructor(json: JSONObject, size: number) {
+      this._json = json;
     }
 
     /**
      * デストラクタ相当の処理
      */
     public release(): void {
-      CubismJson.delete(this._json);
+      this._json = undefined;
     }
 
     /**
      * モーションの長さを取得する
      * @return モーションの長さ[秒]
      */
-    public getMotionDuration(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(Duration)
-        .toFloat();
+    public getMotionDuration(): number | undefined {
+      return this._json[Meta][Duration];
     }
 
     /**
@@ -72,110 +62,56 @@ export namespace Live2DCubismFramework {
      * @return true ループする
      * @return false ループしない
      */
-    public isMotionLoop(): boolean {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(Loop)
-        .toBoolean();
+    public isMotionLoop(): boolean | undefined {
+      return this._json[Meta][Loop];
     }
 
     /**
      * モーションカーブの個数の取得
      * @return モーションカーブの個数
      */
-    public getMotionCurveCount(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(CurveCount)
-        .toInt();
+    public getMotionCurveCount(): number | undefined {
+      return this._json[Meta][CurveCount];
     }
 
     /**
      * モーションのフレームレートの取得
      * @return フレームレート[FPS]
      */
-    public getMotionFps(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(Fps)
-        .toFloat();
+    public getMotionFps(): number | undefined {
+      return this._json[Meta][Fps];
     }
 
     /**
      * モーションのセグメントの総合計の取得
      * @return モーションのセグメントの取得
      */
-    public getMotionTotalSegmentCount(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(TotalSegmentCount)
-        .toInt();
+    public getMotionTotalSegmentCount(): number | undefined {
+      return this._json[Meta][TotalSegmentCount];
     }
 
     /**
      * モーションのカーブの制御店の総合計の取得
      * @return モーションのカーブの制御点の総合計
      */
-    public getMotionTotalPointCount(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(TotalPointCount)
-        .toInt();
-    }
-
-    /**
-     * モーションのフェードイン時間の存在
-     * @return true 存在する
-     * @return false 存在しない
-     */
-    public isExistMotionFadeInTime(): boolean {
-      return !this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(FadeInTime)
-        .isNull();
-    }
-
-    /**
-     * モーションのフェードアウト時間の存在
-     * @return true 存在する
-     * @return false 存在しない
-     */
-    public isExistMotionFadeOutTime(): boolean {
-      return !this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(FadeOutTime)
-        .isNull();
+    public getMotionTotalPointCount(): number | undefined {
+      return this._json[Meta][TotalPointCount];
     }
 
     /**
      * モーションのフェードイン時間の取得
      * @return フェードイン時間[秒]
      */
-    public getMotionFadeInTime(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(FadeInTime)
-        .toFloat();
+    public getMotionFadeInTime(): number | undefined {
+      return this._json[Meta][FadeInTime];
     }
 
     /**
      * モーションのフェードアウト時間の取得
      * @return フェードアウト時間[秒]
      */
-    public getMotionFadeOutTime(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(FadeOutTime)
-        .toFloat();
+    public getMotionFadeOutTime(): number | undefined {
+      return this._json[Meta][FadeOutTime];
     }
 
     /**
@@ -183,13 +119,8 @@ export namespace Live2DCubismFramework {
      * @param curveIndex カーブのインデックス
      * @return カーブの種類
      */
-    public getMotionCurveTarget(curveIndex: number): string {
-      return this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(Target)
-        .getRawString();
+    public getMotionCurveTarget(curveIndex: number): string | undefined {
+      return this._json[Curves][curveIndex][Target];
     }
 
     /**
@@ -197,45 +128,10 @@ export namespace Live2DCubismFramework {
      * @param curveIndex カーブのインデックス
      * @return カーブのID
      */
-    public getMotionCurveId(curveIndex: number): CubismIdHandle {
+    public getMotionCurveId(curveIndex: number): string | undefined {
       return CubismFramework.getIdManager().getId(
-        this._json
-          .getRoot()
-          .getValueByString(Curves)
-          .getValueByIndex(curveIndex)
-          .getValueByString(Id)
-          .getRawString()
+        this._json[Curves][curveIndex][Id],
       );
-    }
-
-    /**
-     * モーションのカーブのフェードイン時間の存在
-     * @param curveIndex カーブのインデックス
-     * @return true 存在する
-     * @return false 存在しない
-     */
-    public isExistMotionCurveFadeInTime(curveIndex: number): boolean {
-      return !this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(FadeInTime)
-        .isNull();
-    }
-
-    /**
-     * モーションのカーブのフェードアウト時間の存在
-     * @param curveIndex カーブのインデックス
-     * @return true 存在する
-     * @return false 存在しない
-     */
-    public isExistMotionCurveFadeOutTime(curveIndex: number): boolean {
-      return !this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(FadeOutTime)
-        .isNull();
     }
 
     /**
@@ -243,13 +139,8 @@ export namespace Live2DCubismFramework {
      * @param curveIndex カーブのインデックス
      * @return フェードイン時間[秒]
      */
-    public getMotionCurveFadeInTime(curveIndex: number): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(FadeInTime)
-        .toFloat();
+    public getMotionCurveFadeInTime(curveIndex: number): number | undefined {
+      return this._json[Curves][curveIndex][FadeInTime];
     }
 
     /**
@@ -257,13 +148,8 @@ export namespace Live2DCubismFramework {
      * @param curveIndex カーブのインデックス
      * @return フェードアウト時間[秒]
      */
-    public getMotionCurveFadeOutTime(curveIndex: number): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(FadeOutTime)
-        .toFloat();
+    public getMotionCurveFadeOutTime(curveIndex: number): number | undefined {
+      return this._json[Curves][curveIndex][FadeOutTime];
     }
 
     /**
@@ -271,14 +157,8 @@ export namespace Live2DCubismFramework {
      * @param curveIndex カーブのインデックス
      * @return モーションのカーブのセグメントの個数
      */
-    public getMotionCurveSegmentCount(curveIndex: number): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(Segments)
-        .getVector()
-        .getSize();
+    public getMotionCurveSegmentCount(curveIndex: number): number | undefined {
+      return this._json[Curves][curveIndex][Segments]?.length;
     }
 
     /**
@@ -290,38 +170,24 @@ export namespace Live2DCubismFramework {
     public getMotionCurveSegment(
       curveIndex: number,
       segmentIndex: number
-    ): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Curves)
-        .getValueByIndex(curveIndex)
-        .getValueByString(Segments)
-        .getValueByIndex(segmentIndex)
-        .toFloat();
+    ): number | undefined {
+      return this._json[Curves][curveIndex][Segments][segmentIndex];
     }
 
     /**
      * イベントの個数の取得
      * @return イベントの個数
      */
-    public getEventCount(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(UserDataCount)
-        .toInt();
+    public getEventCount(): number | undefined {
+      return this._json[Meta][UserDataCount];
     }
 
     /**
      *  イベントの総文字数の取得
      * @return イベントの総文字数
      */
-    public getTotalEventValueSize(): number {
-      return this._json
-        .getRoot()
-        .getValueByString(Meta)
-        .getValueByString(TotalUserDataSize)
-        .toInt();
+    public getTotalEventValueSize(): number | undefined {
+      return this._json[Meta][TotalUserDataSize];
     }
 
     /**
@@ -330,12 +196,7 @@ export namespace Live2DCubismFramework {
      * @return イベントの時間[秒]
      */
     public getEventTime(userDataIndex: number): number {
-      return this._json
-        .getRoot()
-        .getValueByString(UserData)
-        .getValueByIndex(userDataIndex)
-        .getValueByString(Time)
-        .toInt();
+      return this._json[UserData][userDataIndex][Time];
     }
 
     /**
@@ -343,17 +204,10 @@ export namespace Live2DCubismFramework {
      * @param userDataIndex イベントのインデックス
      * @return イベントの文字列
      */
-    public getEventValue(userDataIndex: number): csmString {
-      return new csmString(
-        this._json
-          .getRoot()
-          .getValueByString(UserData)
-          .getValueByIndex(userDataIndex)
-          .getValueByString(Value)
-          .getRawString()
-      );
+    public getEventValue(userDataIndex: number): string {
+      return this._json[UserData][userDataIndex][Value];
     }
 
-    _json: CubismJson; // motion3.jsonのデータ
+    _json: JSONObject; // motion3.jsonのデータ
   }
 }

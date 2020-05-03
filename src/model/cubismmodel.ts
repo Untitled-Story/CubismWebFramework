@@ -6,16 +6,10 @@
  */
 
 import { Live2DCubismFramework as cubismrenderer } from '../rendering/cubismrenderer';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
 import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
-import { Live2DCubismFramework as csmmap } from '../type/csmmap';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
 import { CSM_ASSERT } from '../utils/cubismdebug';
 import CubismFramework = cubismframework.CubismFramework;
 import CubismBlendMode = cubismrenderer.CubismBlendMode;
-import csmVector = csmvector.csmVector;
-import csmMap = csmmap.csmMap;
-import CubismIdHandle = cubismid.CubismIdHandle;
 
 export namespace Live2DCubismFramework {
   /**
@@ -67,13 +61,13 @@ export namespace Live2DCubismFramework {
      */
     public saveParameters(): void {
       const parameterCount: number = this._model.parameters.count;
-      const savedParameterCount: number = this._savedParameters.getSize();
+      const savedParameterCount: number = this._savedParameters.length;
 
       for (let i = 0; i < parameterCount; ++i) {
         if (i < savedParameterCount) {
-          this._savedParameters.set(i, this._parameterValues[i]);
+          this._savedParameters[i] = this._parameterValues[i];
         } else {
-          this._savedParameters.pushBack(this._parameterValues[i]);
+          this._savedParameters.push(this._parameterValues[i]);
         }
       }
     }
@@ -90,25 +84,25 @@ export namespace Live2DCubismFramework {
      * @param partId パーツのID
      * @return パーツのインデックス
      */
-    public getPartIndex(partId: CubismIdHandle): number {
+    public getPartIndex(partId: string): number {
       let partIndex: number;
       const partCount: number = this._model.parts.count;
 
       for (partIndex = 0; partIndex < partCount; ++partIndex) {
-        if (partId == this._partIds.at(partIndex)) {
+        if (partId == this._partIds[partIndex]) {
           return partIndex;
         }
       }
 
       // モデルに存在していない場合、非存在パーツIDリスト内にあるかを検索し、そのインデックスを返す
-      if (this._notExistPartId.isExist(partId)) {
-        return this._notExistPartId.getValue(partId);
+      if (partId in this._notExistPartId) {
+        return this._notExistPartId[partId];
       }
 
       // 非存在パーツIDリストにない場合、新しく要素を追加する
-      partIndex = partCount + this._notExistPartId.getSize();
-      this._notExistPartId.setValue(partId, partIndex);
-      this._notExistPartOpacities.appendKey(partIndex);
+      partIndex = partCount + this._notExistPartId.length;
+      this._notExistPartId[partId] = partIndex;
+      this._notExistPartOpacities[partIndex] = 0;
 
       return partIndex;
     }
@@ -118,8 +112,7 @@ export namespace Live2DCubismFramework {
      * @return パーツの個数
      */
     public getPartCount(): number {
-      const partCount: number = this._model.parts.count;
-      return partCount;
+      return this._model.parts.count;
     }
 
     /**
@@ -128,8 +121,8 @@ export namespace Live2DCubismFramework {
      * @param opacity 不透明度
      */
     public setPartOpacityByIndex(partIndex: number, opacity: number): void {
-      if (this._notExistPartOpacities.isExist(partIndex)) {
-        this._notExistPartOpacities.setValue(partIndex, opacity);
+      if (partIndex in this._notExistPartOpacities) {
+        this._notExistPartOpacities[partIndex] = opacity;
         return;
       }
 
@@ -144,7 +137,7 @@ export namespace Live2DCubismFramework {
      * @param partId パーツのID
      * @param opacity パーツの不透明度
      */
-    public setPartOpacityById(partId: CubismIdHandle, opacity: number): void {
+    public setPartOpacityById(partId: string, opacity: number): void {
       // 高速化のためにPartIndexを取得できる機構になっているが、外部からの設定の時は呼び出し頻度が低いため不要
       const index: number = this.getPartIndex(partId);
 
@@ -161,9 +154,9 @@ export namespace Live2DCubismFramework {
      * @return パーツの不透明度
      */
     public getPartOpacityByIndex(partIndex: number): number {
-      if (this._notExistPartOpacities.isExist(partIndex)) {
+      if (partIndex in this._notExistPartOpacities) {
         // モデルに存在しないパーツIDの場合、非存在パーツリストから不透明度を返す。
-        return this._notExistPartOpacities.getValue(partIndex);
+        return this._notExistPartOpacities[partIndex];
       }
 
       // インデックスの範囲内検知
@@ -177,7 +170,7 @@ export namespace Live2DCubismFramework {
      * @param partId パーツのＩｄ
      * @return パーツの不透明度
      */
-    public getPartOpacityById(partId: CubismIdHandle): number {
+    public getPartOpacityById(partId: string): number {
       // 高速化のためにPartIndexを取得できる機構になっているが、外部からの設定の時は呼び出し頻度が低いため不要
       const index: number = this.getPartIndex(partId);
 
@@ -193,12 +186,12 @@ export namespace Live2DCubismFramework {
      * @param パラメータID
      * @return パラメータのインデックス
      */
-    public getParameterIndex(parameterId: CubismIdHandle): number {
+    public getParameterIndex(parameterId: string): number {
       let parameterIndex: number;
       const idCount: number = this._model.parameters.count;
 
       for (parameterIndex = 0; parameterIndex < idCount; ++parameterIndex) {
-        if (parameterId != this._parameterIds.at(parameterIndex)) {
+        if (parameterId != this._parameterIds[parameterIndex]) {
           continue;
         }
 
@@ -206,16 +199,15 @@ export namespace Live2DCubismFramework {
       }
 
       // モデルに存在していない場合、非存在パラメータIDリスト内を検索し、そのインデックスを返す
-      if (this._notExistParameterId.isExist(parameterId)) {
-        return this._notExistParameterId.getValue(parameterId);
+      if (parameterId in this._notExistParameterId) {
+        return this._notExistParameterId[parameterId];
       }
 
       // 非存在パラメータIDリストにない場合新しく要素を追加する
-      parameterIndex =
-        this._model.parameters.count + this._notExistParameterId.getSize();
+      parameterIndex = this._model.parameters.count + this._notExistParameterId.length;
 
-      this._notExistParameterId.setValue(parameterId, parameterIndex);
-      this._notExistParameterValues.appendKey(parameterIndex);
+      this._notExistParameterId[parameterId] = parameterIndex;
+      this._notExistParameterValues[parameterIndex] = 0;
 
       return parameterIndex;
     }
@@ -261,8 +253,8 @@ export namespace Live2DCubismFramework {
      * @return パラメータの値
      */
     public getParameterValueByIndex(parameterIndex: number): number {
-      if (this._notExistParameterValues.isExist(parameterIndex)) {
-        return this._notExistParameterValues.getValue(parameterIndex);
+      if (parameterIndex in this._notExistParameterValues) {
+        return this._notExistParameterValues[parameterIndex];
       }
 
       // インデックスの範囲内検知
@@ -278,7 +270,7 @@ export namespace Live2DCubismFramework {
      * @param parameterId    パラメータのID
      * @return パラメータの値
      */
-    public getParameterValueById(parameterId: CubismIdHandle): number {
+    public getParameterValueById(parameterId: string): number {
       // 高速化のためにparameterIndexを取得できる機構になっているが、外部からの設定の時は呼び出し頻度が低いため不要
       const parameterIndex: number = this.getParameterIndex(parameterId);
       return this.getParameterValueByIndex(parameterIndex);
@@ -295,15 +287,13 @@ export namespace Live2DCubismFramework {
       value: number,
       weight = 1.0
     ): void {
-      if (this._notExistParameterValues.isExist(parameterIndex)) {
-        this._notExistParameterValues.setValue(
-          parameterIndex,
+      if (parameterIndex in this._notExistParameterValues) {
+        this._notExistParameterValues[parameterIndex] =
           weight == 1
             ? value
-            : this._notExistParameterValues.getValue(parameterIndex) *
+            : this._notExistParameterValues[parameterIndex] *
                 (1 - weight) +
                 value * weight
-        );
 
         return;
       }
@@ -335,7 +325,7 @@ export namespace Live2DCubismFramework {
      * @param weight 重み
      */
     public setParameterValueById(
-      parameterId: CubismIdHandle,
+      parameterId: string,
       value: number,
       weight = 1.0
     ): void {
@@ -382,7 +372,7 @@ export namespace Live2DCubismFramework {
      * @param weight 重み
      */
     public multiplyParameterValueById(
-      parameterId: CubismIdHandle,
+      parameterId: string,
       value: number,
       weight = 1.0
     ): void {
@@ -413,7 +403,7 @@ export namespace Live2DCubismFramework {
      * @param drawableId DrawableのID
      * @return Drawableのインデックス
      */
-    public getDrawableIndex(drawableId: CubismIdHandle): number {
+    public getDrawableIndex(drawableId: string): number {
       const drawableCount = this._model.drawables.count;
 
       for (
@@ -421,7 +411,7 @@ export namespace Live2DCubismFramework {
         drawableIndex < drawableCount;
         ++drawableIndex
       ) {
-        if (this._drawableIds.at(drawableIndex) == drawableId) {
+        if (this._drawableIds[drawableIndex] == drawableId) {
           return drawableIndex;
         }
       }
@@ -434,8 +424,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの個数
      */
     public getDrawableCount(): number {
-      const drawableCount = this._model.drawables.count;
-      return drawableCount;
+      return this._model.drawables.count;
     }
 
     /**
@@ -443,7 +432,7 @@ export namespace Live2DCubismFramework {
      * @param drawableIndex Drawableのインデックス
      * @return drawableのID
      */
-    public getDrawableId(drawableIndex: number): CubismIdHandle {
+    public getDrawableId(drawableIndex: number): string {
       const parameterIds: string[] = this._model.drawables.ids;
       return CubismFramework.getIdManager().getId(parameterIds[drawableIndex]);
     }
@@ -453,8 +442,7 @@ export namespace Live2DCubismFramework {
      * @return Drawableの描画順リスト
      */
     public getDrawableRenderOrders(): Int32Array {
-      const renderOrders: Int32Array = this._model.drawables.renderOrders;
-      return renderOrders;
+      return this._model.drawables.renderOrders;
     }
 
     /**
@@ -463,8 +451,7 @@ export namespace Live2DCubismFramework {
      * @return drawableのテクスチャインデックスリスト
      */
     public getDrawableTextureIndices(drawableIndex: number): number {
-      const textureIndices: Int32Array = this._model.drawables.textureIndices;
-      return textureIndices[drawableIndex];
+      return this._model.drawables.textureIndices[drawableIndex];
     }
 
     /**
@@ -491,8 +478,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの頂点インデックスの個数
      */
     public getDrawableVertexIndexCount(drawableIndex: number): number {
-      const indexCounts: Int32Array = this._model.drawables.indexCounts;
-      return indexCounts[drawableIndex];
+      return this._model.drawables.indexCounts[drawableIndex];
     }
 
     /**
@@ -501,8 +487,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの頂点の個数
      */
     public getDrawableVertexCount(drawableIndex: number): number {
-      const vertexCounts = this._model.drawables.vertexCounts;
-      return vertexCounts[drawableIndex];
+      return this._model.drawables.vertexCounts[drawableIndex];
     }
 
     /**
@@ -520,8 +505,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの頂点インデックスリスト
      */
     public getDrawableVertexIndices(drawableIndex: number): Uint16Array {
-      const indicesArray: Uint16Array[] = this._model.drawables.indices;
-      return indicesArray[drawableIndex];
+      return this._model.drawables.indices[drawableIndex];
     }
 
     /**
@@ -530,9 +514,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの頂点リスト
      */
     public getDrawableVertexPositions(drawableIndex: number): Float32Array {
-      const verticesArray: Float32Array[] = this._model.drawables
-        .vertexPositions;
-      return verticesArray[drawableIndex];
+      return this._model.drawables.vertexPositions[drawableIndex];
     }
 
     /**
@@ -541,8 +523,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの頂点UVリスト
      */
     public getDrawableVertexUvs(drawableIndex: number): Float32Array {
-      const uvsArray: Float32Array[] = this._model.drawables.vertexUvs;
-      return uvsArray[drawableIndex];
+      return this._model.drawables.vertexUvs[drawableIndex];
     }
 
     /**
@@ -551,8 +532,7 @@ export namespace Live2DCubismFramework {
      * @return drawableの不透明度
      */
     public getDrawableOpacity(drawableIndex: number): number {
-      const opacities: Float32Array = this._model.drawables.opacities;
-      return opacities[drawableIndex];
+      return this._model.drawables.opacities[drawableIndex];
     }
 
     /**
@@ -609,8 +589,7 @@ export namespace Live2DCubismFramework {
      * @return Drawableのクリッピングマスクリスト
      */
     public getDrawableMasks(): Int32Array[] {
-      const masks: Int32Array[] = this._model.drawables.masks;
-      return masks;
+      return this._model.drawables.masks;
     }
 
     /**
@@ -618,8 +597,7 @@ export namespace Live2DCubismFramework {
      * @return Drawableのクリッピングマスクの個数リスト
      */
     public getDrawableMaskCounts(): Int32Array {
-      const maskCounts: Int32Array = this._model.drawables.maskCounts;
-      return maskCounts;
+      return this._model.drawables.maskCounts;
     }
 
     /**
@@ -711,14 +689,14 @@ export namespace Live2DCubismFramework {
      */
     public loadParameters(): void {
       let parameterCount: number = this._model.parameters.count;
-      const savedParameterCount: number = this._savedParameters.getSize();
+      const savedParameterCount: number = this._savedParameters.length;
 
       if (parameterCount > savedParameterCount) {
         parameterCount = savedParameterCount;
       }
 
       for (let i = 0; i < parameterCount; ++i) {
-        this._parameterValues[i] = this._savedParameters.at(i);
+        this._parameterValues[i] = this._savedParameters[i];
       }
     }
 
@@ -737,9 +715,8 @@ export namespace Live2DCubismFramework {
         const parameterIds: string[] = this._model.parameters.ids;
         const parameterCount: number = this._model.parameters.count;
 
-        this._parameterIds.prepareCapacity(parameterCount);
         for (let i = 0; i < parameterCount; ++i) {
-          this._parameterIds.pushBack(
+          this._parameterIds.push(
             CubismFramework.getIdManager().getId(parameterIds[i])
           );
         }
@@ -749,9 +726,8 @@ export namespace Live2DCubismFramework {
         const partIds: string[] = this._model.parts.ids;
         const partCount: number = this._model.parts.count;
 
-        this._partIds.prepareCapacity(partCount);
         for (let i = 0; i < partCount; ++i) {
-          this._partIds.pushBack(
+          this._partIds.push(
             CubismFramework.getIdManager().getId(partIds[i])
           );
         }
@@ -761,9 +737,8 @@ export namespace Live2DCubismFramework {
         const drawableIds: string[] = this._model.drawables.ids;
         const drawableCount: number = this._model.drawables.count;
 
-        this._drawableIds.prepareCapacity(drawableCount);
         for (let i = 0; i < drawableCount; ++i) {
-          this._drawableIds.pushBack(
+          this._drawableIds.push(
             CubismFramework.getIdManager().getId(drawableIds[i])
           );
         }
@@ -780,15 +755,15 @@ export namespace Live2DCubismFramework {
       this._parameterMaximumValues = null;
       this._parameterMinimumValues = null;
       this._partOpacities = null;
-      this._savedParameters = new csmVector<number>();
-      this._parameterIds = new csmVector<CubismIdHandle>();
-      this._drawableIds = new csmVector<CubismIdHandle>();
-      this._partIds = new csmVector<CubismIdHandle>();
+      this._savedParameters = [];
+      this._parameterIds = [];
+      this._drawableIds = [];
+      this._partIds = [];
 
-      this._notExistPartId = new csmMap<CubismIdHandle, number>();
-      this._notExistParameterId = new csmMap<CubismIdHandle, number>();
-      this._notExistParameterValues = new csmMap<number, number>();
-      this._notExistPartOpacities = new csmMap<number, number>();
+      this._notExistPartId = {};
+      this._notExistParameterId = {};
+      this._notExistParameterValues = {};
+      this._notExistPartOpacities = {};
     }
 
     /**
@@ -799,13 +774,13 @@ export namespace Live2DCubismFramework {
       this._model = null;
     }
 
-    private _notExistPartOpacities: csmMap<number, number>; // 存在していないパーツの不透明度のリスト
-    private _notExistPartId: csmMap<CubismIdHandle, number>; // 存在していないパーツIDのリスト
+    private _notExistPartOpacities: Record<number, number>; // 存在していないパーツの不透明度のリスト
+    private _notExistPartId: Record<string, number>; // 存在していないパーツIDのリスト
 
-    private _notExistParameterValues: csmMap<number, number>; // 存在していないパラメータの値のリスト
-    private _notExistParameterId: csmMap<CubismIdHandle, number>; // 存在していないパラメータIDのリスト
+    private _notExistParameterValues: Record<number, number>; // 存在していないパラメータの値のリスト
+    private _notExistParameterId: Record<string, number>; // 存在していないパラメータIDのリスト
 
-    private _savedParameters: csmVector<number>; // 保存されたパラメータ
+    private _savedParameters: number[]; // 保存されたパラメータ
 
     private _model: Live2DCubismCore.Model; // モデル
 
@@ -815,8 +790,8 @@ export namespace Live2DCubismFramework {
 
     private _partOpacities: Float32Array; // パーツの不透明度のリスト
 
-    private _parameterIds: csmVector<CubismIdHandle>;
-    private _partIds: csmVector<CubismIdHandle>;
-    private _drawableIds: csmVector<CubismIdHandle>;
+    private _parameterIds: string[];
+    private _partIds: string[];
+    private _drawableIds: string[];
   }
 }

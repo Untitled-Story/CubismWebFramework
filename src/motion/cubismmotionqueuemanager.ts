@@ -7,13 +7,8 @@
 
 import { Live2DCubismFramework as acubismmotion } from './acubismmotion';
 import { Live2DCubismFramework as cubismmotionqueueentry } from './cubismmotionqueueentry';
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
 import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
-import csmString = csmstring.csmString;
 import CubismModel = cubismmodel.CubismModel;
-import csmVector = csmvector.csmVector;
-import iterator = csmvector.iterator;
 import CubismMotionQueueEntry = cubismmotionqueueentry.CubismMotionQueueEntry;
 import ACubismMotion = acubismmotion.ACubismMotion;
 
@@ -35,22 +30,20 @@ export namespace Live2DCubismFramework {
       this._userTimeSeconds = 0.0;
       this._eventCallBack = null;
       this._eventCustomData = null;
-      this._motions = new csmVector<CubismMotionQueueEntry>();
+      this._motions = [];
     }
 
     /**
      * デストラクタ
      */
     public release(): void {
-      for (let i = 0; i < this._motions.getSize(); ++i) {
-        if (this._motions.at(i)) {
-          this._motions.at(i).release();
-          this._motions.set(i, void 0);
-          this._motions.set(i, null);
+      for (let i = 0; i < this._motions.length; ++i) {
+        if (this._motions[i]) {
+          this._motions[i].release();
         }
       }
 
-      this._motions = null;
+      this._motions = undefined;
     }
 
     /**
@@ -75,8 +68,8 @@ export namespace Live2DCubismFramework {
       let motionQueueEntry: CubismMotionQueueEntry = null;
 
       // 既にモーションがあれば終了フラグを立てる
-      for (let i = 0; i < this._motions.getSize(); ++i) {
-        motionQueueEntry = this._motions.at(i);
+      for (let i = 0; i < this._motions.length; ++i) {
+        motionQueueEntry = this._motions[i];
         if (motionQueueEntry == null) {
           continue;
         }
@@ -91,7 +84,7 @@ export namespace Live2DCubismFramework {
       motionQueueEntry._autoDelete = autoDelete;
       motionQueueEntry._motion = motion;
 
-      this._motions.pushBack(motionQueueEntry);
+      this._motions.push(motionQueueEntry);
 
       return motionQueueEntry._motionQueueEntryHandle;
     }
@@ -105,15 +98,13 @@ export namespace Live2DCubismFramework {
       // ------- 処理を行う -------
       // 既にモーションがあれば終了フラグを立てる
 
-      for (
-        let ite: iterator<CubismMotionQueueEntry> = this._motions.begin();
-        ite.notEqual(this._motions.end());
+      let i = 0;
 
-      ) {
-        let motionQueueEntry: CubismMotionQueueEntry = ite.ptr();
+      while (i < this._motions.length) {
+        const motionQueueEntry: CubismMotionQueueEntry = this._motions[i];
 
         if (motionQueueEntry == null) {
-          ite = this._motions.erase(ite); // 削除
+          this._motions.splice(i, 1); // 削除
           continue;
         }
 
@@ -121,18 +112,16 @@ export namespace Live2DCubismFramework {
 
         if (motion == null) {
           motionQueueEntry.release();
-          motionQueueEntry = void 0;
-          motionQueueEntry = null;
-          ite = this._motions.erase(ite); // 削除
+          this._motions.splice(i, 1); // 削除
           continue;
         }
 
         // ----- 終了済みの処理があれば削除する ------
         if (!motionQueueEntry.isFinished()) {
           return false;
-        } else {
-          ite.preIncrement();
         }
+
+        i++;
       }
 
       return true;
@@ -148,12 +137,8 @@ export namespace Live2DCubismFramework {
       motionQueueEntryNumber: CubismMotionQueueEntryHandle
     ): boolean {
       // 既にモーションがあれば終了フラグを立てる
-      for (
-        let ite: iterator<CubismMotionQueueEntry> = this._motions.begin();
-        ite.notEqual(this._motions.end());
-        ite.increment()
-      ) {
-        const motionQueueEntry: CubismMotionQueueEntry = ite.ptr();
+      for (let i = 0; i < this._motions.length; i++) {
+        const motionQueueEntry: CubismMotionQueueEntry = this._motions[i];
 
         if (motionQueueEntry == null) {
           continue;
@@ -166,6 +151,7 @@ export namespace Live2DCubismFramework {
           return false;
         }
       }
+
       return true;
     }
 
@@ -176,25 +162,16 @@ export namespace Live2DCubismFramework {
       // ------- 処理を行う -------
       // 既にモーションがあれば終了フラグを立てる
 
-      for (
-        let ite: iterator<CubismMotionQueueEntry> = this._motions.begin();
-        ite.notEqual(this._motions.end());
+      for (let i = 0; i < this._motions.length; i++) {
+        const motionQueueEntry: CubismMotionQueueEntry = this._motions[i];
 
-      ) {
-        let motionQueueEntry: CubismMotionQueueEntry = ite.ptr();
-
-        if (motionQueueEntry == null) {
-          ite = this._motions.erase(ite);
-
-          continue;
+        if (motionQueueEntry != null) {
+          // ----- 終了済みの処理があれば削除する ------
+          motionQueueEntry.release();
         }
-
-        // ----- 終了済みの処理があれば削除する ------
-        motionQueueEntry.release();
-        motionQueueEntry = void 0;
-        motionQueueEntry = null;
-        ite = this._motions.erase(ite); // 削除
       }
+
+      this._motions = [];
     }
 
     /**
@@ -206,28 +183,10 @@ export namespace Live2DCubismFramework {
          */
     public getCubismMotionQueueEntry(
       motionQueueEntryNumber: any
-    ): CubismMotionQueueEntry {
+    ): CubismMotionQueueEntry | undefined {
       //------- 処理を行う -------
       // 既にモーションがあれば終了フラグを立てる
-      for (
-        let ite: iterator<CubismMotionQueueEntry> = this._motions.begin();
-        ite.notEqual(this._motions.end());
-        ite.preIncrement()
-      ) {
-        const motionQueueEntry: CubismMotionQueueEntry = ite.ptr();
-
-        if (motionQueueEntry == null) {
-          continue;
-        }
-
-        if (
-          motionQueueEntry._motionQueueEntryHandle == motionQueueEntryNumber
-        ) {
-          return motionQueueEntry;
-        }
-      }
-
-      return null;
+      return this._motions.find(entry => entry != null && entry._motionQueueEntryHandle == motionQueueEntryNumber);
     }
 
     /**
@@ -261,15 +220,13 @@ export namespace Live2DCubismFramework {
       // ------- 処理を行う --------
       // 既にモーションがあれば終了フラグを立てる
 
-      for (
-        let ite: iterator<CubismMotionQueueEntry> = this._motions.begin();
-        ite.notEqual(this._motions.end());
+      let i = 0;
 
-      ) {
-        let motionQueueEntry: CubismMotionQueueEntry = ite.ptr();
+      while (i < this._motions.length) {
+        const motionQueueEntry: CubismMotionQueueEntry = this._motions[i];
 
         if (motionQueueEntry == null) {
-          ite = this._motions.erase(ite); // 削除
+          this._motions.splice(i, 1); // 削除
           continue;
         }
 
@@ -277,10 +234,7 @@ export namespace Live2DCubismFramework {
 
         if (motion == null) {
           motionQueueEntry.release();
-          motionQueueEntry = void 0;
-          motionQueueEntry = null;
-          ite = this._motions.erase(ite); // 削除
-
+          this._motions.splice(i, 1); // 削除
           continue;
         }
 
@@ -289,14 +243,14 @@ export namespace Live2DCubismFramework {
         updated = true;
 
         // ------ ユーザトリガーイベントを検査する ----
-        const firedList: csmVector<csmString> = motion.getFiredEvent(
+        const firedList: string[] = motion.getFiredEvent(
           motionQueueEntry.getLastCheckEventTime() -
-            motionQueueEntry.getStartTime(),
+          motionQueueEntry.getStartTime(),
           userTimeSeconds - motionQueueEntry.getStartTime()
         );
 
-        for (let i = 0; i < firedList.getSize(); ++i) {
-          this._eventCallBack(this, firedList.at(i), this._eventCustomData);
+        for (let i = 0; i < firedList.length; ++i) {
+          this._eventCallBack(this, firedList[i], this._eventCustomData);
         }
 
         motionQueueEntry.setLastCheckEventTime(userTimeSeconds);
@@ -304,11 +258,9 @@ export namespace Live2DCubismFramework {
         // ------ 終了済みの処理があれば削除する ------
         if (motionQueueEntry.isFinished()) {
           motionQueueEntry.release();
-          motionQueueEntry = void 0;
-          motionQueueEntry = null;
-          ite = this._motions.erase(ite); // 削除
+          this._motions.splice(i, 1); // 削除
         } else {
-          ite.preIncrement();
+          i++;
         }
       }
 
@@ -316,7 +268,7 @@ export namespace Live2DCubismFramework {
     }
     _userTimeSeconds: number; // デルタ時間の積算値[秒]
 
-    _motions: csmVector<CubismMotionQueueEntry>; // モーション
+    _motions: CubismMotionQueueEntry[]; // モーション
     _eventCallBack: CubismMotionEventFunction; // コールバック関数
     _eventCustomData: any; // コールバックに戻されるデータ
   }
@@ -332,7 +284,7 @@ export namespace Live2DCubismFramework {
   export interface CubismMotionEventFunction {
     (
       caller: CubismMotionQueueManager,
-      eventValue: csmString,
+      eventValue: string,
       customData: any
     ): void;
   }
@@ -342,6 +294,6 @@ export namespace Live2DCubismFramework {
    *
    * モーションの識別番号の定義
    */
-  export declare type CubismMotionQueueEntryHandle = any;
+  export declare type CubismMotionQueueEntryHandle = number;
   export const InvalidMotionQueueEntryHandleValue: CubismMotionQueueEntryHandle = -1;
 }

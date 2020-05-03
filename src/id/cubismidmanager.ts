@@ -5,13 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
-import { Live2DCubismFramework as cubismid } from './cubismid';
-import { Live2DCubismFramework as csmstring } from '../type/csmstring';
-import csmString = csmstring.csmString;
-import CubismId = cubismid.CubismId;
-import csmVector = csmvector.csmVector;
-
 export namespace Live2DCubismFramework {
   /**
    * ID名の管理
@@ -23,17 +16,14 @@ export namespace Live2DCubismFramework {
      * コンストラクタ
      */
     public constructor() {
-      this._ids = new csmVector<CubismId>();
+      this._ids = [];
     }
 
     /**
      * デストラクタ相当の処理
      */
     public release(): void {
-      for (let i = 0; i < this._ids.getSize(); ++i) {
-        this._ids.set(i, void 0);
-      }
-      this._ids = null;
+      this._ids = undefined;
     }
 
     /**
@@ -42,7 +32,7 @@ export namespace Live2DCubismFramework {
      * @param ids ID名リスト
      * @param count IDの個数
      */
-    public registerIds(ids: string[] | csmString[]): void {
+    public registerIds(ids: string[]): void {
       for (let i = 0; i < ids.length; i++) {
         this.registerId(ids[i]);
       }
@@ -53,21 +43,14 @@ export namespace Live2DCubismFramework {
      *
      * @param id ID名
      */
-    public registerId(id: string | csmString): CubismId {
-      let result: CubismId = null;
-
-      if ('string' == typeof id) {
-        if ((result = this.findId(id)) != null) {
-          return result;
-        }
-
-        result = new CubismId(id);
-        this._ids.pushBack(result);
-      } else {
-        return this.registerId(id.s);
+    public registerId(id: string): string {
+      if (this.isExist(id)) {
+        return id;
       }
 
-      return result;
+      this._ids.push(id);
+
+      return id;
     }
 
     /**
@@ -75,7 +58,7 @@ export namespace Live2DCubismFramework {
      *
      * @param id ID名
      */
-    public getId(id: csmString | string): CubismId {
+    public getId(id: string): string {
       return this.registerId(id);
     }
 
@@ -85,34 +68,10 @@ export namespace Live2DCubismFramework {
      * @return true 存在する
      * @return false 存在しない
      */
-    public isExist(id: csmString | string): boolean {
-      if ('string' == typeof id) {
-        return this.findId(id) != null;
-      }
-      return this.isExist(id.s);
+    public isExist(id: string): boolean {
+      return this._ids.includes(id);
     }
 
-    /**
-     * ID名からIDを検索する。
-     *
-     * @param id ID名
-     * @return 登録されているID。なければNULL。
-     */
-    private findId(id: string): CubismId {
-      for (let i = 0; i < this._ids.getSize(); ++i) {
-        if (
-          this._ids
-            .at(i)
-            .getString()
-            .isEqual(id)
-        ) {
-          return this._ids.at(i);
-        }
-      }
-
-      return null;
-    }
-
-    private _ids: csmVector<CubismId>; // 登録されているIDのリスト
+    private _ids: string[]; // 登録されているIDのリスト
   }
 }

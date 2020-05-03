@@ -5,14 +5,10 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as csmvector } from '../type/csmvector';
 import { Live2DCubismFramework as icubismmodelsetting } from '../icubismmodelsetting';
-import { Live2DCubismFramework as cubismid } from '../id/cubismid';
 import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import CubismModel = cubismmodel.CubismModel;
-import CubismIdHandle = cubismid.CubismIdHandle;
 import ICubismModelSetting = icubismmodelsetting.ICubismModelSetting;
-import csmVector = csmvector.csmVector;
 
 export namespace Live2DCubismFramework {
   /**
@@ -71,7 +67,7 @@ export namespace Live2DCubismFramework {
      * まばたきさせるパラメータIDのリストの設定
      * @param parameterIds パラメータのIDのリスト
      */
-    public setParameterIds(parameterIds: csmVector<CubismIdHandle>): void {
+    public setParameterIds(parameterIds: string[]): void {
       this._parameterIds = parameterIds;
     }
 
@@ -79,7 +75,7 @@ export namespace Live2DCubismFramework {
      * まばたきさせるパラメータIDのリストの取得
      * @return パラメータIDのリスト
      */
-    public getParameterIds(): csmVector<CubismIdHandle> {
+    public getParameterIds(): string[] {
       return this._parameterIds;
     }
 
@@ -160,8 +156,8 @@ export namespace Live2DCubismFramework {
         parameterValue = -parameterValue;
       }
 
-      for (let i = 0; i < this._parameterIds.getSize(); ++i) {
-        model.setParameterValueById(this._parameterIds.at(i), parameterValue);
+      for (let i = 0; i < this._parameterIds.length; ++i) {
+        model.setParameterValueById(this._parameterIds[i], parameterValue);
       }
     }
 
@@ -178,14 +174,14 @@ export namespace Live2DCubismFramework {
       this._closedSeconds = 0.05;
       this._openingSeconds = 0.15;
       this._userTimeSeconds = 0.0;
-      this._parameterIds = new csmVector<CubismIdHandle>();
+      this._parameterIds = [];
 
       if (modelSetting == null) {
         return;
       }
 
       for (let i = 0; i < modelSetting.getEyeBlinkParameterCount(); ++i) {
-        this._parameterIds.pushBack(modelSetting.getEyeBlinkParameterId(i));
+        this._parameterIds.push(modelSetting.getEyeBlinkParameterId(i));
       }
     }
 
@@ -202,7 +198,7 @@ export namespace Live2DCubismFramework {
     }
 
     _blinkingState: number; // 現在の状態
-    _parameterIds: csmVector<CubismIdHandle>; // 操作対象のパラメータのIDのリスト
+    _parameterIds: string[]; // 操作対象のパラメータのIDのリスト
     _nextBlinkingTime: number; // 次のまばたきの時刻[秒]
     _stateStartTimeSeconds: number; // 現在の状態が開始した時刻[秒]
     _blinkingIntervalSeconds: number; // まばたきの間隔[秒]
