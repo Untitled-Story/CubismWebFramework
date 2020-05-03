@@ -18,22 +18,6 @@ export namespace Live2DCubismFramework {
    */
   export abstract class CubismRenderer {
     /**
-     * レンダラのインスタンスを生成して取得する
-     *
-     * @return レンダラのインスタンス
-     */
-    public static create(): CubismRenderer {
-      return null;
-    }
-
-    /**
-     * レンダラのインスタンスを解放する
-     */
-    public static delete(renderer: CubismRenderer): void {
-      renderer = null;
-    }
-
-    /**
      * レンダラの初期化処理を実行する
      * 引数に渡したモデルからレンダラの初期化処理に必要な情報を取り出すことができる
      * @param model モデルのインスタンス

@@ -24,13 +24,6 @@ export namespace Live2DCubismFramework {
    */
   export abstract class ACubismMotion {
     /**
-     * インスタンスの破棄
-     */
-    public static delete(motion: ACubismMotion): void {
-      motion.release();
-    }
-
-    /**
      * コンストラクタ
      */
     public constructor() {

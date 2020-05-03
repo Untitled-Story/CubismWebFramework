@@ -294,6 +294,6 @@ export namespace Live2DCubismFramework {
    *
    * モーションの識別番号の定義
    */
-  export declare type CubismMotionQueueEntryHandle = number;
+  export declare type CubismMotionQueueEntryHandle = any;
   export const InvalidMotionQueueEntryHandleValue: CubismMotionQueueEntryHandle = -1;
 }

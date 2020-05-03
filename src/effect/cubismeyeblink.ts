@@ -30,16 +30,6 @@ export namespace Live2DCubismFramework {
     }
 
     /**
-     * インスタンスの破棄
-     * @param eyeBlink 対象のCubismEyeBlink
-     */
-    public static delete(eyeBlink: CubismEyeBlink): void {
-      if (eyeBlink != null) {
-        eyeBlink = null;
-      }
-    }
-
-    /**
      * まばたきの間隔の設定
      * @param blinkingInterval まばたきの間隔の時間[秒]
      */

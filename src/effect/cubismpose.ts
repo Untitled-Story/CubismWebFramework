@@ -89,16 +89,6 @@ export namespace Live2DCubismFramework {
     }
 
     /**
-     * インスタンスを破棄する
-     * @param pose 対象のCubismPose
-     */
-    public static delete(pose: CubismPose): void {
-      if (pose != null) {
-        pose = null;
-      }
-    }
-
-    /**
      * モデルのパラメータの更新
      * @param model 対象のモデル
      * @param deltaTimeSeconds デルタ時間[秒]

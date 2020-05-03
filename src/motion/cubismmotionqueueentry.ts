@@ -38,7 +38,7 @@ export namespace Live2DCubismFramework {
      */
     public release(): void {
       if (this._autoDelete && this._motion) {
-        ACubismMotion.delete(this._motion); //
+        this._motion.release();
       }
     }
 

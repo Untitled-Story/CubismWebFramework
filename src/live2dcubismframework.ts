@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as cubismjson } from './utils/cubismjson';
 import { Live2DCubismFramework as cubismidmanager } from './id/cubismidmanager';
 import { Live2DCubismFramework as cubismrenderer } from './rendering/cubismrenderer';
 import {
@@ -13,39 +12,8 @@ import {
   CubismLogWarning,
   CSM_ASSERT
 } from './utils/cubismdebug';
-import Value = cubismjson.Value;
 import CubismIdManager = cubismidmanager.CubismIdManager;
 import CubismRenderer = cubismrenderer.CubismRenderer;
-
-export function strtod(s: string, endPtr: string[]): number {
-  let index = 0;
-  for (let i = 1; ; i++) {
-    const testC: string = s.slice(i - 1, i);
-
-    // 指数・マイナスの可能性があるのでスキップする
-    if (testC == 'e' || testC == '-' || testC == 'E') {
-      continue;
-    } // 文字列の範囲を広げていく
-
-    const test: string = s.substring(0, i);
-    const number = Number(test);
-    if (isNaN(number)) {
-      // 数値として認識できなくなったので終了
-      break;
-    } // 最後に数値としてできたindexを格納しておく
-
-    index = i;
-  }
-  let d = parseFloat(s); // パースした数値
-
-  if (isNaN(d)) {
-    // 数値として認識できなくなったので終了
-    d = NaN;
-  }
-
-  endPtr[0] = s.slice(index); // 後続の文字列
-  return d;
-}
 
 export namespace Live2DCubismFramework {
   // ファイルスコープの変数を初期化
@@ -61,14 +29,6 @@ export namespace Live2DCubismFramework {
   export namespace Constant {
     export const vertexOffset = 0; // メッシュ頂点のオフセット値
     export const vertexStep = 2; // メッシュ頂点のステップ値
-  }
-
-  export function csmDelete<T>(address: T): void {
-    if (!address) {
-      return;
-    }
-
-    address = void 0;
   }
 
   /**
@@ -153,9 +113,6 @@ export namespace Live2DCubismFramework {
         return;
       }
 
-      //---- static 初期化 ----
-      Value.staticInitializeNotForClientCall();
-
       s_cubismIdManager = new CubismIdManager();
 
       s_isInitialized = true;
@@ -182,8 +139,6 @@ export namespace Live2DCubismFramework {
         CubismLogWarning('CubismFramework.dispose() skipped, not initialized.');
         return;
       }
-
-      Value.staticReleaseNotForClientCall();
 
       s_cubismIdManager.release();
       s_cubismIdManager = null;

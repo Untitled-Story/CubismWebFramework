@@ -389,32 +389,31 @@ export namespace Live2DCubismFramework {
      * デストラクタに相当する処理
      */
     public release() {
-      if (this._motionManager != null) {
-        this._motionManager.release();
-        this._motionManager = null;
-      }
+      this._motionManager?.release();
+      this._motionManager = undefined;
 
-      if (this._expressionManager != null) {
-        this._expressionManager.release();
-        this._expressionManager = null;
-      }
+      this._expressionManager?.release();
+      this._expressionManager = undefined;
 
-      if (this._moc != null) {
+      if (this._moc) {
         this._moc.deleteModel(this._model);
         this._moc.release();
-        this._moc = null;
+        this._moc = undefined;
       }
 
-      this._modelMatrix = null;
+      this._modelMatrix = undefined;
 
-      CubismPose.delete(this._pose);
-      CubismEyeBlink.delete(this._eyeBlink);
-      CubismBreath.delete(this._breath);
+      this._pose = undefined;
+      this._eyeBlink = undefined;
+      this._breath = undefined;
 
-      this._dragManager = null;
+      this._dragManager = undefined;
 
-      CubismPhysics.delete(this._physics);
-      CubismModelUserData.delete(this._modelUserData);
+      this._physics?.release();
+      this._physics = undefined;
+
+      this._modelUserData?.release();
+      this._modelUserData = undefined;
 
       this.deleteRenderer();
     }

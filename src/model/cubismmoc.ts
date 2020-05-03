@@ -33,17 +33,6 @@ export namespace Live2DCubismFramework {
     }
 
     /**
-     * Mocデータを削除
-     *
-     * Mocデータを削除する
-     */
-    public static delete(moc: CubismMoc): void {
-      moc._moc._release();
-      moc._moc = null;
-      moc = null;
-    }
-
-    /**
      * モデルを作成する
      *
      * @return Mocデータから作成されたモデル
@@ -70,8 +59,6 @@ export namespace Live2DCubismFramework {
      */
     deleteModel(model: CubismModel): void {
       if (model != null) {
-        model.release();
-        model = null;
         --this._modelCount;
       }
     }

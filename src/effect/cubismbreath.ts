@@ -23,16 +23,6 @@ export namespace Live2DCubismFramework {
     }
 
     /**
-     * インスタンスの破棄
-     * @param instance 対象のCubismBreath
-     */
-    public static delete(instance: CubismBreath): void {
-      if (instance != null) {
-        instance = null;
-      }
-    }
-
-    /**
      * 呼吸のパラメータの紐づけ
      * @param breathParameters 呼吸を紐づけたいパラメータのリスト
      */

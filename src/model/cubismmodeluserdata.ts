@@ -49,17 +49,6 @@ export namespace Live2DCubismFramework {
     }
 
     /**
-     * インスタンスを破棄する
-     *
-     * @param modelUserData 破棄するインスタンス
-     */
-    public static delete(modelUserData: CubismModelUserData): void {
-      if (modelUserData != null) {
-        modelUserData.release();
-      }
-    }
-
-    /**
      * ArtMeshのユーザーデータのリストの取得
      *
      * @return ユーザーデータリスト

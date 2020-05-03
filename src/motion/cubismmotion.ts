@@ -603,7 +603,6 @@ export namespace Live2DCubismFramework {
      * デストラクタ相当の処理
      */
     public release(): void {
-      this._motionData = void 0;
       this._motionData = null;
     }
 

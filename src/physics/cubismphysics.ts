@@ -58,17 +58,6 @@ export namespace Live2DCubismFramework {
     }
 
     /**
-     * インスタンスを破棄する
-     * @param physics 破棄するインスタンス
-     */
-    public static delete(physics: CubismPhysics): void {
-      if (physics != null) {
-        physics.release();
-        physics = null;
-      }
-    }
-
-    /**
      * 物理演算の評価
      * @param model 物理演算の結果を適用するモデル
      * @param deltaTimeSeconds デルタ時間[秒]
