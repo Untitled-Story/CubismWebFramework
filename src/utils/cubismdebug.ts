@@ -6,7 +6,7 @@
  */
 
 import {
-  Live2DCubismFramework as cubismframework,
+  CubismFramework,
   LogLevel
 } from '../live2dcubismframework';
 import {
@@ -19,7 +19,7 @@ import {
 } from '../cubismframeworkconfig';
 
 export const CubismLogPrint = (level: LogLevel, fmt: string, args: any[]) => {
-  Live2DCubismFramework.CubismDebug.print(level, '[CSM]' + fmt, args);
+  CubismDebug.print(level, '[CSM]' + fmt, args);
 };
 
 export const CubismLogPrintIn = (level: LogLevel, fmt: string, args: any[]) => {
@@ -98,8 +98,6 @@ if (CSM_LOG_LEVEL <= CSM_LOG_LEVEL_VERBOSE) {
   };
 }
 
-//------------ LIVE2D NAMESPACE ------------
-export namespace Live2DCubismFramework {
   /**
    * デバッグ用のユーティリティクラス。
    * ログの出力、バイトのダンプなど
@@ -119,12 +117,12 @@ export namespace Live2DCubismFramework {
       args?: any[]
     ): void {
       // オプションで設定されたログ出力レベルを下回る場合はログに出さない
-      if (logLevel < cubismframework.CubismFramework.getLoggingLevel()) {
+      if (logLevel < CubismFramework.getLoggingLevel()) {
         return;
       }
 
       const logPrint: Live2DCubismCore.csmLogFunction =
-        cubismframework.CubismFramework.coreLogFunction;
+        CubismFramework.coreLogFunction;
 
       if (!logPrint) return;
 
@@ -161,6 +159,3 @@ export namespace Live2DCubismFramework {
      */
     private constructor() {}
   }
-}
-
-//------------ LIVE2D NAMESPACE ------------

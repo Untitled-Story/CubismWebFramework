@@ -5,209 +5,206 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as cubismframework } from '../live2dcubismframework';
-import CubismFramework = cubismframework.CubismFramework;
+import { CubismFramework } from '../live2dcubismframework';
 
-export namespace Live2DCubismFramework {
-  // JSON keys
-  const Meta = 'Meta';
-  const Duration = 'Duration';
-  const Loop = 'Loop';
-  const CurveCount = 'CurveCount';
-  const Fps = 'Fps';
-  const TotalSegmentCount = 'TotalSegmentCount';
-  const TotalPointCount = 'TotalPointCount';
-  const Curves = 'Curves';
-  const Target = 'Target';
-  const Id = 'Id';
-  const FadeInTime = 'FadeInTime';
-  const FadeOutTime = 'FadeOutTime';
-  const Segments = 'Segments';
-  const UserData = 'UserData';
-  const UserDataCount = 'UserDataCount';
-  const TotalUserDataSize = 'TotalUserDataSize';
-  const Time = 'Time';
-  const Value = 'Value';
+// JSON keys
+const Meta = 'Meta';
+const Duration = 'Duration';
+const Loop = 'Loop';
+const CurveCount = 'CurveCount';
+const Fps = 'Fps';
+const TotalSegmentCount = 'TotalSegmentCount';
+const TotalPointCount = 'TotalPointCount';
+const Curves = 'Curves';
+const Target = 'Target';
+const Id = 'Id';
+const FadeInTime = 'FadeInTime';
+const FadeOutTime = 'FadeOutTime';
+const Segments = 'Segments';
+const UserData = 'UserData';
+const UserDataCount = 'UserDataCount';
+const TotalUserDataSize = 'TotalUserDataSize';
+const Time = 'Time';
+const Value = 'Value';
+
+/**
+ * motion3.jsonのコンテナ。
+ */
+export class CubismMotionJson {
+  /**
+   * コンストラクタ
+   * @param json motion3.jsonが読み込まれているバッファ
+   * @param size バッファのサイズ
+   */
+  public constructor(json: JSONObject, size: number) {
+    this._json = json;
+  }
 
   /**
-   * motion3.jsonのコンテナ。
+   * デストラクタ相当の処理
    */
-  export class CubismMotionJson {
-    /**
-     * コンストラクタ
-     * @param json motion3.jsonが読み込まれているバッファ
-     * @param size バッファのサイズ
-     */
-    public constructor(json: JSONObject, size: number) {
-      this._json = json;
-    }
-
-    /**
-     * デストラクタ相当の処理
-     */
-    public release(): void {
-      this._json = undefined;
-    }
-
-    /**
-     * モーションの長さを取得する
-     * @return モーションの長さ[秒]
-     */
-    public getMotionDuration(): number | undefined {
-      return this._json[Meta][Duration];
-    }
-
-    /**
-     * モーションのループ情報の取得
-     * @return true ループする
-     * @return false ループしない
-     */
-    public isMotionLoop(): boolean | undefined {
-      return this._json[Meta][Loop];
-    }
-
-    /**
-     * モーションカーブの個数の取得
-     * @return モーションカーブの個数
-     */
-    public getMotionCurveCount(): number | undefined {
-      return this._json[Meta][CurveCount];
-    }
-
-    /**
-     * モーションのフレームレートの取得
-     * @return フレームレート[FPS]
-     */
-    public getMotionFps(): number | undefined {
-      return this._json[Meta][Fps];
-    }
-
-    /**
-     * モーションのセグメントの総合計の取得
-     * @return モーションのセグメントの取得
-     */
-    public getMotionTotalSegmentCount(): number | undefined {
-      return this._json[Meta][TotalSegmentCount];
-    }
-
-    /**
-     * モーションのカーブの制御店の総合計の取得
-     * @return モーションのカーブの制御点の総合計
-     */
-    public getMotionTotalPointCount(): number | undefined {
-      return this._json[Meta][TotalPointCount];
-    }
-
-    /**
-     * モーションのフェードイン時間の取得
-     * @return フェードイン時間[秒]
-     */
-    public getMotionFadeInTime(): number | undefined {
-      return this._json[Meta][FadeInTime];
-    }
-
-    /**
-     * モーションのフェードアウト時間の取得
-     * @return フェードアウト時間[秒]
-     */
-    public getMotionFadeOutTime(): number | undefined {
-      return this._json[Meta][FadeOutTime];
-    }
-
-    /**
-     * モーションのカーブの種類の取得
-     * @param curveIndex カーブのインデックス
-     * @return カーブの種類
-     */
-    public getMotionCurveTarget(curveIndex: number): string | undefined {
-      return this._json[Curves][curveIndex][Target];
-    }
-
-    /**
-     * モーションのカーブのIDの取得
-     * @param curveIndex カーブのインデックス
-     * @return カーブのID
-     */
-    public getMotionCurveId(curveIndex: number): string | undefined {
-      return CubismFramework.getIdManager().getId(
-        this._json[Curves][curveIndex][Id],
-      );
-    }
-
-    /**
-     * モーションのカーブのフェードイン時間の取得
-     * @param curveIndex カーブのインデックス
-     * @return フェードイン時間[秒]
-     */
-    public getMotionCurveFadeInTime(curveIndex: number): number | undefined {
-      return this._json[Curves][curveIndex][FadeInTime];
-    }
-
-    /**
-     * モーションのカーブのフェードアウト時間の取得
-     * @param curveIndex カーブのインデックス
-     * @return フェードアウト時間[秒]
-     */
-    public getMotionCurveFadeOutTime(curveIndex: number): number | undefined {
-      return this._json[Curves][curveIndex][FadeOutTime];
-    }
-
-    /**
-     * モーションのカーブのセグメントの個数を取得する
-     * @param curveIndex カーブのインデックス
-     * @return モーションのカーブのセグメントの個数
-     */
-    public getMotionCurveSegmentCount(curveIndex: number): number | undefined {
-      return this._json[Curves][curveIndex][Segments]?.length;
-    }
-
-    /**
-     * モーションのカーブのセグメントの値の取得
-     * @param curveIndex カーブのインデックス
-     * @param segmentIndex セグメントのインデックス
-     * @return セグメントの値
-     */
-    public getMotionCurveSegment(
-      curveIndex: number,
-      segmentIndex: number
-    ): number | undefined {
-      return this._json[Curves][curveIndex][Segments][segmentIndex];
-    }
-
-    /**
-     * イベントの個数の取得
-     * @return イベントの個数
-     */
-    public getEventCount(): number | undefined {
-      return this._json[Meta][UserDataCount];
-    }
-
-    /**
-     *  イベントの総文字数の取得
-     * @return イベントの総文字数
-     */
-    public getTotalEventValueSize(): number | undefined {
-      return this._json[Meta][TotalUserDataSize];
-    }
-
-    /**
-     * イベントの時間の取得
-     * @param userDataIndex イベントのインデックス
-     * @return イベントの時間[秒]
-     */
-    public getEventTime(userDataIndex: number): number {
-      return this._json[UserData][userDataIndex][Time];
-    }
-
-    /**
-     * イベントの取得
-     * @param userDataIndex イベントのインデックス
-     * @return イベントの文字列
-     */
-    public getEventValue(userDataIndex: number): string {
-      return this._json[UserData][userDataIndex][Value];
-    }
-
-    _json: JSONObject; // motion3.jsonのデータ
+  public release(): void {
+    this._json = undefined;
   }
+
+  /**
+   * モーションの長さを取得する
+   * @return モーションの長さ[秒]
+   */
+  public getMotionDuration(): number | undefined {
+    return this._json[Meta][Duration];
+  }
+
+  /**
+   * モーションのループ情報の取得
+   * @return true ループする
+   * @return false ループしない
+   */
+  public isMotionLoop(): boolean | undefined {
+    return this._json[Meta][Loop];
+  }
+
+  /**
+   * モーションカーブの個数の取得
+   * @return モーションカーブの個数
+   */
+  public getMotionCurveCount(): number | undefined {
+    return this._json[Meta][CurveCount];
+  }
+
+  /**
+   * モーションのフレームレートの取得
+   * @return フレームレート[FPS]
+   */
+  public getMotionFps(): number | undefined {
+    return this._json[Meta][Fps];
+  }
+
+  /**
+   * モーションのセグメントの総合計の取得
+   * @return モーションのセグメントの取得
+   */
+  public getMotionTotalSegmentCount(): number | undefined {
+    return this._json[Meta][TotalSegmentCount];
+  }
+
+  /**
+   * モーションのカーブの制御店の総合計の取得
+   * @return モーションのカーブの制御点の総合計
+   */
+  public getMotionTotalPointCount(): number | undefined {
+    return this._json[Meta][TotalPointCount];
+  }
+
+  /**
+   * モーションのフェードイン時間の取得
+   * @return フェードイン時間[秒]
+   */
+  public getMotionFadeInTime(): number | undefined {
+    return this._json[Meta][FadeInTime];
+  }
+
+  /**
+   * モーションのフェードアウト時間の取得
+   * @return フェードアウト時間[秒]
+   */
+  public getMotionFadeOutTime(): number | undefined {
+    return this._json[Meta][FadeOutTime];
+  }
+
+  /**
+   * モーションのカーブの種類の取得
+   * @param curveIndex カーブのインデックス
+   * @return カーブの種類
+   */
+  public getMotionCurveTarget(curveIndex: number): string | undefined {
+    return this._json[Curves][curveIndex][Target];
+  }
+
+  /**
+   * モーションのカーブのIDの取得
+   * @param curveIndex カーブのインデックス
+   * @return カーブのID
+   */
+  public getMotionCurveId(curveIndex: number): string | undefined {
+    return CubismFramework.getIdManager().getId(
+      this._json[Curves][curveIndex][Id],
+    );
+  }
+
+  /**
+   * モーションのカーブのフェードイン時間の取得
+   * @param curveIndex カーブのインデックス
+   * @return フェードイン時間[秒]
+   */
+  public getMotionCurveFadeInTime(curveIndex: number): number | undefined {
+    return this._json[Curves][curveIndex][FadeInTime];
+  }
+
+  /**
+   * モーションのカーブのフェードアウト時間の取得
+   * @param curveIndex カーブのインデックス
+   * @return フェードアウト時間[秒]
+   */
+  public getMotionCurveFadeOutTime(curveIndex: number): number | undefined {
+    return this._json[Curves][curveIndex][FadeOutTime];
+  }
+
+  /**
+   * モーションのカーブのセグメントの個数を取得する
+   * @param curveIndex カーブのインデックス
+   * @return モーションのカーブのセグメントの個数
+   */
+  public getMotionCurveSegmentCount(curveIndex: number): number | undefined {
+    return this._json[Curves][curveIndex][Segments]?.length;
+  }
+
+  /**
+   * モーションのカーブのセグメントの値の取得
+   * @param curveIndex カーブのインデックス
+   * @param segmentIndex セグメントのインデックス
+   * @return セグメントの値
+   */
+  public getMotionCurveSegment(
+    curveIndex: number,
+    segmentIndex: number,
+  ): number | undefined {
+    return this._json[Curves][curveIndex][Segments][segmentIndex];
+  }
+
+  /**
+   * イベントの個数の取得
+   * @return イベントの個数
+   */
+  public getEventCount(): number | undefined {
+    return this._json[Meta][UserDataCount];
+  }
+
+  /**
+   *  イベントの総文字数の取得
+   * @return イベントの総文字数
+   */
+  public getTotalEventValueSize(): number | undefined {
+    return this._json[Meta][TotalUserDataSize];
+  }
+
+  /**
+   * イベントの時間の取得
+   * @param userDataIndex イベントのインデックス
+   * @return イベントの時間[秒]
+   */
+  public getEventTime(userDataIndex: number): number {
+    return this._json[UserData][userDataIndex][Time];
+  }
+
+  /**
+   * イベントの取得
+   * @param userDataIndex イベントのインデックス
+   * @return イベントの文字列
+   */
+  public getEventValue(userDataIndex: number): string {
+    return this._json[UserData][userDataIndex][Value];
+  }
+
+  _json: JSONObject; // motion3.jsonのデータ
 }

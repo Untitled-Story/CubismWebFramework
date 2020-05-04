@@ -5,10 +5,8 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as cubismvector2 } from './cubismvector2';
-import CubismVector2 = cubismvector2.CubismVector2;
+import { CubismVector2 } from './cubismvector2';
 
-export namespace Live2DCubismFramework {
   /**
    * 数値計算などに使用するユーティリティクラス
    */
@@ -192,4 +190,3 @@ export namespace Live2DCubismFramework {
      */
     private constructor() {}
   }
-}
