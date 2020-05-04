@@ -5,10 +5,10 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Live2DCubismFramework as icubismmodelsetting } from '../icubismmodelsetting';
+import { Live2DCubismFramework as cubismmodelsettingsjson } from '../settings/cubismmodelsettingsjson';
 import { Live2DCubismFramework as cubismmodel } from '../model/cubismmodel';
 import CubismModel = cubismmodel.CubismModel;
-import ICubismModelSetting = icubismmodelsetting.ICubismModelSetting;
+import CubismModelSettingsJson = cubismmodelsettingsjson.CubismModelSettingsJson;
 
 export namespace Live2DCubismFramework {
   /**
@@ -24,7 +24,7 @@ export namespace Live2DCubismFramework {
      * @note 引数がNULLの場合、パラメータIDが設定されていない空のインスタンスを作成する。
      */
     public static create(
-      modelSetting: ICubismModelSetting = null
+      modelSetting: CubismModelSettingsJson = null,
     ): CubismEyeBlink {
       return new CubismEyeBlink(modelSetting);
     }
@@ -155,7 +155,7 @@ export namespace Live2DCubismFramework {
      * コンストラクタ
      * @param modelSetting モデルの設定情報
      */
-    public constructor(modelSetting: ICubismModelSetting) {
+    public constructor(modelSetting: CubismModelSettingsJson) {
       this._blinkingState = EyeState.EyeState_First;
       this._nextBlinkingTime = 0.0;
       this._stateStartTimeSeconds = 0.0;
@@ -170,9 +170,7 @@ export namespace Live2DCubismFramework {
         return;
       }
 
-      for (let i = 0; i < modelSetting.getEyeBlinkParameterCount(); ++i) {
-        this._parameterIds.push(modelSetting.getEyeBlinkParameterId(i));
-      }
+      this._parameterIds = modelSetting.getEyeBlinkParameters().slice();
     }
 
     /**
