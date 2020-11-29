@@ -111,7 +111,7 @@ export class CubismPhysics {
           parameterDefaultValue[currentInput[i].sourceParameterIndex],
           currentSetting.normalizationPosition,
           currentSetting.normalizationAngle,
-          currentInput[0].reflect,
+          currentInput[i].reflect,
           weight,
         );
       }

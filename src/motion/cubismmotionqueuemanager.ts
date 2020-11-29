@@ -70,10 +70,7 @@ export class CubismMotionQueueManager {
         continue;
       }
 
-      motionQueueEntry.startFadeout(
-        motionQueueEntry._motion.getFadeOutTime(),
-        userTimeSeconds,
-      ); // フェードアウトを開始し終了する
+      motionQueueEntry.setFadeOut(motionQueueEntry._motion.getFadeOutTime()); // フェードアウト設定
     }
 
     motionQueueEntry = new CubismMotionQueueEntry(); // 終了時に破棄する
@@ -240,7 +237,7 @@ export class CubismMotionQueueManager {
 
       // ------ ユーザトリガーイベントを検査する ----
       const firedList: string[] = motion.getFiredEvent(
-        motionQueueEntry.getLastCheckEventTime() -
+        motionQueueEntry.getLastCheckEventSeconds() -
         motionQueueEntry.getStartTime(),
         userTimeSeconds - motionQueueEntry.getStartTime(),
       );
@@ -249,13 +246,19 @@ export class CubismMotionQueueManager {
         this._eventCallBack(this, firedList[i], this._eventCustomData);
       }
 
-      motionQueueEntry.setLastCheckEventTime(userTimeSeconds);
+      motionQueueEntry.setLastCheckEventSeconds(userTimeSeconds);
 
       // ------ 終了済みの処理があれば削除する ------
       if (motionQueueEntry.isFinished()) {
         motionQueueEntry.release();
         this._motions.splice(i, 1); // 削除
       } else {
+        if (motionQueueEntry.isTriggeredFadeOut()) {
+          motionQueueEntry.startFadeOut(
+            motionQueueEntry.getFadeOutSeconds(),
+            userTimeSeconds
+          );
+        }
         i++;
       }
     }
