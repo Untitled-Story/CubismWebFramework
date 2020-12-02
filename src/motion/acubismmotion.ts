@@ -10,9 +10,6 @@ import { CubismModel } from '../model/cubismmodel';
 import { CSM_ASSERT } from '../utils/cubismdebug';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
 
-/** モーション再生終了コールバック関数定義 */
-export type FinishedMotionCallback = (self: ACubismMotion) => void;
-
 /**
  * モーションの抽象基底クラス
  *
@@ -235,9 +232,11 @@ export abstract class ACubismMotion {
    *
    * @param onFinishedMotionHandler モーション再生終了コールバック関数
    */
-  public setFinishedMotionHandler = (
-    onFinishedMotionHandler: FinishedMotionCallback,
-  ) => (this._onFinishedMotion = onFinishedMotionHandler);
+  public setFinishedMotionHandler(
+    onFinishedMotionHandler?: (self: this) => void,
+  ) {
+    this._onFinishedMotion = onFinishedMotionHandler;
+  };
 
   /**
    * モーション再生終了コールバックの取得
@@ -256,5 +255,5 @@ export abstract class ACubismMotion {
   public _firedEventValues: string[];
 
   // モーション再生終了コールバック関数
-  public _onFinishedMotion?: FinishedMotionCallback;
+  public _onFinishedMotion?: (self: ACubismMotion) => void;
 }

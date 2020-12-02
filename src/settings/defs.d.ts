@@ -1,4 +1,4 @@
-export interface CubismModelSettingsDefinition {
+export interface CubismModelSettingsDef {
   Version?: 3;
   FileReferences: {
     Moc: string;
@@ -7,27 +7,27 @@ export interface CubismModelSettingsDefinition {
     Pose?: string;
     DisplayInfo?: string;
     UserData?: string;
-    Expressions?: CubismExpressionDefinition[];
-    Motions?: Record<string, CubismMotionDefinition[]>;
+    Expressions?: CubismExpressionDef[];
+    Motions?: Record<string, CubismMotionDef[]>;
   };
-  Layout?: CubismLayoutDefinition;
-  Groups?: CubismGroupDefinition[];
-  HitAreas?: CubismHitAreasDefinition[];
+  Layout?: CubismLayoutDef;
+  Groups?: CubismGroupDef[];
+  HitAreas?: CubismHitAreasDef[];
 }
 
-export interface CubismMotionDefinition {
+export interface CubismMotionDef {
   File: string;
   Sound?: string;
   FadeInTime?: number;
   FadeOutTime?: number;
 }
 
-export interface CubismExpressionDefinition {
+export interface CubismExpressionDef {
   Name: string;
   File: string;
 }
 
-export interface CubismLayoutDefinition {
+export interface CubismLayoutDef {
   CenterX?: number;
   CenterY?: number;
   X?: number;
@@ -36,13 +36,13 @@ export interface CubismLayoutDefinition {
   Height?: number;
 }
 
-export interface CubismGroupDefinition {
+export interface CubismGroupDef {
   Target: string;
   Name: 'LipSync' | 'EyeBlink';
   Ids: string[];
 }
 
-export interface CubismHitAreasDefinition {
+export interface CubismHitAreasDef {
   Id: string;
   Name: string;
 }

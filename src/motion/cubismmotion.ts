@@ -9,7 +9,7 @@ import { CubismFramework } from '../live2dcubismframework';
 import { CubismMath } from '../math/cubismmath';
 import { CubismModel } from '../model/cubismmodel';
 import { CSM_ASSERT, CubismLogDebug } from '../utils/cubismdebug';
-import { ACubismMotion, FinishedMotionCallback } from './acubismmotion';
+import { ACubismMotion } from './acubismmotion';
 import {
   CubismMotionCurve,
   CubismMotionCurveTarget,
@@ -129,18 +129,13 @@ export class CubismMotion extends ACubismMotion {
    * インスタンスを作成する
    *
    * @param json motion3.jsonが読み込まれているバッファ
-   * @param size バッファのサイズ
    * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
    * @return 作成されたインスタンス
    */
-  public static create(
-    json: JSONObject,
-    size: number,
-    onFinishedMotionHandler?: FinishedMotionCallback,
-  ): CubismMotion {
+  public static create(json: JSONObject, onFinishedMotionHandler?: (self: CubismMotion) => void): CubismMotion {
     const ret = new CubismMotion();
 
-    ret.parse(json, size);
+    ret.parse(json);
     ret._sourceFrameRate = ret._motionData.fps;
     ret._loopDurationSeconds = ret._motionData.duration;
     ret._onFinishedMotion = onFinishedMotionHandler;
@@ -603,12 +598,11 @@ export class CubismMotion extends ACubismMotion {
    * motion3.jsonをパースする。
    *
    * @param motionJson  motion3.jsonが読み込まれているバッファ
-   * @param size        バッファのサイズ
    */
-  public parse(motionJson: JSONObject, size: number): void {
+  public parse(motionJson: JSONObject): void {
     this._motionData = new CubismMotionData();
 
-    let json: CubismMotionJson = new CubismMotionJson(motionJson, size);
+    let json: CubismMotionJson = new CubismMotionJson(motionJson);
 
     this._motionData.duration = json.getMotionDuration();
     this._motionData.loop = json.isMotionLoop();

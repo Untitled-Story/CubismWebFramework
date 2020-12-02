@@ -58,10 +58,9 @@ const Acceleration = 'Acceleration';
 export class CubismPhysicsJson {
   /**
    * コンストラクタ
-   * @param buffer physics3.jsonが読み込まれているバッファ
-   * @param size バッファのサイズ
+   * @param json physics3.jsonが読み込まれているバッファ
    */
-  public constructor(json: JSONObject, size: number) {
+  public constructor(json: JSONObject) {
     this._json = json;
   }
 

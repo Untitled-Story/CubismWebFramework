@@ -6,13 +6,13 @@
  */
 
 import {
-  CubismExpressionDefinition,
-  CubismGroupDefinition,
-  CubismHitAreasDefinition,
-  CubismLayoutDefinition,
-  CubismModelSettingsDefinition,
-  CubismMotionDefinition,
-} from './cubismmodelsettingsdefinition';
+  CubismExpressionDef,
+  CubismGroupDef,
+  CubismHitAreasDef,
+  CubismLayoutDef,
+  CubismModelSettingsDef,
+  CubismMotionDef,
+} from './defs';
 
 /**
  * Model3Jsonパーサー
@@ -20,24 +20,10 @@ import {
  * model3.jsonファイルをパースして値を取得する
  */
 export class CubismModelSettingsJson {
-  static isValid(json: any): json is CubismModelSettingsDefinition {
-    return !!json.FileReferences &&
-      typeof json.FileReferences.Moc === 'string' &&
-      Array.isArray(json.FileReferences.Textures) &&
-
-      // textures must be a non-empty array of strings
-      typeof json.FileReferences.Textures[0] === 'string';
-  }
-
-  public constructor(json: CubismModelSettingsDefinition) {
-    if (!CubismModelSettingsJson.isValid(json)) {
-      throw new TypeError('Invalid JSON.');
-    }
-
-    this.json = json;
-
+  public constructor(json: CubismModelSettingsDef) {
     this.groups = json.Groups;
     this.hitAreas = json.HitAreas;
+    this.layout = json.Layout;
 
     this.moc = json.FileReferences.Moc;
     this.expressions = json.FileReferences.Expressions;
@@ -55,15 +41,13 @@ export class CubismModelSettingsJson {
     return this.groups.find(group => group.Name === 'LipSync')?.Ids;
   }
 
-  json: CubismModelSettingsDefinition;
-
-  groups: CubismGroupDefinition[];
+  groups: CubismGroupDef[];
   moc: string;
-  expressions: CubismExpressionDefinition[];
-  motions: Record<string, CubismMotionDefinition[]>;
+  expressions?: CubismExpressionDef[];
+  motions: Record<string, CubismMotionDef[]>;
   textures: string[];
-  physics: string;
-  pose: string;
-  hitAreas: CubismHitAreasDefinition[];
-  layout: CubismLayoutDefinition;
+  physics?: string;
+  pose?: string;
+  hitAreas?: CubismHitAreasDef[];
+  layout?: CubismLayoutDef;
 }

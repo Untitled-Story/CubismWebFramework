@@ -11,7 +11,7 @@ import { CubismPose } from '../effect/cubismpose';
 import { Constant } from '../live2dcubismframework';
 import { CubismModelMatrix } from '../math/cubismmodelmatrix';
 import { CubismTargetPoint } from '../math/cubismtargetpoint';
-import { ACubismMotion, FinishedMotionCallback } from '../motion/acubismmotion';
+import { ACubismMotion } from '../motion/acubismmotion';
 import { CubismExpressionMotion } from '../motion/cubismexpressionmotion';
 import { CubismMotion } from '../motion/cubismmotion';
 import { CubismMotionManager } from '../motion/cubismmotionmanager';
@@ -144,30 +144,23 @@ export class CubismUserModel {
   /**
    * モーションデータを読み込む
    * @param json motion3.jsonファイルが読み込まれているバッファ
-   * @param size バッファのサイズ
    * @param name モーションの名前
    * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
    * @return モーションクラス
    */
   public loadMotion = (
     json: JSONObject,
-    size: number,
     name: string,
-    onFinishedMotionHandler?: FinishedMotionCallback,
-  ) => CubismMotion.create(json, size, onFinishedMotionHandler);
+    onFinishedMotionHandler?: (self: CubismMotion) => void,
+  ) => CubismMotion.create(json, onFinishedMotionHandler);
 
   /**
    * 表情データの読み込み
    * @param json expファイルが読み込まれているバッファ
-   * @param size バッファのサイズ
    * @param name 表情の名前
    */
-  public loadExpression(
-    json: JSONObject,
-    size: number,
-    name: string,
-  ): ACubismMotion {
-    return CubismExpressionMotion.create(json, size);
+  public loadExpression(json: JSONObject, name: string): ACubismMotion {
+    return CubismExpressionMotion.create(json);
   }
 
   /**
@@ -175,8 +168,8 @@ export class CubismUserModel {
    * @param json pose3.jsonが読み込まれているバッファ
    * @param size バッファのサイズ
    */
-  public loadPose(json: JSONObject, size: number): void {
-    this._pose = CubismPose.create(json, size);
+  public loadPose(json: JSONObject): void {
+    this._pose = CubismPose.create(json);
   }
 
   /**
@@ -191,10 +184,9 @@ export class CubismUserModel {
   /**
    * 物理演算データの読み込み
    * @param json  physics3.jsonが読み込まれているバッファ
-   * @param size    バッファのサイズ
    */
-  public loadPhysics(json: JSONObject, size: number): void {
-    this._physics = CubismPhysics.create(json, size);
+  public loadPhysics(json: JSONObject): void {
+    this._physics = CubismPhysics.create(json);
   }
 
   /**

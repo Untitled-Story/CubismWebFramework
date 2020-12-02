@@ -41,13 +41,12 @@ export class CubismPhysics {
   /**
    * インスタンスの作成
    * @param json    physics3.jsonが読み込まれているバッファ
-   * @param size      バッファのサイズ
    * @return 作成されたインスタンス
    */
-  public static create(json: JSONObject, size: number): CubismPhysics {
+  public static create(json: JSONObject): CubismPhysics {
     const ret: CubismPhysics = new CubismPhysics();
 
-    ret.parse(json, size);
+    ret.parse(json);
     ret._physicsRig.gravity.y = 0;
 
     return ret;
@@ -245,12 +244,11 @@ export class CubismPhysics {
   /**
    * physics3.jsonをパースする。
    * @param physicsJson physics3.jsonが読み込まれているバッファ
-   * @param size バッファのサイズ
    */
-  public parse(physicsJson: JSONObject, size: number): void {
+  public parse(physicsJson: JSONObject): void {
     this._physicsRig = new CubismPhysicsRig();
 
-    let json: CubismPhysicsJson = new CubismPhysicsJson(physicsJson, size);
+    let json: CubismPhysicsJson = new CubismPhysicsJson(physicsJson);
 
     this._physicsRig.gravity = json.getGravity();
     this._physicsRig.wind = json.getWind();

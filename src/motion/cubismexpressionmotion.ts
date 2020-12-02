@@ -34,10 +34,7 @@ export class CubismExpressionMotion extends ACubismMotion {
    * @param size バッファのサイズ
    * @return 作成されたインスタンス
    */
-  public static create(
-    json: JSONObject,
-    size: number,
-  ): CubismExpressionMotion {
+  public static create(json: JSONObject): CubismExpressionMotion {
     const expression: CubismExpressionMotion = new CubismExpressionMotion();
 
     const fadeInTime = json[ExpressionKeyFadeIn] as number;

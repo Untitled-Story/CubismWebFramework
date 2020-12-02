@@ -26,10 +26,9 @@ export class CubismPose {
   /**
    * インスタンスの作成
    * @param pose3json pose3.jsonのデータ
-   * @param size pose3.jsonのデータのサイズ[byte]
    * @return 作成されたインスタンス
    */
-  public static create(pose3json: JSONObject, size: number): CubismPose {
+  public static create(pose3json: JSONObject): CubismPose {
     const ret: CubismPose = new CubismPose();
 
     // フェード時間の指定

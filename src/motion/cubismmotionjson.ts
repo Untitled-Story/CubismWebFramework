@@ -34,9 +34,8 @@ export class CubismMotionJson {
   /**
    * コンストラクタ
    * @param json motion3.jsonが読み込まれているバッファ
-   * @param size バッファのサイズ
    */
-  public constructor(json: JSONObject, size: number) {
+  public constructor(json: JSONObject) {
     this._json = json;
   }
 
