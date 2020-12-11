@@ -233,7 +233,7 @@ export abstract class ACubismMotion {
    * @param onFinishedMotionHandler モーション再生終了コールバック関数
    */
   public setFinishedMotionHandler(
-    onFinishedMotionHandler?: (self: this) => void,
+    onFinishedMotionHandler?: (self: ACubismMotion) => void,
   ) {
     this._onFinishedMotion = onFinishedMotionHandler;
   };
@@ -245,7 +245,9 @@ export abstract class ACubismMotion {
    *
    * @return 登録されているモーション再生終了コールバック関数
    */
-  public getFinishedMotionHandler = () => this._onFinishedMotion;
+  public getFinishedMotionHandler() {
+    return this._onFinishedMotion;
+  };
 
   public _fadeInSeconds: number; // フェードインにかかる時間[秒]
   public _fadeOutSeconds: number; // フェードアウトにかかる時間[秒]
@@ -255,5 +257,5 @@ export abstract class ACubismMotion {
   public _firedEventValues: string[];
 
   // モーション再生終了コールバック関数
-  public _onFinishedMotion?: (self: this) => void;
+  public _onFinishedMotion?: (self: ACubismMotion) => void;
 }

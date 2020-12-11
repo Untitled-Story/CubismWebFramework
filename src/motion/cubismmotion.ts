@@ -19,8 +19,9 @@ import {
   CubismMotionSegment,
   CubismMotionSegmentType,
 } from './cubismmotioninternal';
-import { CubismMotionFileDef, CubismMotionJson } from './cubismmotionjson';
+import { CubismMotionJson } from './cubismmotionjson';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
+import Motion3 = CubismSpec.Motion3;
 
 const EffectNameEyeBlink = 'EyeBlink';
 const EffectNameLipSync = 'LipSync';
@@ -132,7 +133,7 @@ export class CubismMotion extends ACubismMotion {
    * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
    * @return 作成されたインスタンス
    */
-  public static create(json: CubismMotionFileDef, onFinishedMotionHandler?: (self: CubismMotion) => void): CubismMotion {
+  public static create(json: Motion3, onFinishedMotionHandler?: (self: ACubismMotion) => void): CubismMotion {
     const ret = new CubismMotion();
 
     ret.parse(json);
@@ -594,7 +595,7 @@ export class CubismMotion extends ACubismMotion {
    *
    * @param motionJson  motion3.jsonが読み込まれているバッファ
    */
-  public parse(motionJson: CubismMotionFileDef): void {
+  public parse(motionJson: Motion3): void {
     this._motionData = new CubismMotionData();
 
     let json: CubismMotionJson = new CubismMotionJson(motionJson);

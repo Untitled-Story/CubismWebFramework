@@ -62,16 +62,12 @@ declare namespace CubismSpec {
      * [Optional]Layout
      */
     Layout?: {
-      width?: number;
-      height?: number;
-      x?: number;
-      y?: number;
-      center_x?: number;
-      center_y?: number;
-      top?: number;
-      bottom?: number;
-      left?: number;
-      right?: number;
+      Width?: number;
+      Height?: number;
+      X?: number;
+      Y?: number;
+      CenterX?: number;
+      CenterY?: number;
     };
   }
 
