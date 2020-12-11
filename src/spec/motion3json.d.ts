@@ -1,5 +1,5 @@
 declare namespace CubismSpec {
-  export interface Motion3 {
+  export interface MotionJSON {
     /**
      * Json file format version.
      */

@@ -7,7 +7,7 @@
 
 import { CubismFramework } from '../live2dcubismframework';
 import { CubismModelUserDataJson } from './cubismmodeluserdatajson';
-import Userdata3 = CubismSpec.Userdata3;
+import UserDataJSON = CubismSpec.UserDataJSON;
 
 const ArtMesh = 'ArtMesh';
 
@@ -36,7 +36,7 @@ export class CubismModelUserData {
    * @return 作成されたインスタンス
    */
   public static create(
-    json: Userdata3,
+    json: UserDataJSON,
     size: number,
   ): CubismModelUserData {
     const ret: CubismModelUserData = new CubismModelUserData();
@@ -61,7 +61,7 @@ export class CubismModelUserData {
    * @param data    userdata3.jsonが読み込まれているバッファ
    * @param size      バッファのサイズ
    */
-  public parseUserData(data: Userdata3, size: number): void {
+  public parseUserData(data: UserDataJSON, size: number): void {
     let json: CubismModelUserDataJson = new CubismModelUserDataJson(data, size);
 
     const typeOfArtMesh = CubismFramework.getIdManager().getId(ArtMesh);

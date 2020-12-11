@@ -1,5 +1,5 @@
 declare namespace CubismSpec {
-  export interface Pose3 {
+  export interface PoseJSON {
     Type: 'Live2D Pose';
     /**
      * Time of the Fade-In for easing in seconds.

@@ -1,5 +1,5 @@
 declare namespace CubismSpec {
-  export interface Physics3 {
+  export interface PhysicsJSON {
     /**
      * Physics Settings.
      */

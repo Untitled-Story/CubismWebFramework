@@ -7,15 +7,10 @@
 
 import { CubismFramework } from '../live2dcubismframework';
 import { CubismModel } from '../model/cubismmodel';
+import PoseJSON = CubismSpec.PoseJSON;
 
 const Epsilon = 0.001;
 const DefaultFadeInSeconds = 0.5;
-
-// Pose.jsonのタグ
-const FadeIn = 'FadeInTime';
-const Link = 'Link';
-const Groups = 'Groups';
-const Id = 'Id';
 
 /**
  * パーツの不透明度の設定
@@ -28,12 +23,12 @@ export class CubismPose {
    * @param pose3json pose3.jsonのデータ
    * @return 作成されたインスタンス
    */
-  public static create(pose3json: JSONObject): CubismPose {
+  public static create(pose3json: PoseJSON): CubismPose {
     const ret: CubismPose = new CubismPose();
 
     // フェード時間の指定
-    if (typeof pose3json[FadeIn] === 'number') {
-      ret._fadeTimeSeconds = pose3json[FadeIn] as number;
+    if (typeof pose3json.FadeInTime === 'number') {
+      ret._fadeTimeSeconds = pose3json.FadeInTime;
 
       if (ret._fadeTimeSeconds <= 0.0) {
         ret._fadeTimeSeconds = DefaultFadeInSeconds;
@@ -41,33 +36,30 @@ export class CubismPose {
     }
 
     // パーツグループ
-    const poseListInfo: JSONArray = pose3json[Groups] as JSONArray;
+    const poseListInfo = pose3json.Groups;
     const poseCount: number = poseListInfo.length;
 
     for (let poseIndex = 0; poseIndex < poseCount; ++poseIndex) {
-      const idListInfo: JSONArray = poseListInfo[poseIndex] as JSONArray;
+      const idListInfo = poseListInfo[poseIndex];
       const idCount: number = idListInfo.length;
       let groupCount = 0;
 
       for (let groupIndex = 0; groupIndex < idCount; ++groupIndex) {
-        const partInfo: JSONObject = idListInfo[groupIndex] as JSONObject;
+        const partInfo = idListInfo[groupIndex];
         const partData: PartData = new PartData();
 
-        partData.partId = CubismFramework.getIdManager().getId(
-          partInfo[Id] as string,
-        );
+        partData.partId = CubismFramework.getIdManager().getId(partInfo.Id);
+
+        const linkListInfo = partInfo.Link;
 
         // リンクするパーツの設定
-        if (partInfo[Link]) {
-          const linkListInfo: JSONArray = partInfo[Link] as JSONArray;
+        if (linkListInfo) {
           const linkCount: number = linkListInfo.length;
 
           for (let linkIndex = 0; linkIndex < linkCount; ++linkIndex) {
             const linkPart: PartData = new PartData();
 
-            linkPart.partId = CubismFramework.getIdManager().getId(
-              linkListInfo[linkIndex] as string,
-            );
+            linkPart.partId = CubismFramework.getIdManager().getId(linkListInfo[linkIndex]);
 
             partData.link.push(linkPart);
           }

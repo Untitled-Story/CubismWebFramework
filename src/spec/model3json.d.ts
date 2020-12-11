@@ -1,5 +1,5 @@
 declare namespace CubismSpec {
-  export interface Model3 {
+  export interface ModelJSON {
     /**
      * Json file format version.
      */
@@ -35,10 +35,7 @@ declare namespace CubismSpec {
       /**
        * [Optional] Relative path to the exp3.json file.
        */
-      Expressions?: {
-        Name: string;
-        File: string;
-      }[];
+      Expressions?: Expression[];
       /**
        * [Optional] Relative path to the motion3.json file.
        */
@@ -57,7 +54,7 @@ declare namespace CubismSpec {
     /**
      * [Optional]Collision detection
      */
-    HitAreas?: Hitareas[];
+    HitAreas?: HitArea[];
     /**
      * [Optional]Layout
      */
@@ -116,7 +113,7 @@ declare namespace CubismSpec {
   /**
    * Collision detection.
    */
-  export interface Hitareas {
+  export interface HitArea {
     /**
      * Unique name of group.
      */
@@ -125,5 +122,10 @@ declare namespace CubismSpec {
      * IDs for mapping to target.
      */
     Id: string;
+  }
+
+  export interface Expression {
+    Name: string;
+    File: string;
   }
 }

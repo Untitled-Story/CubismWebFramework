@@ -1,5 +1,5 @@
 declare namespace CubismSpec {
-  export interface Exp3 {
+  export interface ExpressionJSON {
     /**
      * Json file format type.
      */

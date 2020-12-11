@@ -5,9 +5,10 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
+import Expression = CubismSpec.Expression;
 import Group = CubismSpec.Group;
-import Hitareas = CubismSpec.Hitareas;
-import Model3 = CubismSpec.Model3;
+import HitAreas = CubismSpec.HitArea;
+import ModelJSON = CubismSpec.ModelJSON;
 import Motion = CubismSpec.Motion;
 
 /**
@@ -16,7 +17,7 @@ import Motion = CubismSpec.Motion;
  * model3.jsonファイルをパースして値を取得する
  */
 export class CubismModelSettingsJson {
-  public constructor(json: Model3) {
+  public constructor(json: ModelJSON) {
     this.groups = json.Groups;
     this.hitAreas = json.HitAreas;
     this.layout = json.Layout;
@@ -39,11 +40,11 @@ export class CubismModelSettingsJson {
 
   groups?: Group[];
   moc: string;
-  expressions?: Model3['FileReferences']['Expressions'];
+  expressions?: Expression[];
   motions?: Record<string, Motion[]>;
   textures: string[];
   physics?: string;
   pose?: string;
-  hitAreas?: Hitareas[];
-  layout?: Model3['Layout'];
+  hitAreas?: HitAreas[];
+  layout?: ModelJSON['Layout'];
 }

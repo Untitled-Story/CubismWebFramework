@@ -1,5 +1,5 @@
 declare namespace CubismSpec {
-  export interface Userdata3 {
+  export interface UserDataJSON {
     /**
      * Json file format version.
      */

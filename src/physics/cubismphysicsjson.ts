@@ -7,7 +7,7 @@
 
 import { CubismFramework } from '../live2dcubismframework';
 import { CubismVector2 } from '../math/cubismvector2';
-import Physics3 = CubismSpec.Physics3;
+import PhysicsJSON = CubismSpec.PhysicsJSON;
 
 /**
  * physics3.jsonのコンテナ。
@@ -17,7 +17,7 @@ export class CubismPhysicsJson {
    * コンストラクタ
    * @param json physics3.jsonが読み込まれているバッファ
    */
-  public constructor(json: Physics3) {
+  public constructor(json: PhysicsJSON) {
     this._json = json;
   }
 
@@ -377,5 +377,5 @@ export class CubismPhysicsJson {
     return ret;
   }
 
-  _json: Physics3; // physics3.jsonデータ
+  _json: PhysicsJSON; // physics3.jsonデータ
 }
