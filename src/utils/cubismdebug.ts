@@ -127,7 +127,7 @@ if (CSM_LOG_LEVEL <= CSM_LOG_LEVEL_VERBOSE) {
       if (!logPrint) return;
 
       const buffer: string = format.replace(/\{(\d+)\}/g, (m, k) => {
-        return args[k];
+        return args![k];
       });
       logPrint(buffer);
     }

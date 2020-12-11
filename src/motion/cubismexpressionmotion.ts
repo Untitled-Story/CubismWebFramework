@@ -9,17 +9,9 @@ import { CubismFramework } from '../live2dcubismframework';
 import { CubismModel } from '../model/cubismmodel';
 import { ACubismMotion } from './acubismmotion';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
+import Exp3 = CubismSpec.Exp3;
 
 // exp3.jsonのキーとデフォルト
-const ExpressionKeyFadeIn = 'FadeInTime';
-const ExpressionKeyFadeOut = 'FadeOutTime';
-const ExpressionKeyParameters = 'Parameters';
-const ExpressionKeyId = 'Id';
-const ExpressionKeyValue = 'Value';
-const ExpressionKeyBlend = 'Blend';
-const BlendValueAdd = 'Add';
-const BlendValueMultiply = 'Multiply';
-const BlendValueOverwrite = 'Overwrite';
 const DefaultFadeTime = 1.0;
 
 /**
@@ -34,37 +26,37 @@ export class CubismExpressionMotion extends ACubismMotion {
    * @param size バッファのサイズ
    * @return 作成されたインスタンス
    */
-  public static create(json: JSONObject): CubismExpressionMotion {
+  public static create(json: Exp3): CubismExpressionMotion {
     const expression: CubismExpressionMotion = new CubismExpressionMotion();
 
-    const fadeInTime = json[ExpressionKeyFadeIn] as number;
-    const fadeOutTime = json[ExpressionKeyFadeOut] as number;
+    const fadeInTime = json.FadeInTime;
+    const fadeOutTime = json.FadeOutTime;
 
     expression.setFadeInTime(fadeInTime !== undefined ? fadeInTime : DefaultFadeTime); // フェードイン
     expression.setFadeOutTime(fadeOutTime !== undefined ? fadeOutTime : DefaultFadeTime); // フェードアウト
 
     // 各パラメータについて
-    const parameters = json[ExpressionKeyParameters] as JSONObject[];
+    const parameters = json.Parameters;
 
     for (let i = 0; i < parameters.length; ++i) {
-      const param: JSONObject = parameters[i];
-      const parameterId: string = CubismFramework.getIdManager().getId(param[ExpressionKeyId] as string); // パラメータID
+      const param = parameters[i];
+      const parameterId: string = CubismFramework.getIdManager().getId(param.Id); // パラメータID
 
-      const value: number = param[ExpressionKeyValue] as number; // 値
+      const value: number = param.Value; // 値
 
       // 計算方法の設定
       let blendType: ExpressionBlendType;
 
-      switch (param[ExpressionKeyBlend]) {
-        case BlendValueMultiply:
+      switch (param.Blend) {
+        case 'Multiply':
           blendType = ExpressionBlendType.ExpressionBlendType_Multiply;
           break;
 
-        case BlendValueOverwrite:
+        case 'Overwrite':
           blendType = ExpressionBlendType.ExpressionBlendType_Overwrite;
           break;
 
-        case BlendValueAdd:
+        case 'Add':
         // その他 仕様にない値を設定した時は加算モードにすることで復旧
         default:
           blendType = ExpressionBlendType.ExpressionBlendType_Add;
@@ -72,11 +64,11 @@ export class CubismExpressionMotion extends ACubismMotion {
       }
 
       // 設定オブジェクトを作成してリストに追加する
-      const item: ExpressionParameter = new ExpressionParameter();
-
-      item.parameterId = parameterId;
-      item.blendType = blendType;
-      item.value = value;
+      const item: ExpressionParameter = {
+        parameterId: parameterId,
+        blendType: blendType,
+        value: value,
+      };
 
       expression._parameters.push(item);
     }
@@ -156,7 +148,7 @@ export enum ExpressionBlendType {
 /**
  * 表情のパラメータ情報
  */
-export class ExpressionParameter {
+export interface ExpressionParameter {
   parameterId: string; // パラメータID
   blendType: ExpressionBlendType; // パラメータの演算種類
   value: number; // 値

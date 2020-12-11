@@ -18,16 +18,13 @@ export class CubismMoc {
    * Mocデータの作成
    */
   public static create(mocBytes: ArrayBuffer): CubismMoc {
-    let cubismMoc: CubismMoc = null;
-    const moc: Live2DCubismCore.Moc = Live2DCubismCore.Moc.fromArrayBuffer(
-      mocBytes,
-    );
+    const moc: Live2DCubismCore.Moc = Live2DCubismCore.Moc.fromArrayBuffer(mocBytes);
 
     if (moc) {
-      cubismMoc = new CubismMoc(moc);
+      return new CubismMoc(moc);
     }
 
-    return cubismMoc;
+    throw new Error('Unknown error');
   }
 
   /**
@@ -36,20 +33,20 @@ export class CubismMoc {
    * @return Mocデータから作成されたモデル
    */
   createModel(): CubismModel {
-    let cubismModel: CubismModel = null;
+    let cubismModel: CubismModel;
 
-    const model: Live2DCubismCore.Model = Live2DCubismCore.Model.fromMoc(
-      this._moc,
-    );
+    const model: Live2DCubismCore.Model = Live2DCubismCore.Model.fromMoc(this._moc);
 
     if (model) {
       cubismModel = new CubismModel(model);
       cubismModel.initialize();
 
       ++this._modelCount;
+
+      return cubismModel;
     }
 
-    return cubismModel;
+    throw new Error('Unknown error');
   }
 
   /**
@@ -76,7 +73,7 @@ export class CubismMoc {
     CSM_ASSERT(this._modelCount == 0);
 
     this._moc._release();
-    this._moc = null;
+    (this as Partial<this>)._moc = undefined;
   }
 
   _moc: Live2DCubismCore.Moc; // Mocデータ

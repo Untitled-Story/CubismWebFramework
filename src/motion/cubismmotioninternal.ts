@@ -60,12 +60,11 @@ export class CubismMotionSegment {
    * コンストラクタ。
    */
   public constructor() {
-    this.evaluate = null;
     this.basePointIndex = 0;
     this.segmentType = 0;
   }
 
-  evaluate: csmMotionSegmentEvaluationFunction; // 使用する評価関数
+  evaluate!: csmMotionSegmentEvaluationFunction; // 使用する評価関数
   basePointIndex: number; // 最初のセグメントへのインデックス
   segmentType: number; // セグメントの種類
 }
@@ -85,7 +84,7 @@ export class CubismMotionCurve {
   }
 
   type: CubismMotionCurveTarget; // カーブの種類
-  id: string; // カーブのID
+  id: string = ''; // カーブのID
   segmentCount: number; // セグメントの個数
   baseSegmentIndex: number; // 最初のセグメントのインデックス
   fadeInTime: number; // フェードインにかかる時間[秒]
@@ -97,7 +96,7 @@ export class CubismMotionCurve {
  */
 export class CubismMotionEvent {
   fireTime = 0.0;
-  value: string;
+  value: string = '';
 }
 
 /**

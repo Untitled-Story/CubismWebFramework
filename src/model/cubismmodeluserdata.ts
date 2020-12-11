@@ -7,6 +7,7 @@
 
 import { CubismFramework } from '../live2dcubismframework';
 import { CubismModelUserDataJson } from './cubismmodeluserdatajson';
+import Userdata3 = CubismSpec.Userdata3;
 
 const ArtMesh = 'ArtMesh';
 
@@ -15,7 +16,7 @@ const ArtMesh = 'ArtMesh';
  *
  * Jsonから読み込んだユーザーデータを記録しておくための構造体
  */
-export class CubismModelUserDataNode {
+export interface CubismModelUserDataNode {
   targetType: string; // ユーザーデータターゲットタイプ
   targetId: string; // ユーザーデータターゲットのID
   value: string; // ユーザーデータ
@@ -35,7 +36,7 @@ export class CubismModelUserData {
    * @return 作成されたインスタンス
    */
   public static create(
-    json: JSONObject,
+    json: Userdata3,
     size: number,
   ): CubismModelUserData {
     const ret: CubismModelUserData = new CubismModelUserData();
@@ -60,23 +61,19 @@ export class CubismModelUserData {
    * @param data    userdata3.jsonが読み込まれているバッファ
    * @param size      バッファのサイズ
    */
-  public parseUserData(data: JSONObject, size: number): void {
-    let json: CubismModelUserDataJson = new CubismModelUserDataJson(
-      data,
-      size,
-    );
+  public parseUserData(data: Userdata3, size: number): void {
+    let json: CubismModelUserDataJson = new CubismModelUserDataJson(data, size);
 
     const typeOfArtMesh = CubismFramework.getIdManager().getId(ArtMesh);
     const nodeCount: number = json.getUserDataCount();
 
     for (let i = 0; i < nodeCount; i++) {
-      const addNode: CubismModelUserDataNode = new CubismModelUserDataNode();
+      const addNode: CubismModelUserDataNode = {
+        targetId: json.getUserDataId(i),
+        targetType: CubismFramework.getIdManager().getId(json.getUserDataTargetType(i)),
+        value: json.getUserDataValue(i),
+      };
 
-      addNode.targetId = json.getUserDataId(i);
-      addNode.targetType = CubismFramework.getIdManager().getId(
-        json.getUserDataTargetType(i),
-      );
-      addNode.value = json.getUserDataValue(i);
       this._userDataNodes.push(addNode);
 
       if (addNode.targetType == typeOfArtMesh) {
@@ -101,7 +98,7 @@ export class CubismModelUserData {
    * ユーザーデータ構造体配列を解放する
    */
   public release(): void {
-    this._userDataNodes = null;
+    (this as any)._userDataNodes = null;
   }
 
   private _userDataNodes: CubismModelUserDataNode[]; // ユーザーデータ構造体配列

@@ -15,7 +15,7 @@ import { CubismBlendMode, CubismRenderer, CubismTextureColor } from './cubismren
 const ColorChannelCount = 4; // 実験時に1チャンネルの場合は1、RGBだけの場合は3、アルファも含める場合は4
 
 const shaderCount = 10; // シェーダーの数 = マスク生成用 + (通常用 + 加算 + 乗算) * (マスク無の乗算済アルファ対応版 + マスク有の乗算済アルファ対応版 + マスク有反転の乗算済アルファ対応版)
-let s_instance: CubismShader_WebGL;
+let s_instance: CubismShader_WebGL | undefined;
 let s_viewport: number[];
 let s_fbo: WebGLFramebuffer;
 
@@ -37,8 +37,8 @@ export class CubismClippingManager_WebGL {
    *
    * @return レンダーテクスチャのアドレス
    */
-  public getMaskRenderTexture(): WebGLFramebuffer {
-    let ret: WebGLFramebuffer = 0;
+  public getMaskRenderTexture(): WebGLFramebuffer | null {
+    let ret: WebGLFramebuffer | null = 0;
 
     // テンポラリのRenderTextureを取得する
     if (this._maskTexture && this._maskTexture.texture != 0) {
@@ -232,7 +232,6 @@ export class CubismClippingManager_WebGL {
     this._tmpMatrix = new CubismMatrix44();
     this._tmpMatrixForMask = new CubismMatrix44();
     this._tmpMatrixForDraw = new CubismMatrix44();
-    this._maskTexture = null;
 
     let tmp: CubismTextureColor = new CubismTextureColor();
     tmp.R = 1.0;
@@ -267,22 +266,24 @@ export class CubismClippingManager_WebGL {
    * デストラクタ相当の処理
    */
   public release(): void {
+    const self = this as Partial<this>;
+
     for (let i = 0; i < this._clippingContextListForMask.length; i++) {
       if (this._clippingContextListForMask[i]) {
-        this._clippingContextListForMask[i].release();
+        this._clippingContextListForMask[i]?.release();
       }
     }
-    this._clippingContextListForMask = null;
+    self._clippingContextListForMask = undefined;
 
     // _clippingContextListForDrawは_clippingContextListForMaskにあるインスタンスを指している。上記の処理により要素ごとのDELETEは不要。
-    this._clippingContextListForDraw = null;
+    self._clippingContextListForDraw = undefined;
 
     if (this._maskTexture) {
       this.gl.deleteFramebuffer(this._maskTexture.texture);
-      this._maskTexture = null;
+      self._maskTexture = undefined;
     }
 
-    this._channelColors = null;
+    self._channelColors = undefined;
 
     // テクスチャ解放
     this.gl.deleteTexture(this._colorBuffer);
@@ -313,7 +314,7 @@ export class CubismClippingManager_WebGL {
       }
 
       // 既にあるClipContextと同じかチェックする
-      let clippingContext: CubismClippingContext = this.findSameClip(
+      let clippingContext = this.findSameClip(
         drawableMasks[i],
         drawableMaskCounts[i],
       );
@@ -353,7 +354,7 @@ export class CubismClippingManager_WebGL {
       clipIndex++
     ) {
       // 1つのクリッピングマスクに関して
-      const cc: CubismClippingContext = this._clippingContextListForMask[clipIndex];
+      const cc = this._clippingContextListForMask[clipIndex];
 
       // このクリップを利用する描画オブジェクト群全体を囲む矩形を計算
       this.calcClippedDrawTotalBounds(model, cc);
@@ -530,7 +531,7 @@ export class CubismClippingManager_WebGL {
   public findSameClip(
     drawableMasks: Int32Array,
     drawableMaskCounts: number,
-  ): CubismClippingContext {
+  ): CubismClippingContext | null {
     // 作成済みClippingContextと一致するか確認
     for (let i = 0; i < this._clippingContextListForMask.length; i++) {
       const clippingContext: CubismClippingContext = this._clippingContextListForMask[i];
@@ -662,7 +663,7 @@ export class CubismClippingManager_WebGL {
    * カラーバッファを取得する
    * @return カラーバッファ
    */
-  public getColorBuffer(): WebGLTexture {
+  public getColorBuffer(): WebGLTexture | null {
     return this._colorBuffer;
   }
 
@@ -670,7 +671,7 @@ export class CubismClippingManager_WebGL {
    * 画面描画に使用するクリッピングマスクのリストを取得する
    * @return 画面描画に使用するクリッピングマスクのリスト
    */
-  public getClippingContextListForDraw(): CubismClippingContext[] {
+  public getClippingContextListForDraw(): (CubismClippingContext | null)[] {
     return this._clippingContextListForDraw;
   }
 
@@ -690,14 +691,14 @@ export class CubismClippingManager_WebGL {
     return this._clippingMaskBufferSize;
   }
 
-  public _maskRenderTexture: WebGLFramebuffer; // マスク用レンダーテクスチャのアドレス
-  public _colorBuffer: WebGLTexture; // マスク用カラーバッファーのアドレス
+  public _maskRenderTexture: WebGLFramebuffer | null; // マスク用レンダーテクスチャのアドレス
+  public _colorBuffer: WebGLTexture | null; // マスク用カラーバッファーのアドレス
   public _currentFrameNo: number; // マスクテクスチャに与えるフレーム番号
 
   public _channelColors: CubismTextureColor[];
-  public _maskTexture: CubismRenderTextureResource; // マスク用のテクスチャリソースのリスト
+  public _maskTexture?: CubismRenderTextureResource; // マスク用のテクスチャリソースのリスト
   public _clippingContextListForMask: CubismClippingContext[]; // マスク用クリッピングコンテキストのリスト
-  public _clippingContextListForDraw: CubismClippingContext[]; // 描画用クリッピングコンテキストのリスト
+  public _clippingContextListForDraw: (CubismClippingContext | null)[]; // 描画用クリッピングコンテキストのリスト
   public _clippingMaskBufferSize: number; // クリッピングマスクのバッファサイズ（初期値:256）
 
   private _tmpMatrix: CubismMatrix44; // マスク計算用の行列
@@ -705,7 +706,7 @@ export class CubismClippingManager_WebGL {
   private _tmpMatrixForDraw: CubismMatrix44; // マスク計算用の行列
   private _tmpBoundsOnModel: csmRect; // マスク配置計算用の矩形
 
-  gl: WebGLRenderingContext; // WebGLレンダリングコンテキスト
+  gl!: WebGLRenderingContext; // WebGLレンダリングコンテキスト
 }
 
 /**
@@ -718,13 +719,13 @@ export class CubismRenderTextureResource {
    * @param frameNo レンダラーのフレーム番号
    * @param texture テクスチャのアドレス
    */
-  public constructor(frameNo: number, texture: WebGLFramebuffer) {
+  public constructor(frameNo: number, texture: WebGLFramebuffer | null) {
     this.frameNo = frameNo;
     this.texture = texture;
   }
 
   public frameNo: number; // レンダラのフレーム番号
-  public texture: WebGLFramebuffer; // テクスチャのアドレス
+  public texture: WebGLFramebuffer | null; // テクスチャのアドレス
 }
 
 /**
@@ -760,17 +761,10 @@ export class CubismClippingContext {
    * デストラクタ相当の処理
    */
   public release(): void {
-    if (this._layoutBounds != null) {
-      this._layoutBounds = null;
-    }
-
-    if (this._allClippedDrawRect != null) {
-      this._allClippedDrawRect = null;
-    }
-
-    if (this._clippedDrawableIndexList != null) {
-      this._clippedDrawableIndexList = null;
-    }
+    const self = this as Partial<this>;
+    self._layoutBounds = undefined;
+    self._allClippedDrawRect = undefined;
+    self._clippedDrawableIndexList = undefined;
   }
 
   /**
@@ -794,10 +788,10 @@ export class CubismClippingContext {
     this._owner.setGL(gl);
   }
 
-  public _isUsing: boolean; // 現在の描画状態でマスクの準備が必要ならtrue
+  public _isUsing: boolean = false; // 現在の描画状態でマスクの準備が必要ならtrue
   public readonly _clippingIdList: Int32Array; // クリッピングマスクのIDリスト
   public _clippingIdCount: number; // クリッピングマスクの数
-  public _layoutChannelNo: number; // RGBAのいずれのチャンネルにこのクリップを配置するか（0:R, 1:G, 2:B, 3:A）
+  public _layoutChannelNo!: number; // RGBAのいずれのチャンネルにこのクリップを配置するか（0:R, 1:G, 2:B, 3:A）
   public _layoutBounds: csmRect; // マスク用チャンネルのどの領域にマスクを入れるか（View座標-1~1, UVは0~1に直す）
   public _allClippedDrawRect: csmRect; // このクリッピングで、クリッピングされるすべての描画オブジェクトの囲み矩形（毎回更新）
   public _matrixForMask: CubismMatrix44; // マスクの位置計算結果を保持する行列
@@ -831,7 +825,7 @@ export class CubismShader_WebGL {
   public static deleteInstance(): void {
     if (s_instance) {
       s_instance.release();
-      s_instance = null;
+      s_instance = undefined;
     }
   }
 
@@ -866,15 +860,15 @@ export class CubismShader_WebGL {
    */
   public setupShaderProgram(
     renderer: CubismRenderer_WebGL,
-    textureId: WebGLTexture,
+    textureId: WebGLTexture | null,
     vertexCount: number,
     vertexArray: Float32Array,
     indexArray: Uint16Array,
     uvArray: Float32Array,
     bufferData: {
-      vertex: WebGLBuffer;
-      uv: WebGLBuffer;
-      index: WebGLBuffer;
+      vertex: WebGLBuffer | null;
+      uv: WebGLBuffer | null;
+      index: WebGLBuffer | null;
     },
     opacity: number,
     colorBlendMode: CubismBlendMode,
@@ -897,7 +891,9 @@ export class CubismShader_WebGL {
     let SRC_ALPHA: number;
     let DST_ALPHA: number;
 
-    if (renderer.getClippingContextBufferForMask() != null) {
+    const clippingContextBufferForMask = renderer.getClippingContextBufferForMask();
+
+    if (clippingContextBufferForMask != null) {
       // マスク生成時
       const shaderSet: CubismShaderSet = this._shaderSets[ShaderNames.ShaderNames_SetupMask];
       this.gl.useProgram(shaderSet.shaderProgram);
@@ -944,10 +940,8 @@ export class CubismShader_WebGL {
       );
 
       // チャンネル
-      const channelNo: number = renderer.getClippingContextBufferForMask()
-        ._layoutChannelNo;
-      const colorChannel: CubismTextureColor = renderer
-        .getClippingContextBufferForMask()
+      const channelNo: number = clippingContextBufferForMask._layoutChannelNo;
+      const colorChannel: CubismTextureColor = clippingContextBufferForMask
         .getClippingManager()
         .getChannelFlagAsColor(channelNo);
       this.gl.uniform4f(
@@ -961,11 +955,10 @@ export class CubismShader_WebGL {
       this.gl.uniformMatrix4fv(
         shaderSet.uniformClipMatrixLocation,
         false,
-        renderer.getClippingContextBufferForMask()._matrixForMask.getArray(),
+        clippingContextBufferForMask._matrixForMask.getArray(),
       );
 
-      const rect: csmRect = renderer.getClippingContextBufferForMask()
-        ._layoutBounds;
+      const rect: csmRect = clippingContextBufferForMask._layoutBounds;
 
       this.gl.uniform4f(
         shaderSet.uniformBaseColorLocation,
@@ -981,11 +974,11 @@ export class CubismShader_WebGL {
       DST_ALPHA = this.gl.ONE_MINUS_SRC_ALPHA;
     } // マスク生成以外の場合
     else {
-      const masked: boolean =
-        renderer.getClippingContextBufferForDraw() != null; // この描画オブジェクトはマスク対象か
+      const clippingContextBufferForDraw = renderer.getClippingContextBufferForDraw();
+      const masked = clippingContextBufferForDraw != null; // この描画オブジェクトはマスク対象か
       const offset: number = masked ? (invertedMask ? 2 : 1) : 0;
 
-      let shaderSet: CubismShaderSet = new CubismShaderSet();
+      let shaderSet;
 
       switch (colorBlendMode) {
         case CubismBlendMode.CubismBlendMode_Normal:
@@ -1052,10 +1045,9 @@ export class CubismShader_WebGL {
         0,
       );
 
-      if (masked) {
+      if (clippingContextBufferForDraw !== null) {
         this.gl.activeTexture(this.gl.TEXTURE1);
-        const tex: WebGLTexture = renderer
-          .getClippingContextBufferForDraw()
+        const tex = clippingContextBufferForDraw
           .getClippingManager()
           .getColorBuffer();
         this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
@@ -1065,14 +1057,12 @@ export class CubismShader_WebGL {
         this.gl.uniformMatrix4fv(
           shaderSet.uniformClipMatrixLocation,
           false,
-          renderer.getClippingContextBufferForDraw()._matrixForDraw.getArray(),
+          clippingContextBufferForDraw._matrixForDraw.getArray(),
         );
 
         // 使用するカラーチャンネルを設定
-        const channelNo: number = renderer.getClippingContextBufferForDraw()
-          ._layoutChannelNo;
-        const colorChannel: CubismTextureColor = renderer
-          .getClippingContextBufferForDraw()
+        const channelNo: number = clippingContextBufferForDraw._layoutChannelNo;
+        const colorChannel: CubismTextureColor = clippingContextBufferForDraw
           .getClippingManager()
           .getChannelFlagAsColor(channelNo);
         this.gl.uniform4f(
@@ -1137,7 +1127,7 @@ export class CubismShader_WebGL {
    */
   public generateShaders(): void {
     for (let i = 0; i < shaderCount; i++) {
-      this._shaderSets.push(new CubismShaderSet());
+      this._shaderSets.push({} as any);
     }
 
     this._shaderSets[0].shaderProgram = this.loadShaderProgram(
@@ -1476,7 +1466,7 @@ export class CubismShader_WebGL {
     fragmentShaderSource: string,
   ): WebGLProgram {
     // Create Shader Program
-    let shaderProgram: WebGLProgram = this.gl.createProgram();
+    let shaderProgram = this.gl.createProgram()!;
 
     let vertShader = this.compileShaderSource(
       this.gl.VERTEX_SHADER,
@@ -1515,14 +1505,11 @@ export class CubismShader_WebGL {
       CubismLogError('Failed to link program: {0}', shaderProgram);
 
       this.gl.deleteShader(vertShader);
-      vertShader = 0;
 
       this.gl.deleteShader(fragShader);
-      fragShader = 0;
 
       if (shaderProgram) {
         this.gl.deleteProgram(shaderProgram);
-        shaderProgram = 0;
       }
 
       return 0;
@@ -1545,15 +1532,15 @@ export class CubismShader_WebGL {
   public compileShaderSource(
     shaderType: GLenum,
     shaderSource: string,
-  ): WebGLProgram {
+  ): WebGLProgram | null {
     const source: string = shaderSource;
 
-    const shader: WebGLProgram = this.gl.createShader(shaderType);
+    const shader = this.gl.createShader(shaderType)!;
     this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
 
     if (!shader) {
-      const log: string = this.gl.getShaderInfoLog(shader);
+      const log = this.gl.getShaderInfoLog(shader);
       CubismLogError('Shader compile log: {0} ', log);
     }
 
@@ -1574,22 +1561,22 @@ export class CubismShader_WebGL {
   }
 
   _shaderSets: CubismShaderSet[]; // ロードしたシェーダープログラムを保持する変数
-  gl: WebGLRenderingContext; // webglコンテキスト
+  gl!: WebGLRenderingContext; // webglコンテキスト
 }
 
 /**
  * CubismShader_WebGLのインナークラス
  */
-export class CubismShaderSet {
+export interface CubismShaderSet {
   shaderProgram: WebGLProgram; // シェーダープログラムのアドレス
   attributePositionLocation: GLuint; // シェーダープログラムに渡す変数のアドレス（Position）
   attributeTexCoordLocation: GLuint; // シェーダープログラムに渡す変数のアドレス（TexCoord）
-  uniformMatrixLocation: WebGLUniformLocation; // シェーダープログラムに渡す変数のアドレス（Matrix）
-  uniformClipMatrixLocation: WebGLUniformLocation; // シェーダープログラムに渡す変数のアドレス（ClipMatrix）
-  samplerTexture0Location: WebGLUniformLocation; // シェーダープログラムに渡す変数のアドレス（Texture0）
-  samplerTexture1Location: WebGLUniformLocation; // シェーダープログラムに渡す変数のアドレス（Texture1）
-  uniformBaseColorLocation: WebGLUniformLocation; // シェーダープログラムに渡す変数のアドレス（BaseColor）
-  uniformChannelFlagLocation: WebGLUniformLocation; // シェーダープログラムに渡す変数のアドレス（ChannelFlag）
+  uniformMatrixLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（Matrix）
+  uniformClipMatrixLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（ClipMatrix）
+  samplerTexture0Location: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（Texture0）
+  samplerTexture1Location: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（Texture1）
+  uniformBaseColorLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（BaseColor）
+  uniformChannelFlagLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（ChannelFlag）
 }
 
 export enum ShaderNames {
@@ -1774,8 +1761,6 @@ export class CubismRenderer_WebGL extends CubismRenderer {
   public setClippingMaskBufferSize(size: number) {
     // FrameBufferのサイズを変更するためにインスタンスを破棄・再作成する
     this._clippingManager.release();
-    this._clippingManager = void 0;
-    this._clippingManager = null;
 
     this._clippingManager = new CubismClippingManager_WebGL();
 
@@ -1809,9 +1794,9 @@ export class CubismRenderer_WebGL extends CubismRenderer {
     this._textures = {};
     this._sortedDrawableIndexList = [];
     this._bufferData = {
-      vertex: WebGLBuffer = null,
-      uv: WebGLBuffer = null,
-      index: WebGLBuffer = null,
+      vertex: null,
+      uv: null,
+      index: null,
     };
   }
 
@@ -1819,9 +1804,10 @@ export class CubismRenderer_WebGL extends CubismRenderer {
    * デストラクタ相当の処理
    */
   public release(): void {
+    const self = this as Partial<this>;
+
     this._clippingManager.release();
-    this._clippingManager = void 0;
-    this._clippingManager = null;
+    self._clippingManager = undefined;
 
     this.gl.deleteBuffer(this._bufferData.vertex);
     this._bufferData.vertex = null;
@@ -1829,9 +1815,9 @@ export class CubismRenderer_WebGL extends CubismRenderer {
     this._bufferData.uv = null;
     this.gl.deleteBuffer(this._bufferData.index);
     this._bufferData.index = null;
-    this._bufferData = null;
+    self._bufferData = undefined;
 
-    this._textures = null;
+    self._textures = undefined;
   }
 
   /**
@@ -1868,9 +1854,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
       // クリッピングマスクをセットする
       this.setClippingContextBufferForDraw(
         this._clippingManager != null
-          ? this._clippingManager
-          .getClippingContextListForDraw()
-            [drawableIndex]
+          ? this._clippingManager.getClippingContextListForDraw()[drawableIndex]
           : null,
       );
 
@@ -1936,14 +1920,12 @@ export class CubismRenderer_WebGL extends CubismRenderer {
       }
     }
 
-    let drawtexture: WebGLTexture; // シェーダに渡すテクスチャ
+    let drawtexture: WebGLTexture | null = null; // シェーダに渡すテクスチャ
 
     // テクスチャマップからバインド済みテクスチャＩＤを取得
     // バインドされていなければダミーのテクスチャIDをセットする
     if (this._textures[textureNo] != null) {
       drawtexture = this._textures[textureNo];
-    } else {
-      drawtexture = null;
     }
 
     CubismShader_WebGL.getInstance().setupShaderProgram(
@@ -2026,7 +2008,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
   /**
    * マスクテクスチャに描画するクリッピングコンテキストをセットする
    */
-  public setClippingContextBufferForMask(clip: CubismClippingContext) {
+  public setClippingContextBufferForMask(clip: CubismClippingContext | null) {
     this._clippingContextBufferForMask = clip;
   }
 
@@ -2034,14 +2016,14 @@ export class CubismRenderer_WebGL extends CubismRenderer {
    * マスクテクスチャに描画するクリッピングコンテキストを取得する
    * @return マスクテクスチャに描画するクリッピングコンテキスト
    */
-  public getClippingContextBufferForMask(): CubismClippingContext {
+  public getClippingContextBufferForMask(): CubismClippingContext | null {
     return this._clippingContextBufferForMask;
   }
 
   /**
    * 画面上に描画するクリッピングコンテキストをセットする
    */
-  public setClippingContextBufferForDraw(clip: CubismClippingContext): void {
+  public setClippingContextBufferForDraw(clip: CubismClippingContext | null): void {
     this._clippingContextBufferForDraw = clip;
   }
 
@@ -2049,7 +2031,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
    * 画面上に描画するクリッピングコンテキストを取得する
    * @return 画面上に描画するクリッピングコンテキスト
    */
-  public getClippingContextBufferForDraw(): CubismClippingContext {
+  public getClippingContextBufferForDraw(): CubismClippingContext | null {
     return this._clippingContextBufferForDraw;
   }
 
@@ -2065,15 +2047,15 @@ export class CubismRenderer_WebGL extends CubismRenderer {
   _textures: Record<number, WebGLTexture>; // モデルが参照するテクスチャとレンダラでバインドしているテクスチャとのマップ
   _sortedDrawableIndexList: number[]; // 描画オブジェクトのインデックスを描画順に並べたリスト
   _clippingManager: CubismClippingManager_WebGL; // クリッピングマスク管理オブジェクト
-  _clippingContextBufferForMask: CubismClippingContext; // マスクテクスチャに描画するためのクリッピングコンテキスト
-  _clippingContextBufferForDraw: CubismClippingContext; // 画面上描画するためのクリッピングコンテキスト
+  _clippingContextBufferForMask: CubismClippingContext | null; // マスクテクスチャに描画するためのクリッピングコンテキスト
+  _clippingContextBufferForDraw: CubismClippingContext | null; // 画面上描画するためのクリッピングコンテキスト
   firstDraw: boolean;
   _bufferData: {
-    vertex: WebGLBuffer;
-    uv: WebGLBuffer;
-    index: WebGLBuffer;
+    vertex: WebGLBuffer | null;
+    uv: WebGLBuffer | null;
+    index: WebGLBuffer | null;
   }; // 頂点バッファデータ
-  gl: WebGLRenderingContext; // webglコンテキスト
+  gl!: WebGLRenderingContext; // webglコンテキスト
 }
 
 /**

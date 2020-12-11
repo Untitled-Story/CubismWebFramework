@@ -21,7 +21,7 @@ export class CubismEyeBlink {
    * @note 引数がNULLの場合、パラメータIDが設定されていない空のインスタンスを作成する。
    */
   public static create(
-    modelSetting: CubismModelSettingsJson = null,
+    modelSetting: CubismModelSettingsJson,
   ): CubismEyeBlink {
     return new CubismEyeBlink(modelSetting);
   }
@@ -167,7 +167,7 @@ export class CubismEyeBlink {
       return;
     }
 
-    this._parameterIds = modelSetting.getEyeBlinkParameters().slice();
+    this._parameterIds = modelSetting.getEyeBlinkParameters()?.slice() ?? this._parameterIds;
   }
 
   /**

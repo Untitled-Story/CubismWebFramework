@@ -41,7 +41,7 @@ export class PhysicsJsonEffectiveForces {
 /**
  * 物理演算のパラメータ情報
  */
-export class CubismPhysicsParameter {
+export interface CubismPhysicsParameter {
   id: string; // パラメータ
   targetType: CubismPhysicsTargetType; // 適用先の種類
 }
@@ -49,7 +49,7 @@ export class CubismPhysicsParameter {
 /**
  * 物理演算の正規化情報
  */
-export class CubismPhysicsNormalization {
+export interface CubismPhysicsNormalization {
   minimum: number; // 最大値
   maximum: number; // 最小値
   defalut: number; // デフォルト値
@@ -69,10 +69,10 @@ export class CubismPhysicsParticle {
   }
 
   initialPosition: CubismVector2; // 初期位置
-  mobility: number; // 動きやすさ
-  delay: number; // 遅れ
-  acceleration: number; // 加速度
-  radius: number; // 距離
+  mobility!: number; // 動きやすさ
+  delay!: number; // 遅れ
+  acceleration!: number; // 加速度
+  radius!: number; // 距離
   position: CubismVector2; // 現在の位置
   lastPosition: CubismVector2; // 最後の位置
   lastGravity: CubismVector2; // 最後の重力
@@ -84,19 +84,14 @@ export class CubismPhysicsParticle {
  * 物理演算の物理点の管理
  */
 export class CubismPhysicsSubRig {
-  constructor() {
-    this.normalizationPosition = new CubismPhysicsNormalization();
-    this.normalizationAngle = new CubismPhysicsNormalization();
-  }
-
-  inputCount: number; // 入力の個数
-  outputCount: number; // 出力の個数
-  particleCount: number; // 物理点の個数
-  baseInputIndex: number; // 入力の最初のインデックス
-  baseOutputIndex: number; // 出力の最初のインデックス
-  baseParticleIndex: number; // 物理点の最初のインデックス
-  normalizationPosition: CubismPhysicsNormalization; // 正規化された位置
-  normalizationAngle: CubismPhysicsNormalization; // 正規化された角度
+  inputCount!: number; // 入力の個数
+  outputCount!: number; // 出力の個数
+  particleCount!: number; // 物理点の個数
+  baseInputIndex!: number; // 入力の最初のインデックス
+  baseOutputIndex!: number; // 出力の最初のインデックス
+  baseParticleIndex!: number; // 物理点の最初のインデックス
+  normalizationPosition: CubismPhysicsNormalization = {} as any; // 正規化された位置
+  normalizationAngle: CubismPhysicsNormalization = {} as any; // 正規化された角度
 }
 
 /**
@@ -159,16 +154,12 @@ export interface physicsScaleGetter {
  * 物理演算の入力情報
  */
 export class CubismPhysicsInput {
-  constructor() {
-    this.source = new CubismPhysicsParameter();
-  }
-
-  source: CubismPhysicsParameter; // 入力元のパラメータ
-  sourceParameterIndex: number; // 入力元のパラメータのインデックス
-  weight: number; // 重み
-  type: number; // 入力の種類
-  reflect: boolean; // 値が反転されているかどうか
-  getNormalizedParameterValue: normalizedPhysicsParameterValueGetter; // 正規化されたパラメータ値の取得関数
+  source: CubismPhysicsParameter = {} as any; // 入力元のパラメータ
+  sourceParameterIndex!: number; // 入力元のパラメータのインデックス
+  weight!: number; // 重み
+  type!: number; // 入力の種類
+  reflect!: boolean; // 値が反転されているかどうか
+  getNormalizedParameterValue!: normalizedPhysicsParameterValueGetter; // 正規化されたパラメータ値の取得関数
 }
 
 /**
@@ -177,23 +168,18 @@ export class CubismPhysicsInput {
  * 物理演算の出力情報。
  */
 export class CubismPhysicsOutput {
-  constructor() {
-    this.destination = new CubismPhysicsParameter();
-    this.translationScale = new CubismVector2(0, 0);
-  }
-
-  destination: CubismPhysicsParameter; // 出力先のパラメータ
-  destinationParameterIndex: number; // 出力先のパラメータのインデックス
-  vertexIndex: number; // 振り子のインデックス
-  translationScale: CubismVector2; // 移動値のスケール
-  angleScale: number; // 角度のスケール
-  weight: number; // 重み
-  type: CubismPhysicsSource; // 出力の種類
-  reflect: boolean; // 値が反転されているかどうか
-  valueBelowMinimum: number; // 最小値を下回った時の値
-  valueExceededMaximum: number; // 最大値をこえた時の値
-  getValue: physicsValueGetter; // 物理演算の値の取得関数
-  getScale: physicsScaleGetter; // 物理演算のスケール値の取得関数
+  destination: CubismPhysicsParameter = {} as any; // 出力先のパラメータ
+  destinationParameterIndex!: number; // 出力先のパラメータのインデックス
+  vertexIndex!: number; // 振り子のインデックス
+  translationScale = new CubismVector2(0, 0); // 移動値のスケール
+  angleScale!: number; // 角度のスケール
+  weight!: number; // 重み
+  type!: CubismPhysicsSource; // 出力の種類
+  reflect!: boolean; // 値が反転されているかどうか
+  valueBelowMinimum!: number; // 最小値を下回った時の値
+  valueExceededMaximum!: number; // 最大値をこえた時の値
+  getValue!: physicsValueGetter; // 物理演算の値の取得関数
+  getScale!: physicsScaleGetter; // 物理演算のスケール値の取得関数
 }
 
 /**
@@ -211,7 +197,7 @@ export class CubismPhysicsRig {
     this.wind = new CubismVector2(0, 0);
   }
 
-  subRigCount: number; // 物理演算の物理点の個数
+  subRigCount!: number; // 物理演算の物理点の個数
   settings: CubismPhysicsSubRig[]; // 物理演算の物理点の管理のリスト
   inputs: CubismPhysicsInput[]; // 物理演算の入力のリスト
   outputs: CubismPhysicsOutput[]; // 物理演算の出力のリスト

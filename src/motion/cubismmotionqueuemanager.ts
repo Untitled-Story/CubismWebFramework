@@ -24,7 +24,6 @@ export class CubismMotionQueueManager {
    */
   public constructor() {
     this._userTimeSeconds = 0.0;
-    this._eventCallBack = null;
     this._eventCustomData = null;
     this._motions = [];
   }
@@ -39,7 +38,7 @@ export class CubismMotionQueueManager {
       }
     }
 
-    this._motions = undefined;
+    (this as Partial<this>)._motions = undefined;
   }
 
   /**
@@ -61,7 +60,7 @@ export class CubismMotionQueueManager {
       return InvalidMotionQueueEntryHandleValue;
     }
 
-    let motionQueueEntry: CubismMotionQueueEntry = null;
+    let motionQueueEntry: CubismMotionQueueEntry;
 
     // 既にモーションがあれば終了フラグを立てる
     for (let i = 0; i < this._motions.length; ++i) {
@@ -269,7 +268,7 @@ export class CubismMotionQueueManager {
   _userTimeSeconds: number; // デルタ時間の積算値[秒]
 
   _motions: CubismMotionQueueEntry[]; // モーション
-  _eventCallBack: CubismMotionEventFunction; // コールバック関数
+  _eventCallBack!: CubismMotionEventFunction; // コールバック関数
   _eventCustomData: any; // コールバックに戻されるデータ
 }
 

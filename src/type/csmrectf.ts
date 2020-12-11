@@ -16,7 +16,7 @@ export class csmRect {
    * @param w 幅
    * @param h 高さ
    */
-  public constructor(x?: number, y?: number, w?: number, h?: number) {
+  public constructor(x = 0, y = 0, w = 0, h = 0) {
     this.x = x;
     this.y = y;
     this.width = w;

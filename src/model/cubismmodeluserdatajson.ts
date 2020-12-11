@@ -6,14 +6,7 @@
  */
 
 import { CubismFramework } from '../live2dcubismframework';
-
-const Meta = 'Meta';
-const UserDataCount = 'UserDataCount';
-const TotalUserDataSize = 'TotalUserDataSize';
-const UserData = 'UserData';
-const Target = 'Target';
-const Id = 'Id';
-const Value = 'Value';
+import Userdata3 = CubismSpec.Userdata3;
 
 export class CubismModelUserDataJson {
   /**
@@ -21,7 +14,7 @@ export class CubismModelUserDataJson {
    * @param json    userdata3.jsonが読み込まれているバッファ
    * @param size      バッファのサイズ
    */
-  public constructor(json: JSONObject, size: number) {
+  public constructor(json: Userdata3, size: number) {
     this._json = json;
   }
 
@@ -29,7 +22,7 @@ export class CubismModelUserDataJson {
    * デストラクタ相当の処理
    */
   public release(): void {
-    this._json = undefined;
+    (this as any)._json = undefined;
   }
 
   /**
@@ -37,7 +30,7 @@ export class CubismModelUserDataJson {
    * @return ユーザーデータの個数
    */
   public getUserDataCount(): number {
-    return this._json[Meta][UserDataCount];
+    return this._json.Meta.UserDataCount;
   }
 
   /**
@@ -46,7 +39,7 @@ export class CubismModelUserDataJson {
    * @return ユーザーデータ総文字列数
    */
   public getTotalUserDataSize(): number {
-    return this._json[Meta][TotalUserDataSize];
+    return this._json.Meta.TotalUserDataSize;
   }
 
   /**
@@ -55,7 +48,7 @@ export class CubismModelUserDataJson {
    * @return ユーザーデータのタイプ
    */
   public getUserDataTargetType(i: number): string {
-    return this._json[UserData][i][Target];
+    return this._json.UserData[i].Target;
   }
 
   /**
@@ -66,7 +59,7 @@ export class CubismModelUserDataJson {
    */
   public getUserDataId(i: number): string {
     return CubismFramework.getIdManager().getId(
-      this._json[UserData][i][Id],
+      this._json.UserData[i].Id,
     );
   }
 
@@ -77,8 +70,8 @@ export class CubismModelUserDataJson {
    * @return ユーザーデータ
    */
   public getUserDataValue(i: number): string {
-    return this._json[UserData][i][Value];
+    return this._json.UserData[i].Value;
   }
 
-  private _json: JSONObject;
+  private _json: Userdata3;
 }

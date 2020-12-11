@@ -17,7 +17,6 @@ export class CubismMotionQueueEntry {
    */
   public constructor() {
     this._autoDelete = false;
-    this._motion = null;
     this._available = true;
     this._finished = false;
     this._started = false;
@@ -55,8 +54,8 @@ export class CubismMotionQueueEntry {
    * @param fadeOutSeconds フェードアウトにかかる時間[秒]
    * @param userTimeSeconds デルタ時間の積算値[秒]
    */
-  public startFadeout(fadeoutSeconds: number, userTimeSeconds: number): void {
-    const newEndTimeSeconds: number = userTimeSeconds + fadeoutSeconds;
+  public startFadeOut(fadeOutSeconds: number, userTimeSeconds: number): void {
+    const newEndTimeSeconds: number = userTimeSeconds + fadeOutSeconds;
     this._isTriggeredFadeOut = true;
 
     if (
@@ -227,7 +226,7 @@ export class CubismMotionQueueEntry {
   }
 
   _autoDelete: boolean; // 自動削除
-  _motion: ACubismMotion; // モーション
+  _motion!: ACubismMotion; // モーション
 
   _available: boolean; // 有効化フラグ
   _finished: boolean; // 終了フラグ

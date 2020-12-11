@@ -281,7 +281,7 @@ export class CubismPose {
    */
   public constructor() {
     this._fadeTimeSeconds = DefaultFadeInSeconds;
-    this._lastModel = null;
+    this._lastModel = undefined;
     this._partGroups = [];
     this._partGroupCounts = [];
   }
@@ -289,7 +289,7 @@ export class CubismPose {
   _partGroups: PartData[]; // パーツグループ
   _partGroupCounts: number[]; // それぞれのパーツグループの個数
   _fadeTimeSeconds: number; // フェード時間[秒]
-  _lastModel: CubismModel; // 前回操作したモデル
+  _lastModel?: CubismModel; // 前回操作したモデル
 }
 
 /**
@@ -302,6 +302,8 @@ export class PartData {
   constructor(v?: PartData) {
     this.parameterIndex = 0;
     this.partIndex = 0;
+    this.partId = '';
+    this.link = [];
 
     if (v != undefined) {
       this.assignment(v);

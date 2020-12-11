@@ -22,7 +22,7 @@ export class CubismIdManager {
    * デストラクタ相当の処理
    */
   public release(): void {
-    this._ids = undefined;
+    (this as any)._ids = undefined;
   }
 
   /**

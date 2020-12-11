@@ -701,8 +701,6 @@ export class CubismModel {
    * 初期化する
    */
   public initialize(): void {
-    CSM_ASSERT(this._model);
-
     this._parameterValues = this._model.parameters.values;
     this._partOpacities = this._model.parts.opacities;
     this._parameterMaximumValues = this._model.parameters.maximumValues;
@@ -748,10 +746,6 @@ export class CubismModel {
    */
   public constructor(model: Live2DCubismCore.Model) {
     this._model = model;
-    this._parameterValues = null;
-    this._parameterMaximumValues = null;
-    this._parameterMinimumValues = null;
-    this._partOpacities = null;
     this._savedParameters = [];
     this._parameterIds = [];
     this._drawableIds = [];
@@ -761,6 +755,8 @@ export class CubismModel {
     this._notExistParameterId = {};
     this._notExistParameterValues = {};
     this._notExistPartOpacities = {};
+
+    this.initialize();
   }
 
   /**
@@ -768,7 +764,7 @@ export class CubismModel {
    */
   public release(): void {
     this._model.release();
-    this._model = null;
+    (this as any)._model = undefined;
   }
 
   private _notExistPartOpacities: Record<number, number>; // 存在していないパーツの不透明度のリスト
@@ -781,11 +777,11 @@ export class CubismModel {
 
   private _model: Live2DCubismCore.Model; // モデル
 
-  private _parameterValues: Float32Array; // パラメータの値のリスト
-  private _parameterMaximumValues: Float32Array; // パラメータの最大値のリスト
-  private _parameterMinimumValues: Float32Array; // パラメータの最小値のリスト
+  private _parameterValues!: Float32Array; // パラメータの値のリスト
+  private _parameterMaximumValues!: Float32Array; // パラメータの最大値のリスト
+  private _parameterMinimumValues!: Float32Array; // パラメータの最小値のリスト
 
-  private _partOpacities: Float32Array; // パーツの不透明度のリスト
+  private _partOpacities!: Float32Array; // パーツの不透明度のリスト
 
   private _parameterIds: string[];
   private _partIds: string[];

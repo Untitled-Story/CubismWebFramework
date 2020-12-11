@@ -255,5 +255,5 @@ export abstract class ACubismMotion {
   public _firedEventValues: string[];
 
   // モーション再生終了コールバック関数
-  public _onFinishedMotion?: (self: ACubismMotion) => void;
+  public _onFinishedMotion?: (self: this) => void;
 }

@@ -5,14 +5,10 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import {
-  CubismExpressionDef,
-  CubismGroupDef,
-  CubismHitAreasDef,
-  CubismLayoutDef,
-  CubismModelSettingsDef,
-  CubismMotionDef,
-} from './defs';
+import Group = CubismSpec.Group;
+import Hitareas = CubismSpec.Hitareas;
+import Model3 = CubismSpec.Model3;
+import Motion = CubismSpec.Motion;
 
 /**
  * Model3Jsonパーサー
@@ -20,7 +16,7 @@ import {
  * model3.jsonファイルをパースして値を取得する
  */
 export class CubismModelSettingsJson {
-  public constructor(json: CubismModelSettingsDef) {
+  public constructor(json: Model3) {
     this.groups = json.Groups;
     this.hitAreas = json.HitAreas;
     this.layout = json.Layout;
@@ -34,20 +30,20 @@ export class CubismModelSettingsJson {
   }
 
   public getEyeBlinkParameters(): string[] | undefined {
-    return this.groups.find(group => group.Name === 'EyeBlink')?.Ids;
+    return this.groups?.find(group => group.Name === 'EyeBlink')?.Ids;
   }
 
   public getLipSyncParameters(): string[] | undefined {
-    return this.groups.find(group => group.Name === 'LipSync')?.Ids;
+    return this.groups?.find(group => group.Name === 'LipSync')?.Ids;
   }
 
-  groups: CubismGroupDef[];
+  groups?: Group[];
   moc: string;
-  expressions?: CubismExpressionDef[];
-  motions: Record<string, CubismMotionDef[]>;
+  expressions?: Model3['FileReferences']['Expressions'];
+  motions?: Record<string, Motion[]>;
   textures: string[];
   physics?: string;
   pose?: string;
-  hitAreas?: CubismHitAreasDef[];
-  layout?: CubismLayoutDef;
+  hitAreas?: Hitareas[];
+  layout?: Model3['Layout'];
 }

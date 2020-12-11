@@ -19,7 +19,7 @@ import {
   CubismMotionSegment,
   CubismMotionSegmentType,
 } from './cubismmotioninternal';
-import { CubismMotionJson } from './cubismmotionjson';
+import { CubismMotionFileDef, CubismMotionJson } from './cubismmotionjson';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
 
 const EffectNameEyeBlink = 'EyeBlink';
@@ -132,7 +132,7 @@ export class CubismMotion extends ACubismMotion {
    * @param onFinishedMotionHandler モーション再生終了時に呼び出されるコールバック関数
    * @return 作成されたインスタンス
    */
-  public static create(json: JSONObject, onFinishedMotionHandler?: (self: CubismMotion) => void): CubismMotion {
+  public static create(json: CubismMotionFileDef, onFinishedMotionHandler?: (self: CubismMotion) => void): CubismMotion {
     const ret = new CubismMotion();
 
     ret.parse(json);
@@ -580,18 +580,13 @@ export class CubismMotion extends ACubismMotion {
     this._isLoop = false; // trueから false へデフォルトを変更
     this._isLoopFadeIn = true; // ループ時にフェードインが有効かどうかのフラグ
     this._lastWeight = 0.0;
-    this._motionData = null;
-    this._modelCurveIdEyeBlink = null;
-    this._modelCurveIdLipSync = null;
-    this._eyeBlinkParameterIds = null;
-    this._lipSyncParameterIds = null;
   }
 
   /**
    * デストラクタ相当の処理
    */
   public release(): void {
-    this._motionData = null;
+    (this as Partial<this>)._motionData = undefined;
   }
 
   /**
@@ -599,7 +594,7 @@ export class CubismMotion extends ACubismMotion {
    *
    * @param motionJson  motion3.jsonが読み込まれているバッファ
    */
-  public parse(motionJson: JSONObject): void {
+  public parse(motionJson: CubismMotionFileDef): void {
     this._motionData = new CubismMotionData();
 
     let json: CubismMotionJson = new CubismMotionJson(motionJson);
@@ -810,8 +805,6 @@ export class CubismMotion extends ACubismMotion {
     }
 
     json.release();
-    json = void 0;
-    json = null;
   }
 
   /**
@@ -848,11 +841,11 @@ export class CubismMotion extends ACubismMotion {
   public _isLoopFadeIn: boolean; // ループ時にフェードインが有効かどうかのフラグ。初期値では有効。
   public _lastWeight: number; // 最後に設定された重み
 
-  public _motionData: CubismMotionData; // 実際のモーションデータ本体
+  public _motionData!: CubismMotionData; // 実際のモーションデータ本体
 
-  public _eyeBlinkParameterIds: string[]; // 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
-  public _lipSyncParameterIds: string[]; // リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
+  public _eyeBlinkParameterIds: string[] = []; // 自動まばたきを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
+  public _lipSyncParameterIds: string[] = []; // リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
 
-  public _modelCurveIdEyeBlink: string; // モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
-  public _modelCurveIdLipSync: string; // モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+  public _modelCurveIdEyeBlink?: string; // モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+  public _modelCurveIdLipSync?: string; // モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
 }

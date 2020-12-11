@@ -13,8 +13,8 @@ import { CSM_ASSERT, CubismLogInfo, CubismLogWarning } from './utils/cubismdebug
 
 let s_isStarted = false;
 let s_isInitialized = false;
-let s_option: Option = null;
-let s_cubismIdManager: CubismIdManager = null;
+let s_option: Option | undefined = undefined;
+let s_cubismIdManager: CubismIdManager | undefined = undefined;
 
 /**
  * Framework内で使う定数の宣言
@@ -38,7 +38,7 @@ export class CubismFramework {
    *
    * @return   準備処理が完了したらtrueが返ります。
    */
-  public static startUp(option: Option = null): boolean {
+  public static startUp(option?: Option): boolean {
     if (s_isStarted) {
       CubismLogInfo('CubismFramework.startUp() is already done.');
       return s_isStarted;
@@ -46,7 +46,7 @@ export class CubismFramework {
 
     s_option = option;
 
-    if (s_option != null) {
+    if (s_option) {
       Live2DCubismCore.Logging.csmSetLogFunction(s_option.logFunction);
     }
 
@@ -81,8 +81,8 @@ export class CubismFramework {
   public static cleanUp(): void {
     s_isStarted = false;
     s_isInitialized = false;
-    s_option = null;
-    s_cubismIdManager = null;
+    s_option = undefined;
+    s_cubismIdManager = undefined;
   }
 
   /**
@@ -133,8 +133,8 @@ export class CubismFramework {
       return;
     }
 
-    s_cubismIdManager.release();
-    s_cubismIdManager = null;
+    s_cubismIdManager?.release();
+    s_cubismIdManager = undefined;
 
     // レンダラの静的リソース（シェーダプログラム他）を解放する
     CubismRenderer.staticRelease();
@@ -191,7 +191,7 @@ export class CubismFramework {
    * @return CubismManagerクラスのインスタンス
    */
   public static getIdManager(): CubismIdManager {
-    return s_cubismIdManager;
+    return s_cubismIdManager!;
   }
 
   /**
@@ -201,7 +201,7 @@ export class CubismFramework {
   private constructor() {}
 }
 
-export class Option {
+export interface Option {
   logFunction: Live2DCubismCore.csmLogFunction; // ログ出力の関数オブジェクト
   loggingLevel: LogLevel; // ログ出力レベルの設定
 }

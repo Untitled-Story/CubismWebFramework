@@ -1,3 +1,5 @@
+// not gonna fix this file since it's not used at all
+
 /**
  * Copyright(c) Live2D Inc. All rights reserved.
  *

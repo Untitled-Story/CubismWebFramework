@@ -11,13 +11,15 @@
  * 2次元ベクトル型の機能を提供する。
  */
 export class CubismVector2 {
+  x: number;
+  y: number;
+
   /**
    * コンストラクタ
    */
-  public constructor(public x?: number, public y?: number) {
-    this.x = x == undefined ? 0.0 : x;
-
-    this.y = y == undefined ? 0.0 : y;
+  public constructor(x?: number, y?: number) {
+    this.x = x || 0;
+    this.y = y || 0;
   }
 
   /**

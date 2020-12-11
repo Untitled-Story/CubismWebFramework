@@ -6,26 +6,7 @@
  */
 
 import { CubismFramework } from '../live2dcubismframework';
-
-// JSON keys
-const Meta = 'Meta';
-const Duration = 'Duration';
-const Loop = 'Loop';
-const CurveCount = 'CurveCount';
-const Fps = 'Fps';
-const TotalSegmentCount = 'TotalSegmentCount';
-const TotalPointCount = 'TotalPointCount';
-const Curves = 'Curves';
-const Target = 'Target';
-const Id = 'Id';
-const FadeInTime = 'FadeInTime';
-const FadeOutTime = 'FadeOutTime';
-const Segments = 'Segments';
-const UserData = 'UserData';
-const UserDataCount = 'UserDataCount';
-const TotalUserDataSize = 'TotalUserDataSize';
-const Time = 'Time';
-const Value = 'Value';
+import Motion3 = CubismSpec.Motion3;
 
 /**
  * motion3.jsonのコンテナ。
@@ -35,7 +16,7 @@ export class CubismMotionJson {
    * コンストラクタ
    * @param json motion3.jsonが読み込まれているバッファ
    */
-  public constructor(json: JSONObject) {
+  public constructor(json: Motion3) {
     this._json = json;
   }
 
@@ -43,15 +24,15 @@ export class CubismMotionJson {
    * デストラクタ相当の処理
    */
   public release(): void {
-    this._json = undefined;
+    (this as any)._json = undefined;
   }
 
   /**
    * モーションの長さを取得する
    * @return モーションの長さ[秒]
    */
-  public getMotionDuration(): number | undefined {
-    return this._json[Meta][Duration];
+  public getMotionDuration(): number {
+    return this._json.Meta.Duration;
   }
 
   /**
@@ -59,40 +40,40 @@ export class CubismMotionJson {
    * @return true ループする
    * @return false ループしない
    */
-  public isMotionLoop(): boolean | undefined {
-    return this._json[Meta][Loop];
+  public isMotionLoop(): boolean {
+    return this._json.Meta.Loop || false;
   }
 
   /**
    * モーションカーブの個数の取得
    * @return モーションカーブの個数
    */
-  public getMotionCurveCount(): number | undefined {
-    return this._json[Meta][CurveCount];
+  public getMotionCurveCount(): number {
+    return this._json.Meta.CurveCount;
   }
 
   /**
    * モーションのフレームレートの取得
    * @return フレームレート[FPS]
    */
-  public getMotionFps(): number | undefined {
-    return this._json[Meta][Fps];
+  public getMotionFps(): number {
+    return this._json.Meta.Fps;
   }
 
   /**
    * モーションのセグメントの総合計の取得
    * @return モーションのセグメントの取得
    */
-  public getMotionTotalSegmentCount(): number | undefined {
-    return this._json[Meta][TotalSegmentCount];
+  public getMotionTotalSegmentCount(): number {
+    return this._json.Meta.TotalSegmentCount;
   }
 
   /**
    * モーションのカーブの制御店の総合計の取得
    * @return モーションのカーブの制御点の総合計
    */
-  public getMotionTotalPointCount(): number | undefined {
-    return this._json[Meta][TotalPointCount];
+  public getMotionTotalPointCount(): number {
+    return this._json.Meta.TotalPointCount;
   }
 
   /**
@@ -100,7 +81,7 @@ export class CubismMotionJson {
    * @return フェードイン時間[秒]
    */
   public getMotionFadeInTime(): number | undefined {
-    return this._json[Meta][FadeInTime];
+    return this._json.Meta.FadeInTime;
   }
 
   /**
@@ -108,7 +89,7 @@ export class CubismMotionJson {
    * @return フェードアウト時間[秒]
    */
   public getMotionFadeOutTime(): number | undefined {
-    return this._json[Meta][FadeOutTime];
+    return this._json.Meta.FadeOutTime;
   }
 
   /**
@@ -116,8 +97,8 @@ export class CubismMotionJson {
    * @param curveIndex カーブのインデックス
    * @return カーブの種類
    */
-  public getMotionCurveTarget(curveIndex: number): string | undefined {
-    return this._json[Curves][curveIndex][Target];
+  public getMotionCurveTarget(curveIndex: number): string {
+    return this._json.Curves[curveIndex].Target;
   }
 
   /**
@@ -125,9 +106,9 @@ export class CubismMotionJson {
    * @param curveIndex カーブのインデックス
    * @return カーブのID
    */
-  public getMotionCurveId(curveIndex: number): string | undefined {
+  public getMotionCurveId(curveIndex: number): string {
     return CubismFramework.getIdManager().getId(
-      this._json[Curves][curveIndex][Id],
+      this._json.Curves[curveIndex].Id as string,
     );
   }
 
@@ -137,7 +118,7 @@ export class CubismMotionJson {
    * @return フェードイン時間[秒]
    */
   public getMotionCurveFadeInTime(curveIndex: number): number | undefined {
-    return this._json[Curves][curveIndex][FadeInTime];
+    return this._json.Curves[curveIndex].FadeInTime;
   }
 
   /**
@@ -146,7 +127,7 @@ export class CubismMotionJson {
    * @return フェードアウト時間[秒]
    */
   public getMotionCurveFadeOutTime(curveIndex: number): number | undefined {
-    return this._json[Curves][curveIndex][FadeOutTime];
+    return this._json.Curves[curveIndex].FadeOutTime;
   }
 
   /**
@@ -154,8 +135,8 @@ export class CubismMotionJson {
    * @param curveIndex カーブのインデックス
    * @return モーションのカーブのセグメントの個数
    */
-  public getMotionCurveSegmentCount(curveIndex: number): number | undefined {
-    return this._json[Curves][curveIndex][Segments]?.length;
+  public getMotionCurveSegmentCount(curveIndex: number): number {
+    return this._json.Curves[curveIndex].Segments.length;
   }
 
   /**
@@ -167,24 +148,24 @@ export class CubismMotionJson {
   public getMotionCurveSegment(
     curveIndex: number,
     segmentIndex: number,
-  ): number | undefined {
-    return this._json[Curves][curveIndex][Segments][segmentIndex];
+  ): number {
+    return this._json.Curves[curveIndex].Segments[segmentIndex];
   }
 
   /**
    * イベントの個数の取得
    * @return イベントの個数
    */
-  public getEventCount(): number | undefined {
-    return this._json[Meta][UserDataCount];
+  public getEventCount(): number {
+    return this._json.Meta.UserDataCount || 0;
   }
 
   /**
    *  イベントの総文字数の取得
    * @return イベントの総文字数
    */
-  public getTotalEventValueSize(): number | undefined {
-    return this._json[Meta][TotalUserDataSize];
+  public getTotalEventValueSize(): number {
+    return this._json.Meta.TotalUserDataSize!;
   }
 
   /**
@@ -193,7 +174,7 @@ export class CubismMotionJson {
    * @return イベントの時間[秒]
    */
   public getEventTime(userDataIndex: number): number {
-    return this._json[UserData][userDataIndex][Time];
+    return this._json.UserData![userDataIndex].Time!;
   }
 
   /**
@@ -202,8 +183,8 @@ export class CubismMotionJson {
    * @return イベントの文字列
    */
   public getEventValue(userDataIndex: number): string {
-    return this._json[UserData][userDataIndex][Value];
+    return this._json.UserData![userDataIndex].Value!;
   }
 
-  _json: JSONObject; // motion3.jsonのデータ
+  _json: Motion3; // motion3.jsonのデータ
 }

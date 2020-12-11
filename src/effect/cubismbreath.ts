@@ -69,7 +69,7 @@ export class CubismBreath {
     this._currentTime = 0.0;
   }
 
-  _breathParameters: BreathParameterData[]; // 呼吸にひもづいているパラメータのリスト
+  _breathParameters: BreathParameterData[] = []; // 呼吸にひもづいているパラメータのリスト
   _currentTime: number; // 積算時間[秒]
 }
 
@@ -92,14 +92,14 @@ export class BreathParameterData {
     cycle?: number,
     weight?: number,
   ) {
-    this.parameterId = parameterId == undefined ? null : parameterId;
+    this.parameterId = parameterId == undefined ? undefined : parameterId;
     this.offset = offset == undefined ? 0.0 : offset;
     this.peak = peak == undefined ? 0.0 : peak;
     this.cycle = cycle == undefined ? 0.0 : cycle;
     this.weight = weight == undefined ? 0.0 : weight;
   }
 
-  parameterId: string; // 呼吸をひもづけるパラメータID\
+  parameterId?: string; // 呼吸をひもづけるパラメータID\
   offset: number; // 呼吸を正弦波としたときの、波のオフセット
   peak: number; // 呼吸を正弦波としたときの、波の高さ
   cycle: number; // 呼吸を正弦波としたときの、波の周期

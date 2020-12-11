@@ -169,7 +169,6 @@ export abstract class CubismRenderer {
     this._isCulling = false;
     this._isPremultipliedAlpha = false;
     this._anisortopy = 0.0;
-    this._model = null;
     this._modelColor = new CubismTextureColor();
 
     // 単位行列に初期化
@@ -217,7 +216,7 @@ export abstract class CubismRenderer {
   protected _isCulling: boolean; // カリングが有効ならtrue
   protected _isPremultipliedAlpha: boolean; // 乗算済みαならtrue
   protected _anisortopy: any; // テクスチャの異方性フィルタリングのパラメータ
-  protected _model: CubismModel; // レンダリング対象のモデル
+  protected _model!: CubismModel; // レンダリング対象のモデル
 }
 
 export enum CubismBlendMode {
