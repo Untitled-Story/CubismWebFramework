@@ -65,7 +65,7 @@ export class CubismPose {
           }
         }
 
-        ret._partGroups.push(partData.clone());
+        ret._partGroups.push(partData);
 
         ++groupCount;
       }

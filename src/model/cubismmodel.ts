@@ -201,7 +201,7 @@ export class CubismModel {
     }
 
     // 非存在パラメータIDリストにない場合新しく要素を追加する
-    parameterIndex = this._model.parameters.count + this._notExistParameterId.length;
+    parameterIndex = this._model.parameters.count + Object.keys(this._notExistParameterId).length;
 
     this._notExistParameterId[parameterId] = parameterIndex;
     this._notExistParameterValues[parameterIndex] = 0;
