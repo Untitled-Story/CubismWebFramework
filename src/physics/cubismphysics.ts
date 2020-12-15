@@ -256,7 +256,7 @@ export class CubismPhysics {
       outputIndex = 0,
       particleIndex = 0;
 
-    for (let i = 0; i < this._physicsRig.settings.length; ++i) {
+    for (let i = 0; i < this._physicsRig.subRigCount; ++i) {
       const setting = new CubismPhysicsSubRig();
 
       setting.normalizationPosition.minimum = json.getNormalizationPositionMinimumValue(i);
