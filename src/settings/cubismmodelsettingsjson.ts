@@ -5,19 +5,13 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import Expression = CubismSpec.Expression;
-import Group = CubismSpec.Group;
-import HitAreas = CubismSpec.HitArea;
-import ModelJSON = CubismSpec.ModelJSON;
-import Motion = CubismSpec.Motion;
-
 /**
  * Model3Jsonパーサー
  *
  * model3.jsonファイルをパースして値を取得する
  */
 export class CubismModelSettingsJson {
-  public constructor(json: ModelJSON) {
+  public constructor(json: CubismSpec.ModelJSON) {
     this.groups = json.Groups;
     this.hitAreas = json.HitAreas;
     this.layout = json.Layout;
@@ -38,13 +32,13 @@ export class CubismModelSettingsJson {
     return this.groups?.find(group => group.Name === 'LipSync')?.Ids;
   }
 
-  groups?: Group[];
+  groups?: CubismSpec.Group[];
   moc: string;
-  expressions?: Expression[];
-  motions?: Record<string, Motion[]>;
+  expressions?: CubismSpec.Expression[];
+  motions?: Record<string, CubismSpec.Motion[]>;
   textures: string[];
   physics?: string;
   pose?: string;
-  hitAreas?: HitAreas[];
-  layout?: ModelJSON['Layout'];
+  hitAreas?: CubismSpec.HitArea[];
+  layout?: CubismSpec.ModelJSON['Layout'];
 }

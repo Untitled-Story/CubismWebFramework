@@ -6,7 +6,6 @@
  */
 
 import { CubismFramework } from '../live2dcubismframework';
-import UserDataJSON = CubismSpec.UserDataJSON;
 
 export class CubismModelUserDataJson {
   /**
@@ -14,7 +13,7 @@ export class CubismModelUserDataJson {
    * @param json    userdata3.jsonが読み込まれているバッファ
    * @param size      バッファのサイズ
    */
-  public constructor(json: UserDataJSON, size: number) {
+  public constructor(json: CubismSpec.UserDataJSON, size: number) {
     this._json = json;
   }
 
@@ -73,5 +72,5 @@ export class CubismModelUserDataJson {
     return this._json.UserData[i].Value;
   }
 
-  private _json: UserDataJSON;
+  private _json: CubismSpec.UserDataJSON;
 }

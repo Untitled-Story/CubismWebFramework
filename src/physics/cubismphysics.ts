@@ -19,7 +19,6 @@ import {
   CubismPhysicsTargetType,
 } from './cubismphysicsinternal';
 import { CubismPhysicsJson } from './cubismphysicsjson';
-import PhysicsJSON = CubismSpec.PhysicsJSON;
 
 // physics types tags.
 const PhysicsTypeTagX = 'X';
@@ -44,7 +43,7 @@ export class CubismPhysics {
    * @param json    physics3.jsonが読み込まれているバッファ
    * @return 作成されたインスタンス
    */
-  public static create(json: PhysicsJSON): CubismPhysics {
+  public static create(json: CubismSpec.PhysicsJSON): CubismPhysics {
     const ret: CubismPhysics = new CubismPhysics();
 
     ret.parse(json);
@@ -243,7 +242,7 @@ export class CubismPhysics {
    * physics3.jsonをパースする。
    * @param physicsJson physics3.jsonが読み込まれているバッファ
    */
-  public parse(physicsJson: PhysicsJSON): void {
+  public parse(physicsJson: CubismSpec.PhysicsJSON): void {
     this._physicsRig = new CubismPhysicsRig();
 
     let json: CubismPhysicsJson = new CubismPhysicsJson(physicsJson);

@@ -6,7 +6,6 @@
  */
 
 import { CubismFramework } from '../live2dcubismframework';
-import MotionJSON = CubismSpec.MotionJSON;
 
 /**
  * motion3.jsonのコンテナ。
@@ -16,7 +15,7 @@ export class CubismMotionJson {
    * コンストラクタ
    * @param json motion3.jsonが読み込まれているバッファ
    */
-  public constructor(json: MotionJSON) {
+  public constructor(json: CubismSpec.MotionJSON) {
     this._json = json;
   }
 
@@ -186,5 +185,5 @@ export class CubismMotionJson {
     return this._json.UserData![userDataIndex].Value!;
   }
 
-  _json: MotionJSON; // motion3.jsonのデータ
+  _json: CubismSpec.MotionJSON; // motion3.jsonのデータ
 }

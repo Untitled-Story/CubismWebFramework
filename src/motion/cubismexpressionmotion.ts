@@ -9,7 +9,6 @@ import { CubismFramework } from '../live2dcubismframework';
 import { CubismModel } from '../model/cubismmodel';
 import { ACubismMotion } from './acubismmotion';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
-import ExpressionJSON = CubismSpec.ExpressionJSON;
 
 // exp3.jsonのキーとデフォルト
 const DefaultFadeTime = 1.0;
@@ -26,7 +25,7 @@ export class CubismExpressionMotion extends ACubismMotion {
    * @param size バッファのサイズ
    * @return 作成されたインスタンス
    */
-  public static create(json: ExpressionJSON): CubismExpressionMotion {
+  public static create(json: CubismSpec.ExpressionJSON): CubismExpressionMotion {
     const expression: CubismExpressionMotion = new CubismExpressionMotion();
 
     const fadeInTime = json.FadeInTime;

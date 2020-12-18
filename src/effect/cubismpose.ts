@@ -7,7 +7,6 @@
 
 import { CubismFramework } from '../live2dcubismframework';
 import { CubismModel } from '../model/cubismmodel';
-import PoseJSON = CubismSpec.PoseJSON;
 
 const Epsilon = 0.001;
 const DefaultFadeInSeconds = 0.5;
@@ -23,7 +22,7 @@ export class CubismPose {
    * @param pose3json pose3.jsonのデータ
    * @return 作成されたインスタンス
    */
-  public static create(pose3json: PoseJSON): CubismPose {
+  public static create(pose3json: CubismSpec.PoseJSON): CubismPose {
     const ret: CubismPose = new CubismPose();
 
     // フェード時間の指定
