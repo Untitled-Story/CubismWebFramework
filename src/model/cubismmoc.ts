@@ -70,8 +70,6 @@ export class CubismMoc {
    * デストラクタ相当の処理
    */
   public release(): void {
-    CSM_ASSERT(this._modelCount == 0);
-
     this._moc._release();
     (this as Partial<this>)._moc = undefined;
   }
