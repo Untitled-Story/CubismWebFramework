@@ -44,6 +44,13 @@ export class CubismFramework {
       return s_isStarted;
     }
 
+    if ((Live2DCubismCore as any)._isStarted) {
+      s_isStarted = true;
+      return true;
+    }
+
+    (Live2DCubismCore as any)._isStarted = true;
+
     s_option = option;
 
     if (s_option) {
