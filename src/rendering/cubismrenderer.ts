@@ -100,7 +100,7 @@ export abstract class CubismRenderer {
    * @return RGBAのカラー情報
    */
   public getModelColor(): CubismTextureColor {
-    return JSON.parse(JSON.stringify(this._modelColor));
+    return Object.assign({}, this._modelColor);
   }
 
   /**

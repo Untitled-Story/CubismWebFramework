@@ -417,10 +417,8 @@ export class CubismClippingManager_WebGL {
 
         // シェーダ用の計算式を求める。回転を考慮しない場合は以下のとおり
         // movePeriod' = movePeriod * scaleX + offX		  [[ movePeriod' = (movePeriod - tmpBoundsOnModel.movePeriod)*scale + layoutBoundsOnTex01.movePeriod ]]
-        const scaleX: number =
-          layoutBoundsOnTex01.width / this._tmpBoundsOnModel.width;
-        const scaleY: number =
-          layoutBoundsOnTex01.height / this._tmpBoundsOnModel.height;
+        const scaleX: number = layoutBoundsOnTex01.width / this._tmpBoundsOnModel.width;
+        const scaleY: number = layoutBoundsOnTex01.height / this._tmpBoundsOnModel.height;
 
         // マスク生成時に使う行列を求める
         {
@@ -1824,14 +1822,13 @@ export class CubismRenderer_WebGL extends CubismRenderer {
    * モデルを描画する実際の処理
    */
   public doDrawModel(): void {
-    //------------ クリッピングマスク・バッファ前処理方式の場合 ------------
-    if (this._clippingManager != null) {
-      this.preDraw();
-      this._clippingManager.setupClippingContext(this.getModel(), this);
-    }
-
     // 上記クリッピング処理内でも一度PreDrawを呼ぶので注意!!
     this.preDraw();
+
+    //------------ クリッピングマスク・バッファ前処理方式の場合 ------------
+    if (this._clippingManager != null) {
+      this._clippingManager.setupClippingContext(this.getModel(), this);
+    }
 
     const drawableCount: number = this.getModel().getDrawableCount();
     const renderOrder: Int32Array = this.getModel().getDrawableRenderOrders();
