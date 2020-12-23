@@ -13,7 +13,7 @@ import { CSM_ASSERT, CubismLogInfo, CubismLogWarning } from './utils/cubismdebug
 
 let s_isStarted = false;
 let s_isInitialized = false;
-let s_option: Option | undefined = undefined;
+let s_option: CubismStartupOption | undefined = undefined;
 let s_cubismIdManager: CubismIdManager | undefined = undefined;
 
 /**
@@ -38,7 +38,7 @@ export class CubismFramework {
    *
    * @return   準備処理が完了したらtrueが返ります。
    */
-  public static startUp(option?: Option): boolean {
+  public static startUp(option?: CubismStartupOption): boolean {
     if (s_isStarted) {
       CubismLogInfo('CubismFramework.startUp() is already done.');
       return s_isStarted;
@@ -208,7 +208,7 @@ export class CubismFramework {
   private constructor() {}
 }
 
-export interface Option {
+export interface CubismStartupOption {
   logFunction: Live2DCubismCore.csmLogFunction; // ログ出力の関数オブジェクト
   loggingLevel: LogLevel; // ログ出力レベルの設定
 }
