@@ -35,7 +35,7 @@ export class CubismExpressionMotion extends ACubismMotion {
     expression.setFadeOutTime(fadeOutTime !== undefined ? fadeOutTime : DefaultFadeTime); // フェードアウト
 
     // 各パラメータについて
-    const parameters = json.Parameters;
+    const parameters = json.Parameters || [];
 
     for (let i = 0; i < parameters.length; ++i) {
       const param = parameters[i];
