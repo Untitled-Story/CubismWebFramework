@@ -1043,7 +1043,8 @@ export class CubismShader_WebGL {
         0,
       );
 
-      if (clippingContextBufferForDraw !== null) {
+      // この描画オブジェクトはマスク対象か
+      if (clippingContextBufferForDraw != null) {
         this.gl.activeTexture(this.gl.TEXTURE1);
         const tex = clippingContextBufferForDraw
           .getClippingManager()
