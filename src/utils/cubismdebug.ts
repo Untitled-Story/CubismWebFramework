@@ -6,91 +6,27 @@
  */
 
 import { CubismFramework, LogLevel } from '../live2dcubismframework';
-import {
-  CSM_LOG_LEVEL,
-  CSM_LOG_LEVEL_DEBUG,
-  CSM_LOG_LEVEL_ERROR,
-  CSM_LOG_LEVEL_INFO,
-  CSM_LOG_LEVEL_VERBOSE,
-  CSM_LOG_LEVEL_WARNING,
-} from '../cubismframeworkconfig';
-
-export const CubismLogPrint = (level: LogLevel, fmt: string, args: any[]) => {
-  CubismDebug.print(level, '[CSM]' + fmt, args);
-};
-
-export const CubismLogPrintIn = (level: LogLevel, fmt: string, args: any[]) => {
-  CubismLogPrint(level, fmt + '\n', args);
-};
 
 export const CSM_ASSERT = process.env.NODE_ENV === 'production' ? () => {} : (expr: any) => console.assert(expr);
 
-export let CubismLogVerbose: (fmt: string, ...args: any[]) => void;
-export let CubismLogDebug: (fmt: string, ...args: any[]) => void;
-export let CubismLogInfo: (fmt: string, ...args: any[]) => void;
-export let CubismLogWarning: (fmt: string, ...args: any[]) => void;
-export let CubismLogError: (fmt: string, ...args: any[]) => void;
+export function CubismLogVerbose(fmt: string, ...args: any[]) {
+  CubismDebug.print(LogLevel.LogLevel_Verbose, '[CSM][V]' + fmt + '\n', args);
+}
 
-if (CSM_LOG_LEVEL <= CSM_LOG_LEVEL_VERBOSE) {
-  CubismLogVerbose = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Verbose, '[V]' + fmt, args);
-  };
+export function CubismLogDebug(fmt: string, ...args: any[]) {
+  CubismDebug.print(LogLevel.LogLevel_Debug, '[CSM][D]' + fmt + '\n', args);
+}
 
-  CubismLogDebug = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Debug, '[D]' + fmt, args);
-  };
+export function CubismLogInfo(fmt: string, ...args: any[]) {
+  CubismDebug.print(LogLevel.LogLevel_Info, '[CSM][I]' + fmt + '\n', args);
+}
 
-  CubismLogInfo = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Info, '[I]' + fmt, args);
-  };
+export function CubismLogWarning(fmt: string, ...args: any[]) {
+  CubismDebug.print(LogLevel.LogLevel_Warning, '[CSM][W]' + fmt + '\n', args);
+}
 
-  CubismLogWarning = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Warning, '[W]' + fmt, args);
-  };
-
-  CubismLogError = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Error, '[E]' + fmt, args);
-  };
-} else if (CSM_LOG_LEVEL == CSM_LOG_LEVEL_DEBUG) {
-  CubismLogDebug = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Debug, '[D]' + fmt, args);
-  };
-
-  CubismLogInfo = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Info, '[I]' + fmt, args);
-  };
-
-  CubismLogWarning = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Warning, '[W]' + fmt, args);
-  };
-
-  CubismLogError = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Error, '[E]' + fmt, args);
-  };
-} else if (CSM_LOG_LEVEL == CSM_LOG_LEVEL_INFO) {
-  CubismLogInfo = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Info, '[I]' + fmt, args);
-  };
-
-  CubismLogWarning = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Warning, '[W]' + fmt, args);
-  };
-
-  CubismLogError = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Error, '[E]' + fmt, args);
-  };
-} else if (CSM_LOG_LEVEL == CSM_LOG_LEVEL_WARNING) {
-  CubismLogWarning = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Warning, '[W]' + fmt, args);
-  };
-
-  CubismLogError = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Error, '[E]' + fmt, args);
-  };
-} else if (CSM_LOG_LEVEL == CSM_LOG_LEVEL_ERROR) {
-  CubismLogError = (fmt: string, ...args: any[]) => {
-    CubismLogPrintIn(LogLevel.LogLevel_Error, '[E]' + fmt, args);
-  };
+export function CubismLogError(fmt: string, ...args: any[]) {
+  CubismDebug.print(LogLevel.LogLevel_Error, '[CSM][E]' + fmt + '\n', args);
 }
 
 /**
@@ -116,12 +52,11 @@ export class CubismDebug {
       return;
     }
 
-    const logPrint: Live2DCubismCore.csmLogFunction =
-      CubismFramework.coreLogFunction;
+    const logPrint: Live2DCubismCore.csmLogFunction = CubismFramework.coreLogFunction;
 
     if (!logPrint) return;
 
-    const buffer: string = format.replace(/\{(\d+)\}/g, (m, k) => {
+    const buffer: string = format.replace(/{(\d+)}/g, (m, k) => {
       return args![k];
     });
     logPrint(buffer);
