@@ -390,6 +390,10 @@ export class CubismModel {
     );
   }
 
+  public getDrawableIds() {
+    return this._drawableIds.slice();
+  }
+
   /**
    * Drawableのインデックスの取得
    * @param drawableId DrawableのID
