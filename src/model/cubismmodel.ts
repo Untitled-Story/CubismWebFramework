@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
 import { CubismBlendMode } from '../rendering/cubismrenderer';
 import { CSM_ASSERT } from '../utils/cubismdebug';
 
@@ -430,8 +429,7 @@ export class CubismModel {
    * @return drawableのID
    */
   public getDrawableId(drawableIndex: number): string {
-    const parameterIds: string[] = this._model.drawables.ids;
-    return CubismFramework.getIdManager().getId(parameterIds[drawableIndex]);
+    return this._model.drawables.ids[drawableIndex];
   }
 
   /**
@@ -711,9 +709,7 @@ export class CubismModel {
       const parameterCount: number = this._model.parameters.count;
 
       for (let i = 0; i < parameterCount; ++i) {
-        this._parameterIds.push(
-          CubismFramework.getIdManager().getId(parameterIds[i]),
-        );
+        this._parameterIds.push(parameterIds[i]);
       }
     }
 
@@ -722,9 +718,7 @@ export class CubismModel {
       const partCount: number = this._model.parts.count;
 
       for (let i = 0; i < partCount; ++i) {
-        this._partIds.push(
-          CubismFramework.getIdManager().getId(partIds[i]),
-        );
+        this._partIds.push(partIds[i]);
       }
     }
 
@@ -733,9 +727,7 @@ export class CubismModel {
       const drawableCount: number = this._model.drawables.count;
 
       for (let i = 0; i < drawableCount; ++i) {
-        this._drawableIds.push(
-          CubismFramework.getIdManager().getId(drawableIds[i]),
-        );
+        this._drawableIds.push(drawableIds[i]);
       }
     }
   }

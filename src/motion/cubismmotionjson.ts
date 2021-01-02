@@ -5,8 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
-
 /**
  * motion3.jsonのコンテナ。
  */
@@ -106,9 +104,7 @@ export class CubismMotionJson {
    * @return カーブのID
    */
   public getMotionCurveId(curveIndex: number): string {
-    return CubismFramework.getIdManager().getId(
-      this._json.Curves[curveIndex].Id as string,
-    );
+    return this._json.Curves[curveIndex].Id;
   }
 
   /**

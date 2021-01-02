@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
 import { CubismModel } from '../model/cubismmodel';
 import { ACubismMotion } from './acubismmotion';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
@@ -39,7 +38,7 @@ export class CubismExpressionMotion extends ACubismMotion {
 
     for (let i = 0; i < parameters.length; ++i) {
       const param = parameters[i];
-      const parameterId: string = CubismFramework.getIdManager().getId(param.Id); // パラメータID
+      const parameterId: string = param.Id; // パラメータID
 
       const value: number = param.Value; // 値
 

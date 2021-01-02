@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
 import { CubismVector2 } from '../math/cubismvector2';
 
 /**
@@ -205,9 +204,7 @@ export class CubismPhysicsJson {
     physicsSettingIndex: number,
     inputIndex: number,
   ): string {
-    return CubismFramework.getIdManager().getId(
-      this._json.PhysicsSettings[physicsSettingIndex].Input[inputIndex].Source.Id,
-    );
+    return this._json.PhysicsSettings[physicsSettingIndex].Input[inputIndex].Source.Id;
   }
 
   /**
@@ -268,9 +265,7 @@ export class CubismPhysicsJson {
     physicsSettingIndex: number,
     outputIndex: number,
   ): string {
-    return CubismFramework.getIdManager().getId(
-      this._json.PhysicsSettings[physicsSettingIndex].Output[outputIndex].Destination.Id,
-    );
+    return this._json.PhysicsSettings[physicsSettingIndex].Output[outputIndex].Destination.Id;
   }
 
   /**

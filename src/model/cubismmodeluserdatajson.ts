@@ -5,8 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
-
 export class CubismModelUserDataJson {
   /**
    * コンストラクタ
@@ -57,9 +55,7 @@ export class CubismModelUserDataJson {
    * @return ユーザーデータターゲットID
    */
   public getUserDataId(i: number): string {
-    return CubismFramework.getIdManager().getId(
-      this._json.UserData[i].Id,
-    );
+    return this._json.UserData[i].Id;
   }
 
   /**

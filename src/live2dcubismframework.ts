@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismIdManager } from './id/cubismidmanager';
 import { CubismRenderer } from './rendering/cubismrenderer';
 import { CSM_ASSERT, CubismLogInfo, CubismLogWarning } from './utils/cubismdebug';
 
@@ -14,7 +13,6 @@ import { CSM_ASSERT, CubismLogInfo, CubismLogWarning } from './utils/cubismdebug
 let s_isStarted = false;
 let s_isInitialized = false;
 let s_option: CubismStartupOption | undefined = undefined;
-let s_cubismIdManager: CubismIdManager | undefined = undefined;
 
 /**
  * Framework内で使う定数の宣言
@@ -89,7 +87,6 @@ export class CubismFramework {
     s_isStarted = false;
     s_isInitialized = false;
     s_option = undefined;
-    s_cubismIdManager = undefined;
   }
 
   /**
@@ -112,8 +109,6 @@ export class CubismFramework {
       );
       return;
     }
-
-    s_cubismIdManager = new CubismIdManager();
 
     s_isInitialized = true;
 
@@ -139,9 +134,6 @@ export class CubismFramework {
       CubismLogWarning('CubismFramework.dispose() skipped, not initialized.');
       return;
     }
-
-    s_cubismIdManager?.release();
-    s_cubismIdManager = undefined;
 
     // レンダラの静的リソース（シェーダプログラム他）を解放する
     CubismRenderer.staticRelease();
@@ -191,14 +183,6 @@ export class CubismFramework {
       return s_option.loggingLevel;
     }
     return LogLevel.LogLevel_Off;
-  }
-
-  /**
-   * IDマネージャのインスタンスを取得する
-   * @return CubismManagerクラスのインスタンス
-   */
-  public static getIdManager(): CubismIdManager {
-    return s_cubismIdManager!;
   }
 
   /**

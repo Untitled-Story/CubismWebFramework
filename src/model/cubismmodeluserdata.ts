@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
 import { CubismModelUserDataJson } from './cubismmodeluserdatajson';
 
 const ArtMesh = 'ArtMesh';
@@ -63,13 +62,13 @@ export class CubismModelUserData {
   public parseUserData(data: CubismSpec.UserDataJSON, size: number): void {
     let json: CubismModelUserDataJson = new CubismModelUserDataJson(data, size);
 
-    const typeOfArtMesh = CubismFramework.getIdManager().getId(ArtMesh);
+    const typeOfArtMesh = ArtMesh;
     const nodeCount: number = json.getUserDataCount();
 
     for (let i = 0; i < nodeCount; i++) {
       const addNode: CubismModelUserDataNode = {
         targetId: json.getUserDataId(i),
-        targetType: CubismFramework.getIdManager().getId(json.getUserDataTargetType(i)),
+        targetType: json.getUserDataTargetType(i),
         value: json.getUserDataValue(i),
       };
 

@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
 import { CubismModel } from '../model/cubismmodel';
 
 const Epsilon = 0.001;
@@ -47,7 +46,7 @@ export class CubismPose {
         const partInfo = idListInfo[groupIndex];
         const partData: PartData = new PartData();
 
-        partData.partId = CubismFramework.getIdManager().getId(partInfo.Id);
+        partData.partId = partInfo.Id;
 
         const linkListInfo = partInfo.Link;
 
@@ -58,7 +57,7 @@ export class CubismPose {
           for (let linkIndex = 0; linkIndex < linkCount; ++linkIndex) {
             const linkPart: PartData = new PartData();
 
-            linkPart.partId = CubismFramework.getIdManager().getId(linkListInfo[linkIndex]);
+            linkPart.partId = linkListInfo[linkIndex];
 
             partData.link.push(linkPart);
           }

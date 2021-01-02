@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismFramework } from '../live2dcubismframework';
 import { CubismMath } from '../math/cubismmath';
 import { CubismModel } from '../model/cubismmodel';
 import { CSM_ASSERT, CubismLogDebug } from '../utils/cubismdebug';
@@ -159,15 +158,11 @@ export class CubismMotion extends ACubismMotion {
     motionQueueEntry: CubismMotionQueueEntry,
   ): void {
     if (this._modelCurveIdEyeBlink == null) {
-      this._modelCurveIdEyeBlink = CubismFramework.getIdManager().getId(
-        EffectNameEyeBlink,
-      );
+      this._modelCurveIdEyeBlink = EffectNameEyeBlink;
     }
 
     if (this._modelCurveIdLipSync == null) {
-      this._modelCurveIdLipSync = CubismFramework.getIdManager().getId(
-        EffectNameLipSync,
-      );
+      this._modelCurveIdLipSync = EffectNameLipSync;
     }
 
     let timeOffsetSeconds: number =
