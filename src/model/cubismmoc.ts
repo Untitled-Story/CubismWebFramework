@@ -5,7 +5,6 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CSM_ASSERT } from '../utils/cubismdebug';
 import { CubismModel } from './cubismmodel';
 
 /**
@@ -39,7 +38,6 @@ export class CubismMoc {
 
     if (model) {
       cubismModel = new CubismModel(model);
-      cubismModel.initialize();
 
       ++this._modelCount;
 
