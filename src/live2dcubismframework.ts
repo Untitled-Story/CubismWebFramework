@@ -6,7 +6,7 @@
  */
 
 import { CubismRenderer } from './rendering/cubismrenderer';
-import { CSM_ASSERT, CubismLogInfo, CubismLogWarning } from './utils/cubismdebug';
+import { CubismLogInfo, CubismLogWarning } from './utils/cubismdebug';
 
 // ファイルスコープの変数を初期化
 
@@ -94,7 +94,6 @@ export class CubismFramework {
    *     再度Initialize()するには先にDispose()を実行する必要があります。
    */
   public static initialize(): void {
-    CSM_ASSERT(s_isStarted);
     if (!s_isStarted) {
       CubismLogWarning('CubismFramework is not started.');
       return;
@@ -121,7 +120,6 @@ export class CubismFramework {
    *      外部で適切に破棄する必要があります。
    */
   public static dispose(): void {
-    CSM_ASSERT(s_isStarted);
     if (!s_isStarted) {
       CubismLogWarning('CubismFramework is not started.');
       return;

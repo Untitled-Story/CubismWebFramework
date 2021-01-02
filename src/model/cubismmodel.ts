@@ -254,9 +254,7 @@ export class CubismModel {
     }
 
     // インデックスの範囲内検知
-    CSM_ASSERT(
-      0 <= parameterIndex && parameterIndex < this.getParameterCount(),
-    );
+    CSM_ASSERT(0 <= parameterIndex && parameterIndex < this.getParameterCount());
 
     return this._parameterValues[parameterIndex];
   }
@@ -295,9 +293,7 @@ export class CubismModel {
     }
 
     // インデックスの範囲内検知
-    CSM_ASSERT(
-      0 <= parameterIndex && parameterIndex < this.getParameterCount(),
-    );
+    CSM_ASSERT(0 <= parameterIndex && parameterIndex < this.getParameterCount());
 
     if (this._model.parameters.maximumValues[parameterIndex] < value) {
       value = this._model.parameters.maximumValues[parameterIndex];
