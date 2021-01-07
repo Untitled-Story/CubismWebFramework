@@ -34,8 +34,13 @@ export enum CubismMotionSegmentType {
  * モーションカーブの制御点。
  */
 export class CubismMotionPoint {
-  time = 0.0; // 時間[秒]
-  value = 0.0; // 値
+  constructor(time = 0.0, value = 0.0) {
+    this.time = time;
+    this.value = value;
+  }
+
+  time: number; // 時間[秒]
+  value: number; // 値
 }
 
 /**
