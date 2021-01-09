@@ -280,14 +280,14 @@ export class CubismClippingManager_WebGL {
     self._clippingContextListForDraw = undefined;
 
     if (this._maskTexture) {
-      this.gl.deleteFramebuffer(this._maskTexture.texture);
+      this.gl?.deleteFramebuffer(this._maskTexture.texture);
       self._maskTexture = undefined;
     }
 
     self._channelColors = undefined;
 
     // テクスチャ解放
-    this.gl.deleteTexture(this._colorBuffer);
+    this.gl?.deleteTexture(this._colorBuffer);
     this._colorBuffer = null;
   }
 
@@ -1829,11 +1829,11 @@ export class CubismRenderer_WebGL extends CubismRenderer {
     this._clippingManager.release();
     self._clippingManager = undefined;
 
-    this.gl.deleteBuffer(this._bufferData.vertex);
+    this.gl?.deleteBuffer(this._bufferData.vertex);
     this._bufferData.vertex = null;
-    this.gl.deleteBuffer(this._bufferData.uv);
+    this.gl?.deleteBuffer(this._bufferData.uv);
     this._bufferData.uv = null;
-    this.gl.deleteBuffer(this._bufferData.index);
+    this.gl?.deleteBuffer(this._bufferData.index);
     this._bufferData.index = null;
     self._bufferData = undefined;
 
