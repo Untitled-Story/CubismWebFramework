@@ -41,6 +41,16 @@ export class CubismMotionJson {
     return this._json.Meta.Loop || false;
   }
 
+  public getEvaluationOptionFlag(flagType: number): boolean {
+    if (
+      EvaluationOptionFlag.EvaluationOptionFlag_AreBeziersRistricted == flagType
+    ) {
+      return this._json.Meta.AreBeziersRestricted;
+    }
+
+    return false;
+  }
+
   /**
    * モーションカーブの個数の取得
    * @return モーションカーブの個数
@@ -182,4 +192,11 @@ export class CubismMotionJson {
   }
 
   _json: CubismSpec.MotionJSON; // motion3.jsonのデータ
+}
+
+/**
+ * @brief ベジェカーブの解釈方法のフラグタイプ
+ */
+ export enum EvaluationOptionFlag {
+  EvaluationOptionFlag_AreBeziersRistricted = 0 ///< ベジェハンドルの規制状態
 }
