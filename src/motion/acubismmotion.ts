@@ -17,6 +17,7 @@ import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
  */
 export abstract class ACubismMotion {
   /**
+>>>>>>> 13ba60d (Update to Cubism SDK for Web R4)
    * コンストラクタ
    */
   public constructor() {

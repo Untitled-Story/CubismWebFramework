@@ -177,7 +177,6 @@ export class CubismMotionQueueManager {
     motionQueueEntryNumber: any,
   ): CubismMotionQueueEntry | undefined {
     //------- 処理を行う -------
-    // 既にモーションがあれば終了フラグを立てる
     return this._motions.find(entry => entry != null && entry._motionQueueEntryHandle == motionQueueEntryNumber);
   }
 

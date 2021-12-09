@@ -8,7 +8,11 @@
 import { config } from '../config';
 import { CubismMath } from '../math/cubismmath';
 import { CubismModel } from '../model/cubismmodel';
-import { CSM_ASSERT, CubismLogDebug } from '../utils/cubismdebug';
+import {
+  CSM_ASSERT,
+  CubismLogDebug,
+  CubismLogWarning
+} from '../utils/cubismdebug';
 import { ACubismMotion } from './acubismmotion';
 import {
   CubismMotionCurve,
@@ -756,6 +760,11 @@ export class CubismMotion extends ACubismMotion {
         case TargetNamePartOpacity:
           curve.type = CubismMotionCurveTarget.CubismMotionCurveTarget_PartOpacity;
           break;
+      
+        default:
+          CubismLogWarning(
+            'Warning : Unable to get segment type from Curve! The number of "CurveCount" may be incorrect!'
+          );
       }
 
       curve.id = json.getMotionCurveId(curveCount);
