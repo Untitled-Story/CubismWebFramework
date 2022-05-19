@@ -11,7 +11,7 @@ import { CubismVector2 } from '../math/cubismvector2';
  * 物理演算の適用先の種類
  */
 export enum CubismPhysicsTargetType {
-  CubismPhysicsTargetType_Parameter // パラメータに対して適用
+  CubismPhysicsTargetType_Parameter, // パラメータに対して適用
 }
 
 /**
@@ -20,7 +20,7 @@ export enum CubismPhysicsTargetType {
 export enum CubismPhysicsSource {
   CubismPhysicsSource_X, // X軸の位置から
   CubismPhysicsSource_Y, // Y軸の位置から
-  CubismPhysicsSource_Angle // 角度から
+  CubismPhysicsSource_Angle, // 角度から
 }
 
 /**
@@ -118,7 +118,7 @@ export interface normalizedPhysicsParameterValueGetter {
     normalizationPosition: CubismPhysicsNormalization,
     normalizationAngle: CubismPhysicsNormalization,
     isInverted: boolean,
-    weight: number,
+    weight: number
   ): void;
 }
 
@@ -136,7 +136,7 @@ export interface physicsValueGetter {
     particles: CubismPhysicsParticle[],
     particleIndex: number,
     isInverted: boolean,
-    parentGravity: CubismVector2,
+    parentGravity: CubismVector2
   ): number;
 }
 

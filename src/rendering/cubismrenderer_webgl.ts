@@ -10,7 +10,11 @@ import { CubismMatrix44 } from '../math/cubismmatrix44';
 import { CubismModel } from '../model/cubismmodel';
 import { csmRect } from '../type/csmrectf';
 import { CubismLogError } from '../utils/cubismdebug';
-import { CubismBlendMode, CubismRenderer, CubismTextureColor } from './cubismrenderer';
+import {
+  CubismBlendMode,
+  CubismRenderer,
+  CubismTextureColor,
+} from './cubismrenderer';
 import { CubismConfig } from '../config';
 
 const ColorChannelCount = 4; // 実験時に1チャンネルの場合は1、RGBだけの場合は3、アルファも含める場合は4
@@ -65,27 +69,27 @@ export class CubismClippingManager_WebGL {
         0,
         this.gl.RGBA,
         this.gl.UNSIGNED_BYTE,
-        null,
+        null
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_WRAP_S,
-        this.gl.CLAMP_TO_EDGE,
+        this.gl.CLAMP_TO_EDGE
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_WRAP_T,
-        this.gl.CLAMP_TO_EDGE,
+        this.gl.CLAMP_TO_EDGE
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_MIN_FILTER,
-        this.gl.LINEAR,
+        this.gl.LINEAR
       );
       this.gl.texParameteri(
         this.gl.TEXTURE_2D,
         this.gl.TEXTURE_MAG_FILTER,
-        this.gl.LINEAR,
+        this.gl.LINEAR
       );
       this.gl.bindTexture(this.gl.TEXTURE_2D, null);
 
@@ -96,13 +100,13 @@ export class CubismClippingManager_WebGL {
         this.gl.COLOR_ATTACHMENT0,
         this.gl.TEXTURE_2D,
         this._colorBuffer,
-        0,
+        0
       );
       this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, s_fbo);
 
       this._maskTexture = new CubismRenderTextureResource(
         this._currentFrameNo,
-        ret,
+        ret
       );
     }
 
@@ -124,7 +128,7 @@ export class CubismClippingManager_WebGL {
    */
   public calcClippedDrawTotalBounds(
     model: CubismModel,
-    clippingContext: CubismClippingContext,
+    clippingContext: CubismClippingContext
   ): void {
     // 被クリッピングマスク（マスクされる描画オブジェクト）の全体の矩形
     let clippedDrawTotalMinX: number = Number.MAX_VALUE;
@@ -146,12 +150,10 @@ export class CubismClippingManager_WebGL {
       const drawableIndex: number =
         clippingContext._clippedDrawableIndexList[clippedDrawableIndex];
 
-      const drawableVertexCount: number = model.getDrawableVertexCount(
-        drawableIndex,
-      );
-      const drawableVertexes: Float32Array = model.getDrawableVertices(
-        drawableIndex,
-      );
+      const drawableVertexCount: number =
+        model.getDrawableVertexCount(drawableIndex);
+      const drawableVertexes: Float32Array =
+        model.getDrawableVertices(drawableIndex);
 
       let minX: number = Number.MAX_VALUE;
       let minY: number = Number.MAX_VALUE;
@@ -303,7 +305,7 @@ export class CubismClippingManager_WebGL {
     model: CubismModel,
     drawableCount: number,
     drawableMasks: Int32Array[],
-    drawableMaskCounts: Int32Array,
+    drawableMaskCounts: Int32Array
   ): void {
     // クリッピングマスクを使う描画オブジェクトをすべて登録する
     // クリッピングマスクは、通常数個程度に限定して使うものとする
@@ -317,14 +319,14 @@ export class CubismClippingManager_WebGL {
       // 既にあるClipContextと同じかチェックする
       let clippingContext = this.findSameClip(
         drawableMasks[i],
-        drawableMaskCounts[i],
+        drawableMaskCounts[i]
       );
       if (clippingContext == null) {
         // 同一のマスクが存在していない場合は生成する
         clippingContext = new CubismClippingContext(
           this,
           drawableMasks[i],
-          drawableMaskCounts[i],
+          drawableMaskCounts[i]
         );
         this._clippingContextListForMask.push(clippingContext);
       }
@@ -342,7 +344,7 @@ export class CubismClippingManager_WebGL {
    */
   public setupClippingContext(
     model: CubismModel,
-    renderer: CubismRenderer_WebGL,
+    renderer: CubismRenderer_WebGL
   ): void {
     this._currentFrameNo++;
 
@@ -372,7 +374,7 @@ export class CubismClippingManager_WebGL {
         0,
         0,
         this._clippingMaskBufferSize,
-        this._clippingMaskBufferSize,
+        this._clippingMaskBufferSize
       );
 
       // マスクをactiveにする
@@ -403,7 +405,8 @@ export class CubismClippingManager_WebGL {
         clipIndex++
       ) {
         // --- 実際に1つのマスクを描く ---
-        const clipContext: CubismClippingContext = this._clippingContextListForMask[clipIndex];
+        const clipContext: CubismClippingContext =
+          this._clippingContextListForMask[clipIndex];
         const allClipedDrawRect: csmRect = clipContext._allClippedDrawRect; // このマスクを使う、すべての描画オブジェクトの論理座標上の囲み矩形
         const layoutBoundsOnTex01: csmRect = clipContext._layoutBounds; // この中にマスクを収める
 
@@ -412,14 +415,16 @@ export class CubismClippingManager_WebGL {
         this._tmpBoundsOnModel.setRect(allClipedDrawRect);
         this._tmpBoundsOnModel.expand(
           allClipedDrawRect.width * MARGIN,
-          allClipedDrawRect.height * MARGIN,
+          allClipedDrawRect.height * MARGIN
         );
         //########## 本来は割り当てられた領域の全体を使わず必要最低限のサイズがよい
 
         // シェーダ用の計算式を求める。回転を考慮しない場合は以下のとおり
         // movePeriod' = movePeriod * scaleX + offX		  [[ movePeriod' = (movePeriod - tmpBoundsOnModel.movePeriod)*scale + layoutBoundsOnTex01.movePeriod ]]
-        const scaleX: number = layoutBoundsOnTex01.width / this._tmpBoundsOnModel.width;
-        const scaleY: number = layoutBoundsOnTex01.height / this._tmpBoundsOnModel.height;
+        const scaleX: number =
+          layoutBoundsOnTex01.width / this._tmpBoundsOnModel.width;
+        const scaleY: number =
+          layoutBoundsOnTex01.height / this._tmpBoundsOnModel.height;
 
         // マスク生成時に使う行列を求める
         {
@@ -434,12 +439,12 @@ export class CubismClippingManager_WebGL {
             // view to layout0..1
             this._tmpMatrix.translateRelative(
               layoutBoundsOnTex01.x,
-              layoutBoundsOnTex01.y,
+              layoutBoundsOnTex01.y
             );
             this._tmpMatrix.scaleRelative(scaleX, scaleY); // new = [translate][scale]
             this._tmpMatrix.translateRelative(
               -this._tmpBoundsOnModel.x,
-              -this._tmpBoundsOnModel.y,
+              -this._tmpBoundsOnModel.y
             );
             // new = [translate][scale][translate]
           }
@@ -454,23 +459,19 @@ export class CubismClippingManager_WebGL {
           {
             this._tmpMatrix.translateRelative(
               layoutBoundsOnTex01.x,
-              layoutBoundsOnTex01.y,
+              layoutBoundsOnTex01.y
             );
             this._tmpMatrix.scaleRelative(scaleX, scaleY); // new = [translate][scale]
             this._tmpMatrix.translateRelative(
               -this._tmpBoundsOnModel.x,
-              -this._tmpBoundsOnModel.y,
+              -this._tmpBoundsOnModel.y
             );
             // new = [translate][scale][translate]
           }
           this._tmpMatrixForDraw.setMatrix(this._tmpMatrix.getArray());
         }
-        clipContext._matrixForMask.setMatrix(
-          this._tmpMatrixForMask.getArray(),
-        );
-        clipContext._matrixForDraw.setMatrix(
-          this._tmpMatrixForDraw.getArray(),
-        );
+        clipContext._matrixForMask.setMatrix(this._tmpMatrixForMask.getArray());
+        clipContext._matrixForDraw.setMatrix(this._tmpMatrixForDraw.getArray());
 
         const clipDrawCount: number = clipContext._clippingIdCount;
         for (let i = 0; i < clipDrawCount; i++) {
@@ -478,15 +479,13 @@ export class CubismClippingManager_WebGL {
 
           // 頂点情報が更新されておらず、信頼性がない場合は描画をパスする
           if (
-            !model.getDrawableDynamicFlagVertexPositionsDidChange(
-              clipDrawIndex,
-            )
+            !model.getDrawableDynamicFlagVertexPositionsDidChange(clipDrawIndex)
           ) {
             continue;
           }
 
           renderer.setIsCulling(
-            model.getDrawableCulling(clipDrawIndex) != false,
+            model.getDrawableCulling(clipDrawIndex) != false
           );
 
           // 今回専用の変換を適用して描く
@@ -499,9 +498,11 @@ export class CubismClippingManager_WebGL {
             model.getDrawableVertexIndices(clipDrawIndex),
             model.getDrawableVertices(clipDrawIndex),
             model.getDrawableVertexUvs(clipDrawIndex),
+            model.getMultiplyColor(clipDrawIndex),
+            model.getScreenColor(clipDrawIndex),
             model.getDrawableOpacity(clipDrawIndex),
             CubismBlendMode.CubismBlendMode_Normal, // クリッピングは通常描画を強制
-            false, // マスク生成時はクリッピングの反転使用は全く関係がない
+            false // マスク生成時はクリッピングの反転使用は全く関係がない
           );
         }
       }
@@ -514,7 +515,7 @@ export class CubismClippingManager_WebGL {
         s_viewport[0],
         s_viewport[1],
         s_viewport[2],
-        s_viewport[3],
+        s_viewport[3]
       );
     }
   }
@@ -529,11 +530,12 @@ export class CubismClippingManager_WebGL {
    */
   public findSameClip(
     drawableMasks: Int32Array,
-    drawableMaskCounts: number,
+    drawableMaskCounts: number
   ): CubismClippingContext | null {
     // 作成済みClippingContextと一致するか確認
     for (let i = 0; i < this._clippingContextListForMask.length; i++) {
-      const clippingContext: CubismClippingContext = this._clippingContextListForMask[i];
+      const clippingContext: CubismClippingContext =
+        this._clippingContextListForMask[i];
       const count: number = clippingContext._clippingIdCount;
 
       // 個数が違う場合は別物
@@ -594,7 +596,8 @@ export class CubismClippingManager_WebGL {
         // 何もしない
       } else if (layoutCount == 1) {
         // 全てをそのまま使う
-        const clipContext: CubismClippingContext = this._clippingContextListForMask[curClipIndex++];
+        const clipContext: CubismClippingContext =
+          this._clippingContextListForMask[curClipIndex++];
         clipContext._layoutChannelNo = channelNo;
         clipContext._layoutBounds.x = 0.0;
         clipContext._layoutBounds.y = 0.0;
@@ -607,7 +610,8 @@ export class CubismClippingManager_WebGL {
           // 小数点は切り捨てる
           xpos = ~~xpos;
 
-          const cc: CubismClippingContext = this._clippingContextListForMask[curClipIndex++];
+          const cc: CubismClippingContext =
+            this._clippingContextListForMask[curClipIndex++];
           cc._layoutChannelNo = channelNo;
 
           cc._layoutBounds.x = xpos * 0.5;
@@ -644,7 +648,8 @@ export class CubismClippingManager_WebGL {
           xpos = ~~xpos;
           ypos = ~~ypos;
 
-          const cc: CubismClippingContext = this._clippingContextListForMask[curClipIndex++];
+          const cc: CubismClippingContext =
+            this._clippingContextListForMask[curClipIndex++];
           cc._layoutChannelNo = channelNo;
 
           cc._layoutBounds.x = xpos / 3.0;
@@ -664,7 +669,8 @@ export class CubismClippingManager_WebGL {
           xpos = ~~xpos;
           ypos = ~~ypos;
 
-          const cc: CubismClippingContext = this._clippingContextListForMask[curClipIndex++];
+          const cc: CubismClippingContext =
+            this._clippingContextListForMask[curClipIndex++];
           cc._layoutChannelNo = channelNo;
 
           cc._layoutBounds.x = xpos / 4.0;
@@ -673,7 +679,21 @@ export class CubismClippingManager_WebGL {
           cc._layoutBounds.height = 1.0 / 4.0;
         }
       } else {
+        // マスクの制限枚数を超えた場合の処理
         CubismLogError('not supported mask count : {0}', layoutCount);
+
+        // SetupShaderProgramでオーバーアクセスが発生するので仮で数値を入れる
+        // もちろん描画結果は正しいものではなくなる
+        for (let index = 0; index < layoutCount; index++) {
+          const cc = this._clippingContextListForMask[curClipIndex++];
+
+          cc._layoutChannelNo = 0;
+
+          cc._layoutBounds.x = 0.0;
+          cc._layoutBounds.y = 0.0;
+          cc._layoutBounds.width = 1.0;
+          cc._layoutBounds.height = 1.0;
+        }
       }
     }
   }
@@ -757,7 +777,7 @@ export class CubismClippingContext {
   public constructor(
     manager: CubismClippingManager_WebGL,
     clippingDrawableIndices: Int32Array,
-    clipCount: number,
+    clipCount: number
   ) {
     this._owner = manager;
 
@@ -807,7 +827,7 @@ export class CubismClippingContext {
     this._owner.setGL(gl);
   }
 
-  public _isUsing: boolean = false; // 現在の描画状態でマスクの準備が必要ならtrue
+  public _isUsing = false; // 現在の描画状態でマスクの準備が必要ならtrue
   public readonly _clippingIdList: Int32Array; // クリッピングマスクのIDリスト
   public _clippingIdCount: number; // クリッピングマスクの数
   public _layoutChannelNo!: number; // RGBAのいずれのチャンネルにこのクリップを配置するか（0:R, 1:G, 2:B, 3:A）
@@ -892,9 +912,11 @@ export class CubismShader_WebGL {
     opacity: number,
     colorBlendMode: CubismBlendMode,
     baseColor: CubismTextureColor,
+    multiplyColor: CubismTextureColor,
+    screenColor: CubismTextureColor,
     isPremultipliedAlpha: boolean,
     matrix4x4: CubismMatrix44,
-    invertedMask: boolean,
+    invertedMask: boolean
   ): void {
     if (!isPremultipliedAlpha) {
       CubismLogError('NoPremultipliedAlpha is not allowed');
@@ -910,11 +932,13 @@ export class CubismShader_WebGL {
     let SRC_ALPHA: number;
     let DST_ALPHA: number;
 
-    const clippingContextBufferForMask = renderer.getClippingContextBufferForMask();
+    const clippingContextBufferForMask =
+      renderer.getClippingContextBufferForMask();
 
     if (clippingContextBufferForMask != null) {
       // マスク生成時
-      const shaderSet: CubismShaderSet = this._shaderSets[ShaderNames.ShaderNames_SetupMask];
+      const shaderSet: CubismShaderSet =
+        this._shaderSets[ShaderNames.ShaderNames_SetupMask];
       this.gl.useProgram(shaderSet.shaderProgram);
 
       // テクスチャ設定
@@ -930,7 +954,7 @@ export class CubismShader_WebGL {
       this.gl.bufferData(
         this.gl.ARRAY_BUFFER,
         vertexArray,
-        this.gl.DYNAMIC_DRAW,
+        this.gl.DYNAMIC_DRAW
       );
       this.gl.enableVertexAttribArray(shaderSet.attributePositionLocation);
       this.gl.vertexAttribPointer(
@@ -939,7 +963,7 @@ export class CubismShader_WebGL {
         this.gl.FLOAT,
         false,
         0,
-        0,
+        0
       );
 
       // テクスチャ頂点の設定
@@ -955,7 +979,7 @@ export class CubismShader_WebGL {
         this.gl.FLOAT,
         false,
         0,
-        0,
+        0
       );
 
       // チャンネル
@@ -968,13 +992,13 @@ export class CubismShader_WebGL {
         colorChannel.R,
         colorChannel.G,
         colorChannel.B,
-        colorChannel.A,
+        colorChannel.A
       );
 
       this.gl.uniformMatrix4fv(
         shaderSet.uniformClipMatrixLocation,
         false,
-        clippingContextBufferForMask._matrixForMask.getArray(),
+        clippingContextBufferForMask._matrixForMask.getArray()
       );
 
       const rect: csmRect = clippingContextBufferForMask._layoutBounds;
@@ -984,7 +1008,23 @@ export class CubismShader_WebGL {
         rect.x * 2.0 - 1.0,
         rect.y * 2.0 - 1.0,
         rect.getRight() * 2.0 - 1.0,
-        rect.getBottom() * 2.0 - 1.0,
+        rect.getBottom() * 2.0 - 1.0
+      );
+
+      this.gl.uniform4f(
+        shaderSet.uniformMultiplyColorLocation,
+        multiplyColor.R,
+        multiplyColor.G,
+        multiplyColor.B,
+        multiplyColor.A
+      );
+
+      this.gl.uniform4f(
+        shaderSet.uniformScreenColorLocation,
+        screenColor.R,
+        screenColor.G,
+        screenColor.B,
+        screenColor.A
       );
 
       SRC_COLOR = this.gl.ZERO;
@@ -993,7 +1033,8 @@ export class CubismShader_WebGL {
       DST_ALPHA = this.gl.ONE_MINUS_SRC_ALPHA;
     } // マスク生成以外の場合
     else {
-      const clippingContextBufferForDraw = renderer.getClippingContextBufferForDraw();
+      const clippingContextBufferForDraw =
+        renderer.getClippingContextBufferForDraw();
       const masked = clippingContextBufferForDraw != null; // この描画オブジェクトはマスク対象か
       const offset: number = masked ? (invertedMask ? 2 : 1) : 0;
 
@@ -1002,7 +1043,10 @@ export class CubismShader_WebGL {
       switch (colorBlendMode) {
         case CubismBlendMode.CubismBlendMode_Normal:
         default:
-          shaderSet = this._shaderSets[ShaderNames.ShaderNames_NormalPremultipliedAlpha + offset];
+          shaderSet =
+            this._shaderSets[
+              ShaderNames.ShaderNames_NormalPremultipliedAlpha + offset
+            ];
           SRC_COLOR = this.gl.ONE;
           DST_COLOR = this.gl.ONE_MINUS_SRC_ALPHA;
           SRC_ALPHA = this.gl.ONE;
@@ -1010,7 +1054,10 @@ export class CubismShader_WebGL {
           break;
 
         case CubismBlendMode.CubismBlendMode_Additive:
-          shaderSet = this._shaderSets[ShaderNames.ShaderNames_AddPremultipliedAlpha + offset];
+          shaderSet =
+            this._shaderSets[
+              ShaderNames.ShaderNames_AddPremultipliedAlpha + offset
+            ];
           SRC_COLOR = this.gl.ONE;
           DST_COLOR = this.gl.ONE;
           SRC_ALPHA = this.gl.ZERO;
@@ -1018,7 +1065,10 @@ export class CubismShader_WebGL {
           break;
 
         case CubismBlendMode.CubismBlendMode_Multiplicative:
-          shaderSet = this._shaderSets[ShaderNames.ShaderNames_MultPremultipliedAlpha + offset];
+          shaderSet =
+            this._shaderSets[
+              ShaderNames.ShaderNames_MultPremultipliedAlpha + offset
+            ];
           SRC_COLOR = this.gl.DST_COLOR;
           DST_COLOR = this.gl.ONE_MINUS_SRC_ALPHA;
           SRC_ALPHA = this.gl.ZERO;
@@ -1036,7 +1086,7 @@ export class CubismShader_WebGL {
       this.gl.bufferData(
         this.gl.ARRAY_BUFFER,
         vertexArray,
-        this.gl.DYNAMIC_DRAW,
+        this.gl.DYNAMIC_DRAW
       );
       this.gl.enableVertexAttribArray(shaderSet.attributePositionLocation);
       this.gl.vertexAttribPointer(
@@ -1045,7 +1095,7 @@ export class CubismShader_WebGL {
         this.gl.FLOAT,
         false,
         0,
-        0,
+        0
       );
 
       // テクスチャ頂点の設定
@@ -1061,7 +1111,7 @@ export class CubismShader_WebGL {
         this.gl.FLOAT,
         false,
         0,
-        0,
+        0
       );
 
       // この描画オブジェクトはマスク対象か
@@ -1077,7 +1127,7 @@ export class CubismShader_WebGL {
         this.gl.uniformMatrix4fv(
           shaderSet.uniformClipMatrixLocation,
           false,
-          clippingContextBufferForDraw._matrixForDraw.getArray(),
+          clippingContextBufferForDraw._matrixForDraw.getArray()
         );
 
         // 使用するカラーチャンネルを設定
@@ -1090,7 +1140,7 @@ export class CubismShader_WebGL {
           colorChannel.R,
           colorChannel.G,
           colorChannel.B,
-          colorChannel.A,
+          colorChannel.A
         );
       }
 
@@ -1103,7 +1153,7 @@ export class CubismShader_WebGL {
       this.gl.uniformMatrix4fv(
         shaderSet.uniformMatrixLocation,
         false,
-        matrix4x4.getArray(),
+        matrix4x4.getArray()
       );
 
       this.gl.uniform4f(
@@ -1111,7 +1161,23 @@ export class CubismShader_WebGL {
         baseColor.R,
         baseColor.G,
         baseColor.B,
-        baseColor.A,
+        baseColor.A
+      );
+
+      this.gl.uniform4f(
+        shaderSet.uniformMultiplyColorLocation,
+        multiplyColor.R,
+        multiplyColor.G,
+        multiplyColor.B,
+        multiplyColor.A
+      );
+
+      this.gl.uniform4f(
+        shaderSet.uniformScreenColorLocation,
+        screenColor.R,
+        screenColor.G,
+        screenColor.B,
+        screenColor.A
       );
     }
 
@@ -1123,7 +1189,7 @@ export class CubismShader_WebGL {
     this.gl.bufferData(
       this.gl.ELEMENT_ARRAY_BUFFER,
       indexArray,
-      this.gl.DYNAMIC_DRAW,
+      this.gl.DYNAMIC_DRAW
     );
     this.gl.blendFuncSeparate(SRC_COLOR, DST_COLOR, SRC_ALPHA, DST_ALPHA);
   }
@@ -1152,20 +1218,20 @@ export class CubismShader_WebGL {
 
     this._shaderSets[0].shaderProgram = this.loadShaderProgram(
       vertexShaderSrcSetupMask,
-      fragmentShaderSrcsetupMask,
+      fragmentShaderSrcsetupMask
     );
 
     this._shaderSets[1].shaderProgram = this.loadShaderProgram(
       vertexShaderSrc,
-      fragmentShaderSrcPremultipliedAlpha,
+      fragmentShaderSrcPremultipliedAlpha
     );
     this._shaderSets[2].shaderProgram = this.loadShaderProgram(
       vertexShaderSrcMasked,
-      fragmentShaderSrcMaskPremultipliedAlpha,
+      fragmentShaderSrcMaskPremultipliedAlpha
     );
     this._shaderSets[3].shaderProgram = this.loadShaderProgram(
       vertexShaderSrcMasked,
-      fragmentShaderSrcMaskInvertedPremultipliedAlpha,
+      fragmentShaderSrcMaskInvertedPremultipliedAlpha
     );
 
     // 加算も通常と同じシェーダーを利用する
@@ -1181,297 +1247,387 @@ export class CubismShader_WebGL {
     // SetupMask
     this._shaderSets[0].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[0].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[0].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[0].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[0].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[0].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[0].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[0].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[0].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[0].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[0].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[0].shaderProgram,
+      'u_screenColor'
     );
 
     // 通常（PremultipliedAlpha）
     this._shaderSets[1].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[1].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[1].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[1].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[1].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[1].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[1].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[1].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[1].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[1].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[1].shaderProgram,
+      'u_screenColor'
     );
 
     // 通常（クリッピング、PremultipliedAlpha）
     this._shaderSets[2].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[2].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[2].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[2].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[2].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[2].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      's_texture1',
+      's_texture1'
     );
     this._shaderSets[2].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[2].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[2].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[2].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[2].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[2].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[2].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[2].shaderProgram,
+      'u_screenColor'
     );
 
     // 通常（クリッピング・反転, PremultipliedAlpha）
     this._shaderSets[3].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[3].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[3].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[3].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[3].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[3].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      's_texture1',
+      's_texture1'
     );
     this._shaderSets[3].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[3].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[3].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[3].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[3].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[3].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[3].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[3].shaderProgram,
+      'u_screenColor'
     );
 
     // 加算（PremultipliedAlpha）
     this._shaderSets[4].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[4].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[4].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[4].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[4].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[4].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[4].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[4].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[4].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[4].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[4].shaderProgram,
+      'u_screenColor'
     );
 
     // 加算（クリッピング、PremultipliedAlpha）
     this._shaderSets[5].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[5].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[5].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[5].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[5].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[5].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      's_texture1',
+      's_texture1'
     );
     this._shaderSets[5].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[5].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[5].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[5].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[5].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[5].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[5].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[5].shaderProgram,
+      'u_screenColor'
     );
 
     // 加算（クリッピング・反転、PremultipliedAlpha）
     this._shaderSets[6].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[6].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[6].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[6].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[6].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[6].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      's_texture1',
+      's_texture1'
     );
     this._shaderSets[6].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[6].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[6].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[6].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[6].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[6].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[6].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[6].shaderProgram,
+      'u_screenColor'
     );
 
     // 乗算（PremultipliedAlpha）
     this._shaderSets[7].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[7].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[7].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[7].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[7].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[7].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[7].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[7].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[7].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[7].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[7].shaderProgram,
+      'u_screenColor'
     );
 
     // 乗算（クリッピング、PremultipliedAlpha）
     this._shaderSets[8].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[8].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[8].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[8].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[8].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[8].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      's_texture1',
+      's_texture1'
     );
     this._shaderSets[8].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[8].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[8].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[8].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[8].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[8].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[8].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[8].shaderProgram,
+      'u_screenColor'
     );
 
     // 乗算（クリッピング・反転、PremultipliedAlpha）
     this._shaderSets[9].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[9].shaderProgram,
-      'a_position',
+      'a_position'
     );
     this._shaderSets[9].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[9].shaderProgram,
-      'a_texCoord',
+      'a_texCoord'
     );
     this._shaderSets[9].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      's_texture0',
+      's_texture0'
     );
     this._shaderSets[9].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      's_texture1',
+      's_texture1'
     );
     this._shaderSets[9].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      'u_matrix',
+      'u_matrix'
     );
     this._shaderSets[9].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      'u_clipMatrix',
+      'u_clipMatrix'
     );
     this._shaderSets[9].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      'u_channelFlag',
+      'u_channelFlag'
     );
     this._shaderSets[9].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      'u_baseColor',
+      'u_baseColor'
+    );
+    this._shaderSets[9].uniformMultiplyColorLocation =
+      this.gl.getUniformLocation(
+        this._shaderSets[9].shaderProgram,
+        'u_multiplyColor'
+      );
+    this._shaderSets[9].uniformScreenColorLocation = this.gl.getUniformLocation(
+      this._shaderSets[9].shaderProgram,
+      'u_screenColor'
     );
   }
 
@@ -1483,14 +1639,14 @@ export class CubismShader_WebGL {
    */
   public loadShaderProgram(
     vertexShaderSource: string,
-    fragmentShaderSource: string,
+    fragmentShaderSource: string
   ): WebGLProgram {
     // Create Shader Program
-    let shaderProgram = this.gl.createProgram()!;
+    const shaderProgram = this.gl.createProgram()!;
 
-    let vertShader = this.compileShaderSource(
+    const vertShader = this.compileShaderSource(
       this.gl.VERTEX_SHADER,
-      vertexShaderSource,
+      vertexShaderSource
     );
 
     if (!vertShader) {
@@ -1498,9 +1654,9 @@ export class CubismShader_WebGL {
       return 0;
     }
 
-    let fragShader = this.compileShaderSource(
+    const fragShader = this.compileShaderSource(
       this.gl.FRAGMENT_SHADER,
-      fragmentShaderSource,
+      fragmentShaderSource
     );
     if (!fragShader) {
       CubismLogError('Vertex shader compile error!');
@@ -1517,7 +1673,7 @@ export class CubismShader_WebGL {
     this.gl.linkProgram(shaderProgram);
     const linkStatus = this.gl.getProgramParameter(
       shaderProgram,
-      this.gl.LINK_STATUS,
+      this.gl.LINK_STATUS
     );
 
     // リンクに失敗したらシェーダーを削除
@@ -1551,7 +1707,7 @@ export class CubismShader_WebGL {
    */
   public compileShaderSource(
     shaderType: GLenum,
-    shaderSource: string,
+    shaderSource: string
   ): WebGLProgram | null {
     const source: string = shaderSource;
 
@@ -1566,7 +1722,7 @@ export class CubismShader_WebGL {
 
     const status: any = this.gl.getShaderParameter(
       shader,
-      this.gl.COMPILE_STATUS,
+      this.gl.COMPILE_STATUS
     );
     if (!status) {
       this.gl.deleteShader(shader);
@@ -1597,6 +1753,8 @@ export interface CubismShaderSet {
   samplerTexture1Location: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（Texture1）
   uniformBaseColorLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（BaseColor）
   uniformChannelFlagLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（ChannelFlag）
+  uniformMultiplyColorLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（MultiplyColor）
+  uniformScreenColorLocation: WebGLUniformLocation | null; // シェーダープログラムに渡す変数のアドレス（ScreenColor）
 }
 
 export enum ShaderNames {
@@ -1616,7 +1774,7 @@ export enum ShaderNames {
   // Mult
   ShaderNames_MultPremultipliedAlpha,
   ShaderNames_MultMaskedPremultipliedAlpha,
-  ShaderNames_MultMaskedPremultipliedAlphaInverted
+  ShaderNames_MultMaskedPremultipliedAlphaInverted,
 }
 
 export const vertexShaderSrcSetupMask =
@@ -1686,9 +1844,15 @@ export const fragmentShaderSrcPremultipliedAlpha =
   'varying vec2       v_texCoord;' + //v2f.texcoord
   'uniform vec4       u_baseColor;' +
   'uniform sampler2D  s_texture0;' + //_MainTex
+  'uniform vec4       u_multiplyColor;' +
+  'uniform vec4       u_screenColor;' +
   'void main()' +
   '{' +
-  '   gl_FragColor = texture2D(s_texture0 , v_texCoord) * u_baseColor;' +
+  '   vec4 texColor = texture2D(s_texture0, v_texCoord);' +
+  '   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;' +
+  '   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);' +
+  '   vec4 color = texColor * u_baseColor;' +
+  '   gl_FragColor = vec4(color.rgb, color.a);' +
   '}';
 
 // Normal （クリッピングされたものの描画用、PremultipliedAlpha兼用）
@@ -1700,9 +1864,14 @@ export const fragmentShaderSrcMaskPremultipliedAlpha =
   'uniform vec4       u_channelFlag;' +
   'uniform sampler2D  s_texture0;' +
   'uniform sampler2D  s_texture1;' +
+  'uniform vec4       u_multiplyColor;' +
+  'uniform vec4       u_screenColor;' +
   'void main()' +
   '{' +
-  '   vec4 col_formask = texture2D(s_texture0 , v_texCoord) * u_baseColor;' +
+  '   vec4 texColor = texture2D(s_texture0, v_texCoord);' +
+  '   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;' +
+  '   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);' +
+  '   vec4 col_formask = texColor * u_baseColor;' +
   '   vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;' +
   '   float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;' +
   '   col_formask = col_formask * maskVal;' +
@@ -1712,19 +1881,24 @@ export const fragmentShaderSrcMaskPremultipliedAlpha =
 // Normal & Add & Mult 共通（クリッピングされて反転使用の描画用、PremultipliedAlphaの場合）
 export const fragmentShaderSrcMaskInvertedPremultipliedAlpha =
   'precision mediump float;' +
-  'varying vec2 v_texCoord;' +
-  'varying vec4 v_clipPos;' +
+  'varying vec2      v_texCoord;' +
+  'varying vec4      v_clipPos;' +
   'uniform sampler2D s_texture0;' +
   'uniform sampler2D s_texture1;' +
-  'uniform vec4 u_channelFlag;' +
-  'uniform vec4 u_baseColor;' +
+  'uniform vec4      u_channelFlag;' +
+  'uniform vec4      u_baseColor;' +
+  'uniform vec4      u_multiplyColor;' +
+  'uniform vec4      u_screenColor;' +
   'void main()' +
   '{' +
-  'vec4 col_formask = texture2D(s_texture0, v_texCoord) * u_baseColor;' +
-  'vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;' +
-  'float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;' +
-  'col_formask = col_formask * (1.0 - maskVal);' +
-  'gl_FragColor = col_formask;' +
+  '   vec4 texColor = texture2D(s_texture0, v_texCoord);' +
+  '   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;' +
+  '   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);' +
+  '   vec4 col_formask = texColor * u_baseColor;' +
+  '   vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;' +
+  '   float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;' +
+  '   col_formask = col_formask * (1.0 - maskVal);' +
+  '   gl_FragColor = col_formask;' +
   '}';
 
 /**
@@ -1744,7 +1918,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
         model,
         model.getDrawableCount(),
         model.getDrawableMasks(),
-        model.getDrawableMaskCounts(),
+        model.getDrawableMaskCounts()
       );
     }
 
@@ -1790,7 +1964,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
       this.getModel(),
       this.getModel().getDrawableCount(),
       this.getModel().getDrawableMasks(),
-      this.getModel().getDrawableMaskCounts(),
+      this.getModel().getDrawableMaskCounts()
     );
   }
 
@@ -1874,7 +2048,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
       this.setClippingContextBufferForDraw(
         this._clippingManager != null
           ? this._clippingManager.getClippingContextListForDraw()[drawableIndex]
-          : null,
+          : null
       );
 
       this.setIsCulling(this.getModel().getDrawableCulling(drawableIndex));
@@ -1886,9 +2060,11 @@ export class CubismRenderer_WebGL extends CubismRenderer {
         this.getModel().getDrawableVertexIndices(drawableIndex),
         this.getModel().getDrawableVertices(drawableIndex),
         this.getModel().getDrawableVertexUvs(drawableIndex),
+        this.getModel().getMultiplyColor(drawableIndex),
+        this.getModel().getScreenColor(drawableIndex),
         this.getModel().getDrawableOpacity(drawableIndex),
         this.getModel().getDrawableBlendMode(drawableIndex),
-        this.getModel().getDrawableInvertedMaskBit(drawableIndex),
+        this.getModel().getDrawableInvertedMaskBit(drawableIndex)
       );
     }
   }
@@ -1914,9 +2090,11 @@ export class CubismRenderer_WebGL extends CubismRenderer {
     indexArray: Uint16Array,
     vertexArray: Float32Array,
     uvArray: Float32Array,
+    multiplyColor: CubismTextureColor,
+    screenColor: CubismTextureColor,
     opacity: number,
     colorBlendMode: CubismBlendMode,
-    invertedMask: boolean,
+    invertedMask: boolean
   ): void {
     // 裏面描画の有効・無効
     if (this.isCulling()) {
@@ -1958,9 +2136,11 @@ export class CubismRenderer_WebGL extends CubismRenderer {
       opacity,
       colorBlendMode,
       modelColorRGBA,
+      multiplyColor,
+      screenColor,
       this.isPremultipliedAlpha(),
       this.getMvpMatrix(),
-      invertedMask,
+      invertedMask
     );
 
     // ポリゴンメッシュを描画する
@@ -1968,7 +2148,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
       this.gl.TRIANGLES,
       indexCount,
       this.gl.UNSIGNED_SHORT,
-      0,
+      0
     );
 
     // 後処理
@@ -2002,12 +2182,6 @@ export class CubismRenderer_WebGL extends CubismRenderer {
   public preDraw(): void {
     if (this.firstDraw) {
       this.firstDraw = false;
-
-      // 拡張機能を有効にする
-      this._anisortopy =
-        this.gl.getExtension('EXT_texture_filter_anisotropic') ||
-        this.gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
-        this.gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
     }
 
     this.gl.disable(this.gl.SCISSOR_TEST);
@@ -2022,6 +2196,18 @@ export class CubismRenderer_WebGL extends CubismRenderer {
 
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null); // 前にバッファがバインドされていたら破棄する必要がある
     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
+
+    // 異方性フィルタリングを適用する
+    if (this.getAnisotropy() > 0.0 && this._extension) {
+      for (const tex of Object.entries(this._textures)) {
+        this.gl.bindTexture(this.gl.TEXTURE_2D, tex);
+        this.gl.texParameterf(
+          this.gl.TEXTURE_2D,
+          this._extension.TEXTURE_MAX_ANISOTROPY_EXT,
+          this.getAnisotropy()
+        );
+      }
+    }
   }
 
   /**
@@ -2042,7 +2228,9 @@ export class CubismRenderer_WebGL extends CubismRenderer {
   /**
    * 画面上に描画するクリッピングコンテキストをセットする
    */
-  public setClippingContextBufferForDraw(clip: CubismClippingContext | null): void {
+  public setClippingContextBufferForDraw(
+    clip: CubismClippingContext | null
+  ): void {
     this._clippingContextBufferForDraw = clip;
   }
 
@@ -2061,6 +2249,12 @@ export class CubismRenderer_WebGL extends CubismRenderer {
     this.gl = gl;
     this._clippingManager.setGL(gl);
     CubismShader_WebGL.getInstance().setGl(gl);
+
+    // 異方性フィルタリングが使用できるかチェック
+    this._extension =
+      this.gl.getExtension('EXT_texture_filter_anisotropic') ||
+      this.gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
+      this.gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
   }
 
   _textures: Record<number, WebGLTexture>; // モデルが参照するテクスチャとレンダラでバインドしているテクスチャとのマップ
@@ -2074,6 +2268,7 @@ export class CubismRenderer_WebGL extends CubismRenderer {
     uv: WebGLBuffer | null;
     index: WebGLBuffer | null;
   }; // 頂点バッファデータ
+  _extension: any; // 拡張機能
   gl!: WebGLRenderingContext; // webglコンテキスト
 }
 

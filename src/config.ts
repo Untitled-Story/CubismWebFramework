@@ -4,7 +4,7 @@ export namespace CubismConfig {
    * @see https://docs.live2d.com/cubism-sdk-manual/ow-sdk-mask-premake-web/?locale=en_us
    * @default true
    */
-  export let supportMoreMaskDivisions = true;
+  export const supportMoreMaskDivisions = true;
 
   /**
    * Set opacity values directly from motion curves, instead of getting the values calculated by Pose.
@@ -12,5 +12,5 @@ export namespace CubismConfig {
    * @see https://github.com/guansss/CubismWebFramework/pull/1
    * @default false
    */
-  export let setOpacityFromMotion = false;
+  export const setOpacityFromMotion = false;
 }

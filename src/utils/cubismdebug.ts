@@ -7,7 +7,10 @@
 
 import { CubismFramework, LogLevel } from '../live2dcubismframework';
 
-export const CSM_ASSERT = process.env.NODE_ENV === 'production' ? () => {} : (expr: any) => console.assert(expr);
+export const CSM_ASSERT =
+  process.env.NODE_ENV === 'production'
+    ? () => {}
+    : (expr: any) => console.assert(expr);
 
 export function CubismLogVerbose(fmt: string, ...args: any[]) {
   CubismDebug.print(LogLevel.LogLevel_Verbose, '[CSM][V]' + fmt + '\n', args);
@@ -42,17 +45,14 @@ export class CubismDebug {
    * @param format 書式付き文字列
    * @param args 可変長引数
    */
-  public static print(
-    logLevel: LogLevel,
-    format: string,
-    args?: any[],
-  ): void {
+  public static print(logLevel: LogLevel, format: string, args?: any[]): void {
     // オプションで設定されたログ出力レベルを下回る場合はログに出さない
     if (logLevel < CubismFramework.getLoggingLevel()) {
       return;
     }
 
-    const logPrint: Live2DCubismCore.csmLogFunction = CubismFramework.coreLogFunction;
+    const logPrint: Live2DCubismCore.csmLogFunction =
+      CubismFramework.coreLogFunction;
 
     if (!logPrint) return;
 
@@ -73,7 +73,7 @@ export class CubismDebug {
   public static dumpBytes(
     logLevel: LogLevel,
     data: Uint8Array,
-    length: number,
+    length: number
   ): void {
     for (let i = 0; i < length; i++) {
       if (i % 16 == 0 && i > 0) this.print(logLevel, '\n');

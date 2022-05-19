@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismSpec } from "../CubismSpec";
+import { CubismSpec } from '../CubismSpec';
 
 /**
  * Model3Jsonパーサー
@@ -27,11 +27,11 @@ export class CubismModelSettingsJson {
   }
 
   public getEyeBlinkParameters(): string[] | undefined {
-    return this.groups?.find(group => group.Name === 'EyeBlink')?.Ids;
+    return this.groups?.find((group) => group.Name === 'EyeBlink')?.Ids;
   }
 
   public getLipSyncParameters(): string[] | undefined {
-    return this.groups?.find(group => group.Name === 'LipSync')?.Ids;
+    return this.groups?.find((group) => group.Name === 'LipSync')?.Ids;
   }
 
   groups?: CubismSpec.Group[];

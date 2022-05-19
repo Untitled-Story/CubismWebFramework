@@ -13,7 +13,7 @@
 export enum CubismMotionCurveTarget {
   CubismMotionCurveTarget_Model, // モデルに対して
   CubismMotionCurveTarget_Parameter, // パラメータに対して
-  CubismMotionCurveTarget_PartOpacity // パーツの不透明度に対して
+  CubismMotionCurveTarget_PartOpacity, // パーツの不透明度に対して
 }
 
 /**
@@ -25,7 +25,7 @@ export enum CubismMotionSegmentType {
   CubismMotionSegmentType_Linear = 0, // リニア
   CubismMotionSegmentType_Bezier = 1, // ベジェ曲線
   CubismMotionSegmentType_Stepped = 2, // ステップ
-  CubismMotionSegmentType_InverseStepped = 3 // インバースステップ
+  CubismMotionSegmentType_InverseStepped = 3, // インバースステップ
 }
 
 /**
@@ -89,7 +89,7 @@ export class CubismMotionCurve {
   }
 
   type: CubismMotionCurveTarget; // カーブの種類
-  id: string = ''; // カーブのID
+  id = ''; // カーブのID
   segmentCount: number; // セグメントの個数
   baseSegmentIndex: number; // 最初のセグメントのインデックス
   fadeInTime: number; // フェードインにかかる時間[秒]
@@ -101,7 +101,7 @@ export class CubismMotionCurve {
  */
 export class CubismMotionEvent {
   fireTime = 0.0;
-  value: string = '';
+  value = '';
 }
 
 /**

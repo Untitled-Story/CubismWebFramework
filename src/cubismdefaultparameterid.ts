@@ -10,7 +10,7 @@
  *         デフォルト値の仕様は以下のマニュアルに基づく<br>
  *         https://docs.live2d.com/cubism-editor-manual/standard-parametor-list/
  */
-  // パーツID
+// パーツID
 export const HitAreaPrefix = 'HitArea';
 export const HitAreaHead = 'Head';
 export const HitAreaBody = 'Body';

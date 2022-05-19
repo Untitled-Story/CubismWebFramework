@@ -24,9 +24,7 @@ export class CubismBreath {
    * 呼吸のパラメータの紐づけ
    * @param breathParameters 呼吸を紐づけたいパラメータのリスト
    */
-  public setParameters(
-    breathParameters: BreathParameterData[],
-  ): void {
+  public setParameters(breathParameters: BreathParameterData[]): void {
     this._breathParameters = breathParameters;
   }
 
@@ -43,10 +41,7 @@ export class CubismBreath {
    * @param model 対象のモデル
    * @param deltaTimeSeconds デルタ時間[秒]
    */
-  public updateParameters(
-    model: CubismModel,
-    deltaTimeSeconds: number,
-  ): void {
+  public updateParameters(model: CubismModel, deltaTimeSeconds: number): void {
     this._currentTime += deltaTimeSeconds;
 
     const t: number = this._currentTime * 2.0 * 3.14159;
@@ -57,7 +52,7 @@ export class CubismBreath {
       model.addParameterValueById(
         data.parameterId,
         data.offset + data.peak * Math.sin(t / data.cycle),
-        data.weight,
+        data.weight
       );
     }
   }
@@ -90,7 +85,7 @@ export class BreathParameterData {
     offset?: number,
     peak?: number,
     cycle?: number,
-    weight?: number,
+    weight?: number
   ) {
     this.parameterId = parameterId == undefined ? undefined : parameterId;
     this.offset = offset == undefined ? 0.0 : offset;

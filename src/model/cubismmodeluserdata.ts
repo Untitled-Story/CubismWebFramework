@@ -36,7 +36,7 @@ export class CubismModelUserData {
    */
   public static create(
     json: CubismSpec.UserDataJSON,
-    size: number,
+    size: number
   ): CubismModelUserData {
     const ret: CubismModelUserData = new CubismModelUserData();
 
@@ -61,7 +61,10 @@ export class CubismModelUserData {
    * @param size      バッファのサイズ
    */
   public parseUserData(data: CubismSpec.UserDataJSON, size: number): void {
-    let json: CubismModelUserDataJson = new CubismModelUserDataJson(data, size);
+    const json: CubismModelUserDataJson = new CubismModelUserDataJson(
+      data,
+      size
+    );
 
     const typeOfArtMesh = ArtMesh;
     const nodeCount: number = json.getUserDataCount();

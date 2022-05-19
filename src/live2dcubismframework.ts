@@ -70,7 +70,7 @@ export class CubismFramework {
         ('00' + major).slice(-2),
         ('00' + minor).slice(-2),
         ('0000' + patch).slice(-4),
-        versionNumber,
+        versionNumber
       );
     }
 
@@ -104,7 +104,7 @@ export class CubismFramework {
     // 再度Initialize()するには先にDispose()を実行する必要がある。
     if (s_isInitialized) {
       CubismLogWarning(
-        'CubismFramework.initialize() skipped, already initialized.',
+        'CubismFramework.initialize() skipped, already initialized.'
       );
       return;
     }
@@ -204,5 +204,5 @@ export enum LogLevel {
   LogLevel_Info, // Infoログ
   LogLevel_Warning, // 警告ログ
   LogLevel_Error, // エラーログ
-  LogLevel_Off // ログ出力無効
+  LogLevel_Off, // ログ出力無効
 }

@@ -44,7 +44,7 @@ export abstract class ACubismMotion {
   public updateParameters(
     model: CubismModel,
     motionQueueEntry: CubismMotionQueueEntry,
-    userTimeSeconds: number,
+    userTimeSeconds: number
   ): void {
     if (!motionQueueEntry.isAvailable() || motionQueueEntry.isFinished()) {
       return;
@@ -60,7 +60,7 @@ export abstract class ACubismMotion {
       if (motionQueueEntry.getEndTime() < 0) {
         // 開始していないうちに終了設定している場合がある。
         motionQueueEntry.setEndTime(
-          duration <= 0 ? -1 : motionQueueEntry.getStartTime() + duration,
+          duration <= 0 ? -1 : motionQueueEntry.getStartTime() + duration
         );
         // duration == -1 の場合はループする
       }
@@ -74,17 +74,17 @@ export abstract class ACubismMotion {
       this._fadeInSeconds == 0.0
         ? 1.0
         : CubismMath.getEasingSine(
-        (userTimeSeconds - motionQueueEntry.getFadeInStartTime()) /
-        this._fadeInSeconds,
-        );
+            (userTimeSeconds - motionQueueEntry.getFadeInStartTime()) /
+              this._fadeInSeconds
+          );
 
     const fadeOut: number =
       this._fadeOutSeconds == 0.0 || motionQueueEntry.getEndTime() < 0.0
         ? 1.0
         : CubismMath.getEasingSine(
-        (motionQueueEntry.getEndTime() - userTimeSeconds) /
-        this._fadeOutSeconds,
-        );
+            (motionQueueEntry.getEndTime() - userTimeSeconds) /
+              this._fadeOutSeconds
+          );
 
     fadeWeight = fadeWeight * fadeIn * fadeOut;
 
@@ -97,7 +97,7 @@ export abstract class ACubismMotion {
       model,
       userTimeSeconds,
       fadeWeight,
-      motionQueueEntry,
+      motionQueueEntry
     );
 
     // 後処理
@@ -201,7 +201,7 @@ export abstract class ACubismMotion {
    */
   public getFiredEvent(
     beforeCheckTimeSeconds: number,
-    motionTimeSeconds: number,
+    motionTimeSeconds: number
   ): string[] {
     return this._firedEventValues;
   }
@@ -219,7 +219,7 @@ export abstract class ACubismMotion {
     model: CubismModel,
     userTimeSeconds: number,
     weight: number,
-    motionQueueEntry: CubismMotionQueueEntry,
+    motionQueueEntry: CubismMotionQueueEntry
   ): void;
 
   /**
@@ -234,10 +234,10 @@ export abstract class ACubismMotion {
    * @param onFinishedMotionHandler モーション再生終了コールバック関数
    */
   public setFinishedMotionHandler(
-    onFinishedMotionHandler?: (self: ACubismMotion) => void,
+    onFinishedMotionHandler?: (self: ACubismMotion) => void
   ) {
     this._onFinishedMotion = onFinishedMotionHandler;
-  };
+  }
 
   /**
    * モーション再生終了コールバックの取得
@@ -248,7 +248,7 @@ export abstract class ACubismMotion {
    */
   public getFinishedMotionHandler() {
     return this._onFinishedMotion;
-  };
+  }
 
   public _fadeInSeconds: number; // フェードインにかかる時間[秒]
   public _fadeOutSeconds: number; // フェードアウトにかかる時間[秒]

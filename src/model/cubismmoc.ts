@@ -17,7 +17,8 @@ export class CubismMoc {
    * Mocデータの作成
    */
   public static create(mocBytes: ArrayBuffer): CubismMoc {
-    const moc: Live2DCubismCore.Moc = Live2DCubismCore.Moc.fromArrayBuffer(mocBytes);
+    const moc: Live2DCubismCore.Moc =
+      Live2DCubismCore.Moc.fromArrayBuffer(mocBytes);
 
     if (moc) {
       return new CubismMoc(moc);
@@ -34,7 +35,9 @@ export class CubismMoc {
   createModel(): CubismModel {
     let cubismModel: CubismModel;
 
-    const model: Live2DCubismCore.Model = Live2DCubismCore.Model.fromMoc(this._moc);
+    const model: Live2DCubismCore.Model = Live2DCubismCore.Model.fromMoc(
+      this._moc
+    );
 
     if (model) {
       cubismModel = new CubismModel(model);

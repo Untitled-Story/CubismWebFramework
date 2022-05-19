@@ -41,10 +41,7 @@ export class CubismViewMatrix extends CubismMatrix44 {
       x = this._screenLeft - this._tr[0] * this._maxLeft - this._tr[12];
     }
 
-    if (
-      this._tr[0] * this._maxRight + (this._tr[12] + x) <
-      this._screenRight
-    ) {
+    if (this._tr[0] * this._maxRight + (this._tr[12] + x) < this._screenRight) {
       x = this._screenRight - this._tr[0] * this._maxRight - this._tr[12];
     }
 
@@ -178,7 +175,7 @@ export class CubismViewMatrix extends CubismMatrix44 {
     left: number,
     right: number,
     bottom: number,
-    top: number,
+    top: number
   ): void {
     this._screenLeft = left;
     this._screenRight = right;
@@ -197,7 +194,7 @@ export class CubismViewMatrix extends CubismMatrix44 {
     left: number,
     right: number,
     bottom: number,
-    top: number,
+    top: number
   ): void {
     this._maxLeft = left;
     this._maxRight = right;

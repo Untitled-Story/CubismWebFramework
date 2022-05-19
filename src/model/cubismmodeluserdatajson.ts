@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismSpec } from "../CubismSpec";
+import { CubismSpec } from '../CubismSpec';
 
 export class CubismModelUserDataJson {
   /**

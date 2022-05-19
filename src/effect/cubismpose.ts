@@ -80,10 +80,7 @@ export class CubismPose {
    * @param model 対象のモデル
    * @param deltaTimeSeconds デルタ時間[秒]
    */
-  public updateParameters(
-    model: CubismModel,
-    deltaTimeSeconds: number,
-  ): void {
+  public updateParameters(model: CubismModel, deltaTimeSeconds: number): void {
     // 前回のモデルと同じでない場合は初期化が必要
     if (model != this._lastModel) {
       // パラメータインデックスの初期化
@@ -132,16 +129,10 @@ export class CubismPose {
         }
 
         model.setPartOpacityByIndex(partsIndex, j == beginIndex ? 1.0 : 0.0);
-        model.setParameterValueByIndex(
-          paramIndex,
-          j == beginIndex ? 1.0 : 0.0,
-        );
+        model.setParameterValueByIndex(paramIndex, j == beginIndex ? 1.0 : 0.0);
 
         for (let k = 0; k < this._partGroups[j].link.length; ++k) {
-          this._partGroups
-            [j]
-            .link[k]
-            .initialize(model);
+          this._partGroups[j].link[k].initialize(model);
         }
       }
 
@@ -169,11 +160,7 @@ export class CubismPose {
       const partIndex: number = this._partGroups[groupIndex].partIndex;
       const opacity: number = model.getPartOpacityByIndex(partIndex);
 
-      for (
-        let linkIndex = 0;
-        linkIndex < partData.link.length;
-        ++linkIndex
-      ) {
+      for (let linkIndex = 0; linkIndex < partData.link.length; ++linkIndex) {
         const linkPart: PartData = partData.link[linkIndex];
         const linkPartIndex: number = linkPart.partIndex;
 
@@ -197,7 +184,7 @@ export class CubismPose {
     model: CubismModel,
     deltaTimeSeconds: number,
     beginIndex: number,
-    partGroupCount: number,
+    partGroupCount: number
   ): void {
     let visiblePartIndex = -1;
     let newOpacity = 1.0;
@@ -306,7 +293,7 @@ export class PartData {
    */
   public assignment(v: PartData): PartData {
     this.partId = v.partId;
-    this.link = v.link.map(link => link.clone());
+    this.link = v.link.map((link) => link.clone());
 
     return this;
   }
@@ -331,7 +318,7 @@ export class PartData {
     clonePartData.partId = this.partId;
     clonePartData.parameterIndex = this.parameterIndex;
     clonePartData.partIndex = this.partIndex;
-    clonePartData.link = this.link.map(link => link.clone());
+    clonePartData.link = this.link.map((link) => link.clone());
 
     return clonePartData;
   }

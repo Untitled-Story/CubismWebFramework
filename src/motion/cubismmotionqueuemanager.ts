@@ -54,7 +54,7 @@ export class CubismMotionQueueManager {
   public startMotion(
     motion: ACubismMotion,
     autoDelete: boolean,
-    userTimeSeconds: number,
+    userTimeSeconds: number
   ): CubismMotionQueueEntryHandle {
     if (motion == null) {
       return InvalidMotionQueueEntryHandleValue;
@@ -126,7 +126,7 @@ export class CubismMotionQueueManager {
    * @return false 終了していない
    */
   public isFinishedByHandle(
-    motionQueueEntryNumber: CubismMotionQueueEntryHandle,
+    motionQueueEntryNumber: CubismMotionQueueEntryHandle
   ): boolean {
     // 既にモーションがあれば終了フラグを立てる
     for (let i = 0; i < this._motions.length; i++) {
@@ -174,10 +174,13 @@ export class CubismMotionQueueManager {
    * @return  null   見つからなかった
    */
   public getCubismMotionQueueEntry(
-    motionQueueEntryNumber: any,
+    motionQueueEntryNumber: any
   ): CubismMotionQueueEntry | undefined {
     //------- 処理を行う -------
-    return this._motions.find(entry => entry != null && entry._motionQueueEntryHandle == motionQueueEntryNumber);
+    return this._motions.find(
+      (entry) =>
+        entry != null && entry._motionQueueEntryHandle == motionQueueEntryNumber
+    );
   }
 
   /**
@@ -188,7 +191,7 @@ export class CubismMotionQueueManager {
    */
   public setEventCallback(
     callback: CubismMotionEventFunction,
-    customData: any = null,
+    customData: any = null
   ): void {
     this._eventCallBack = callback;
     this._eventCustomData = customData;
@@ -202,10 +205,7 @@ export class CubismMotionQueueManager {
    * @return  true    モデルへパラメータ値の反映あり
    * @return  false   モデルへパラメータ値の反映なし(モーションの変化なし)
    */
-  public doUpdateMotion(
-    model: CubismModel,
-    userTimeSeconds: number,
-  ): boolean {
+  public doUpdateMotion(model: CubismModel, userTimeSeconds: number): boolean {
     let updated = false;
 
     // ------- 処理を行う --------
@@ -236,8 +236,8 @@ export class CubismMotionQueueManager {
       // ------ ユーザトリガーイベントを検査する ----
       const firedList: string[] = motion.getFiredEvent(
         motionQueueEntry.getLastCheckEventSeconds() -
-        motionQueueEntry.getStartTime(),
-        userTimeSeconds - motionQueueEntry.getStartTime(),
+          motionQueueEntry.getStartTime(),
+        userTimeSeconds - motionQueueEntry.getStartTime()
       );
 
       for (let i = 0; i < firedList.length; ++i) {
@@ -280,11 +280,7 @@ export class CubismMotionQueueManager {
  * @param customData   コールバックに返される登録時に指定されたデータ
  */
 export interface CubismMotionEventFunction {
-  (
-    caller: CubismMotionQueueManager,
-    eventValue: string,
-    customData: any,
-  ): void;
+  (caller: CubismMotionQueueManager, eventValue: string, customData: any): void;
 }
 
 /**
@@ -293,4 +289,5 @@ export interface CubismMotionEventFunction {
  * モーションの識別番号の定義
  */
 export declare type CubismMotionQueueEntryHandle = any;
-export const InvalidMotionQueueEntryHandleValue: CubismMotionQueueEntryHandle = -1;
+export const InvalidMotionQueueEntryHandleValue: CubismMotionQueueEntryHandle =
+  -1;

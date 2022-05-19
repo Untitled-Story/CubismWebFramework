@@ -25,14 +25,20 @@ export class CubismExpressionMotion extends ACubismMotion {
    * @param size バッファのサイズ
    * @return 作成されたインスタンス
    */
-  public static create(json: CubismSpec.ExpressionJSON): CubismExpressionMotion {
+  public static create(
+    json: CubismSpec.ExpressionJSON
+  ): CubismExpressionMotion {
     const expression: CubismExpressionMotion = new CubismExpressionMotion();
 
     const fadeInTime = json.FadeInTime;
     const fadeOutTime = json.FadeOutTime;
 
-    expression.setFadeInTime(fadeInTime !== undefined ? fadeInTime : DefaultFadeTime); // フェードイン
-    expression.setFadeOutTime(fadeOutTime !== undefined ? fadeOutTime : DefaultFadeTime); // フェードアウト
+    expression.setFadeInTime(
+      fadeInTime !== undefined ? fadeInTime : DefaultFadeTime
+    ); // フェードイン
+    expression.setFadeOutTime(
+      fadeOutTime !== undefined ? fadeOutTime : DefaultFadeTime
+    ); // フェードアウト
 
     // 各パラメータについて
     const parameters = json.Parameters || [];
@@ -86,7 +92,7 @@ export class CubismExpressionMotion extends ACubismMotion {
     model: CubismModel,
     userTimeSeconds: number,
     weight: number,
-    motionQueueEntry: CubismMotionQueueEntry,
+    motionQueueEntry: CubismMotionQueueEntry
   ): void {
     for (let i = 0; i < this._parameters.length; ++i) {
       const parameter: ExpressionParameter = this._parameters[i];
@@ -96,7 +102,7 @@ export class CubismExpressionMotion extends ACubismMotion {
           model.addParameterValueById(
             parameter.parameterId,
             parameter.value,
-            weight,
+            weight
           );
           break;
         }
@@ -104,7 +110,7 @@ export class CubismExpressionMotion extends ACubismMotion {
           model.multiplyParameterValueById(
             parameter.parameterId,
             parameter.value,
-            weight,
+            weight
           );
           break;
         }
@@ -112,7 +118,7 @@ export class CubismExpressionMotion extends ACubismMotion {
           model.setParameterValueById(
             parameter.parameterId,
             parameter.value,
-            weight,
+            weight
           );
           break;
         }
@@ -141,7 +147,7 @@ export class CubismExpressionMotion extends ACubismMotion {
 export enum ExpressionBlendType {
   ExpressionBlendType_Add = 0, // 加算
   ExpressionBlendType_Multiply = 1, // 乗算
-  ExpressionBlendType_Overwrite = 2 // 上書き
+  ExpressionBlendType_Overwrite = 2, // 上書き
 }
 
 /**

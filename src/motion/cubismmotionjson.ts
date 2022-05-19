@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { CubismSpec } from "../CubismSpec";
+import { CubismSpec } from '../CubismSpec';
 
 /**
  * motion3.jsonのコンテナ。
@@ -154,7 +154,7 @@ export class CubismMotionJson {
    */
   public getMotionCurveSegment(
     curveIndex: number,
-    segmentIndex: number,
+    segmentIndex: number
   ): number {
     return this._json.Curves[curveIndex].Segments[segmentIndex];
   }
@@ -181,7 +181,7 @@ export class CubismMotionJson {
    * @return イベントの時間[秒]
    */
   public getEventTime(userDataIndex: number): number {
-    return this._json.UserData![userDataIndex].Time!;
+    return this._json.UserData![userDataIndex].Time;
   }
 
   /**
@@ -190,7 +190,7 @@ export class CubismMotionJson {
    * @return イベントの文字列
    */
   public getEventValue(userDataIndex: number): string {
-    return this._json.UserData![userDataIndex].Value!;
+    return this._json.UserData![userDataIndex].Value;
   }
 
   _json: CubismSpec.MotionJSON; // motion3.jsonのデータ
@@ -199,6 +199,6 @@ export class CubismMotionJson {
 /**
  * @brief ベジェカーブの解釈方法のフラグタイプ
  */
- export enum EvaluationOptionFlag {
-  EvaluationOptionFlag_AreBeziersRistricted = 0 ///< ベジェハンドルの規制状態
+export enum EvaluationOptionFlag {
+  EvaluationOptionFlag_AreBeziersRistricted = 0, ///< ベジェハンドルの規制状態
 }

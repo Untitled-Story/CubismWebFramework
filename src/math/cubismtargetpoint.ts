@@ -107,7 +107,7 @@ export class CubismTargetPoint {
         (CubismMath.sqrt(maxA * maxA + 16.0 * maxA * d - 8.0 * maxA * d) -
           maxA);
       const curV: number = CubismMath.sqrt(
-        this._faceVX * this._faceVX + this._faceVY * this._faceVY,
+        this._faceVX * this._faceVX + this._faceVY * this._faceVY
       );
 
       if (curV > maxV) {

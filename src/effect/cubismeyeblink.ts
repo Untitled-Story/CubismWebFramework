@@ -20,9 +20,7 @@ export class CubismEyeBlink {
    * @return 作成されたインスタンス
    * @note 引数がNULLの場合、パラメータIDが設定されていない空のインスタンスを作成する。
    */
-  public static create(
-    modelSetting: CubismModelSettingsJson,
-  ): CubismEyeBlink {
+  public static create(modelSetting: CubismModelSettingsJson): CubismEyeBlink {
     return new CubismEyeBlink(modelSetting);
   }
 
@@ -43,7 +41,7 @@ export class CubismEyeBlink {
   public setBlinkingSetting(
     closing: number,
     closed: number,
-    opening: number,
+    opening: number
   ): void {
     this._closingSeconds = closing;
     this._closedSeconds = closed;
@@ -71,10 +69,7 @@ export class CubismEyeBlink {
    * @param model 対象のモデル
    * @param deltaTimeSeconds デルタ時間[秒]
    */
-  public updateParameters(
-    model: CubismModel,
-    deltaTimeSeconds: number,
-  ): void {
+  public updateParameters(model: CubismModel, deltaTimeSeconds: number): void {
     this._userTimeSeconds += deltaTimeSeconds;
     let parameterValue: number;
     let t = 0.0;
@@ -167,7 +162,8 @@ export class CubismEyeBlink {
       return;
     }
 
-    this._parameterIds = modelSetting.getEyeBlinkParameters()?.slice() ?? this._parameterIds;
+    this._parameterIds =
+      modelSetting.getEyeBlinkParameters()?.slice() ?? this._parameterIds;
   }
 
   /**
@@ -208,5 +204,5 @@ export enum EyeState {
   EyeState_Interval, // まばたきしていない状態
   EyeState_Closing, // まぶたが閉じていく途中の状態
   EyeState_Closed, // まぶたが閉じている状態
-  EyeState_Opening // まぶたが開いていく途中の状態
+  EyeState_Opening, // まぶたが開いていく途中の状態
 }
