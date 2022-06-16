@@ -640,12 +640,25 @@ export class CubismModel {
   }
 
   /**
+   * @deprecated
+   * 関数名が誤っていたため、代替となる getDrawableTextureIndex を追加し、この関数は非推奨となりました。
+   *
    * Drawableのテクスチャインデックスリストの取得
    * @param drawableIndex Drawableのインデックス
    * @return drawableのテクスチャインデックスリスト
    */
   public getDrawableTextureIndices(drawableIndex: number): number {
-    return this._model.drawables.textureIndices[drawableIndex];
+    return this.getDrawableTextureIndex(drawableIndex);
+  }
+
+  /**
+   * Drawableのテクスチャインデックスの取得
+   * @param drawableIndex Drawableのインデックス
+   * @return drawableのテクスチャインデックス
+   */
+  public getDrawableTextureIndex(drawableIndex: number): number {
+    const textureIndices: Int32Array = this._model.drawables.textureIndices;
+    return textureIndices[drawableIndex];
   }
 
   /**

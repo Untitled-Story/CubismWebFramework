@@ -50,6 +50,14 @@ export class CubismPhysicsJson {
   }
 
   /**
+   * 物理演算設定FPSの取得
+   * @return 物理演算設定FPS
+   */
+  public getFps(): number {
+    return this._json.Meta.Fps || 0;
+  }
+
+  /**
    * 物理店の管理の個数の取得
    * @return 物理店の管理の個数
    */
