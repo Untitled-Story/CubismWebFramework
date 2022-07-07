@@ -21,7 +21,9 @@ export class CubismMoc {
       Live2DCubismCore.Moc.fromArrayBuffer(mocBytes);
 
     if (moc) {
-      return new CubismMoc(moc);
+      const cubismMoc = new CubismMoc(moc);
+      cubismMoc._mocVersion = Live2DCubismCore.Version.csmGetMocVersion(moc);
+      return cubismMoc;
     }
 
     throw new Error('Unknown error');
@@ -65,6 +67,7 @@ export class CubismMoc {
   private constructor(moc: Live2DCubismCore.Moc) {
     this._moc = moc;
     this._modelCount = 0;
+    this._mocVersion = 0;
   }
 
   /**
@@ -75,6 +78,21 @@ export class CubismMoc {
     (this as Partial<this>)._moc = undefined;
   }
 
+  /**
+   * 最新の.moc3 Versionを取得
+   */
+  public getLatestMocVersion(): number {
+    return Live2DCubismCore.Version.csmGetLatestMocVersion();
+  }
+
+  /**
+   * 読み込んだモデルの.moc3 Versionを取得
+   */
+  public getMocVersion(): number {
+    return this._mocVersion;
+  }
+
   _moc: Live2DCubismCore.Moc; // Mocデータ
   _modelCount: number; // Mocデータから作られたモデルの個数
+  _mocVersion: number; // 読み込んだモデルの.moc3 Version
 }
