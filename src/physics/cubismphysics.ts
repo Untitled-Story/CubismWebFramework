@@ -149,12 +149,13 @@ export class CubismPhysics {
       outputIndex += setting.outputCount;
 
       const currentRigOutput = new PhysicsOutput();
-      this._currentRigOutputs.push(currentRigOutput);
-
       const previousRigOutput = new PhysicsOutput();
-      this._previousRigOutputs.push(previousRigOutput);
 
       for (let j = 0; j < setting.outputCount; ++j) {
+        // initialize
+        currentRigOutput.output[j] = 0.0;
+        previousRigOutput.output[j] = 0.0;
+
         const output = new CubismPhysicsOutput();
 
         output.destinationParameterIndex = -1;
@@ -190,6 +191,9 @@ export class CubismPhysics {
 
         this._physicsRig.outputs.push(output);
       }
+
+      this._currentRigOutputs.push(currentRigOutput);
+      this._previousRigOutputs.push(previousRigOutput);
 
       // Particle
       setting.particleCount = json.getParticleCount(i);
@@ -288,7 +292,16 @@ export class CubismPhysics {
     parameterMinimumValue = model.getModel().parameters.minimumValues;
     parameterDefaultValue = model.getModel().parameters.defaultValues;
 
-    this._parameterCache = new Float32Array(model.getParameterCount());
+    if ((this._parameterCache?.length ?? 0) < model.getParameterCount()) {
+      this._parameterCache = new Float32Array(model.getParameterCount());
+    }
+
+    if ((this._parameterInputCache?.length ?? 0) < model.getParameterCount()) {
+      this._parameterInputCache = new Float32Array(model.getParameterCount());
+      for (let j = 0; j < model.getParameterCount(); ++j) {
+        this._parameterInputCache[j] = parameterValue[j];
+      }
+    }
 
     if (this._physicsRig.fps > 0.0) {
       physicsDeltaTime = 1.0 / this._physicsRig.fps;
@@ -313,8 +326,16 @@ export class CubismPhysics {
         }
       }
 
+      // 入力キャッシュとパラメータで線形補間してUpdateParticlesするタイミングでの入力を計算する。
+      // Calculate the input at the timing to UpdateParticles by linear interpolation with the _parameterInputCache and parameterValue.
+      // _parameterCacheはグループ間での値の伝搬の役割があるので_parameterInputCacheとの分離が必要。
+      // _parameterCache needs to be separated from _parameterInputCache because of its role in propagating values between groups.
+      const inputWeight = physicsDeltaTime / this._currentRemainTime;
       for (let j = 0; j < model.getParameterCount(); ++j) {
-        this._parameterCache[j] = parameterValue[j];
+        this._parameterCache[j] =
+          this._parameterInputCache[j] * (1.0 - inputWeight) +
+          parameterValue[j] * inputWeight;
+        this._parameterInputCache[j] = this._parameterCache[j];
       }
 
       for (
@@ -385,16 +406,16 @@ export class CubismPhysics {
         for (let i = 0; i < currentSetting.outputCount; ++i) {
           const particleIndex = currentOutput[i].vertexIndex;
 
+          if (currentOutput[i].destinationParameterIndex == -1) {
+            currentOutput[i].destinationParameterIndex =
+              model.getParameterIndex(currentOutput[i].destination.id);
+          }
+
           if (
             particleIndex < 1 ||
             particleIndex >= currentSetting.particleCount
           ) {
-            break;
-          }
-
-          if (currentOutput[i].destinationParameterIndex == -1) {
-            currentOutput[i].destinationParameterIndex =
-              model.getParameterIndex(currentOutput[i].destination.id);
+            continue;
           }
 
           const translation: CubismVector2 = new CubismVector2();
@@ -481,6 +502,10 @@ export class CubismPhysics {
 
       // Load input parameters.
       for (let i = 0; i < currentSetting.outputCount; ++i) {
+        if (currentOutput[i].destinationParameterIndex == -1) {
+          continue;
+        }
+
         const destinationParameterIndex: number =
           currentOutput[i].destinationParameterIndex;
         const outParameterValue: Float32Array =
@@ -613,6 +638,7 @@ export class CubismPhysics {
   _currentRemainTime: number; ///< 物理演算が処理していない時間
 
   _parameterCache!: Float32Array; ///< Evaluateで利用するパラメータのキャッシュ
+  _parameterInputCache!: Float32Array; ///< UpdateParticlesが動くときの入力をキャッシュ
 }
 
 /**

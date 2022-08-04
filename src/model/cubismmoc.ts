@@ -22,11 +22,14 @@ export class CubismMoc {
 
     if (moc) {
       const cubismMoc = new CubismMoc(moc);
-      cubismMoc._mocVersion = Live2DCubismCore.Version.csmGetMocVersion(moc);
+      cubismMoc._mocVersion = Live2DCubismCore.Version.csmGetMocVersion(
+        moc,
+        mocBytes
+      );
       return cubismMoc;
     }
 
-    throw new Error('Unknown error');
+    throw new Error('Failed to CubismMoc.create().');
   }
 
   /**
