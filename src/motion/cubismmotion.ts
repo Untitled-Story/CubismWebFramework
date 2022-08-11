@@ -5,6 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
+import { config } from '../config';
 import { CubismMath } from '../math/cubismmath';
 import { CubismModel } from '../model/cubismmodel';
 import { CSM_ASSERT, CubismLogDebug } from '../utils/cubismdebug';
@@ -396,7 +397,19 @@ export class CubismMotion extends ACubismMotion {
       // Evaluate curve and apply value.
       value = evaluateCurve(this._motionData, c, time);
 
-      model.setPartOpacityById(curves[c].id, value);
+      if (config.setOpacityFromMotion) {
+        model.setPartOpacityById(curves[c].id, value);
+      } else {
+        // Find parameter index.
+        parameterIndex = model.getParameterIndex(curves[c].id);
+
+        // Skip curve evaluation if no value in sink.
+        if (parameterIndex == -1) {
+          continue;
+        }
+
+        model.setParameterValueByIndex(parameterIndex, value);
+      }
     }
 
     if (timeOffsetSeconds >= this._motionData.duration) {
