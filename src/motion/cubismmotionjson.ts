@@ -45,7 +45,7 @@ export class CubismMotionJson {
     if (
       EvaluationOptionFlag.EvaluationOptionFlag_AreBeziersRistricted == flagType
     ) {
-      return this._json.Meta.AreBeziersRestricted;
+      return !!this._json.Meta.AreBeziersRestricted;
     }
 
     return false;
