@@ -6,6 +6,7 @@
  */
 
 import { config } from '../config';
+import { CubismSpec } from '../CubismSpec';
 import { CubismMath } from '../math/cubismmath';
 import { CubismModel } from '../model/cubismmodel';
 import {

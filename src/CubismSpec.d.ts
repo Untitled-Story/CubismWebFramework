@@ -1,4 +1,4 @@
-declare namespace CubismSpec {
+export namespace CubismSpec {
   export interface ModelJSON {
     /**
      * Json file format version.

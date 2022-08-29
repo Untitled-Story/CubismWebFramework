@@ -17,10 +17,10 @@ let s_option: CubismStartupOption | undefined = undefined;
 /**
  * Framework内で使う定数の宣言
  */
-export namespace Constant {
-  export const vertexOffset = 0; // メッシュ頂点のオフセット値
-  export const vertexStep = 2; // メッシュ頂点のステップ値
-}
+export const Constant = {
+  vertexOffset: 0, // メッシュ頂点のオフセット値
+  vertexStep: 2, // メッシュ頂点のステップ値
+} as const;
 
 /**
  * Live2D Cubism SDK Original Workflow SDKのエントリポイント

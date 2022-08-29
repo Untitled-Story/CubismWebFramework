@@ -5,6 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
+import { CubismSpec } from '../CubismSpec';
 import { CubismModel } from '../model/cubismmodel';
 import { ACubismMotion } from './acubismmotion';
 import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
