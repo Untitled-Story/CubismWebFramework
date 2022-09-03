@@ -5,7 +5,7 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { config } from '../config';
+import { CubismConfig } from '../config';
 import { CubismSpec } from '../CubismSpec';
 import { CubismMath } from '../math/cubismmath';
 import { CubismModel } from '../model/cubismmodel';
@@ -510,7 +510,7 @@ export class CubismMotion extends ACubismMotion {
       // Evaluate curve and apply value.
       value = evaluateCurve(this._motionData, c, time);
 
-      if (config.setOpacityFromMotion) {
+      if (CubismConfig.setOpacityFromMotion) {
         model.setPartOpacityById(curves[c].id, value);
       } else {
         // Find parameter index.

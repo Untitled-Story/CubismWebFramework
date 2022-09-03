@@ -1,4 +1,4 @@
-export namespace config {
+export namespace CubismConfig {
   /**
    * Support 4x4 mask division, which is unofficial and experimental.
    * @see https://docs.live2d.com/cubism-sdk-manual/ow-sdk-mask-premake-web/?locale=en_us

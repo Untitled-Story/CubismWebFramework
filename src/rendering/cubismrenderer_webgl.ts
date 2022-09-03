@@ -11,7 +11,7 @@ import { CubismModel } from '../model/cubismmodel';
 import { csmRect } from '../type/csmrectf';
 import { CubismLogError } from '../utils/cubismdebug';
 import { CubismBlendMode, CubismRenderer, CubismTextureColor } from './cubismrenderer';
-import { config } from '../config';
+import { CubismConfig } from '../config';
 
 const ColorChannelCount = 4; // 実験時に1チャンネルの場合は1、RGBだけの場合は3、アルファも含める場合は4
 
@@ -652,7 +652,7 @@ export class CubismClippingManager_WebGL {
           cc._layoutBounds.width = 1.0 / 3.0;
           cc._layoutBounds.height = 1.0 / 3.0;
         }
-      } else if (config.supportMoreMaskDivisions && layoutCount <= 16) {
+      } else if (CubismConfig.supportMoreMaskDivisions && layoutCount <= 16) {
         // support 4x4 division
         // https://docs.live2d.com/cubism-sdk-manual/ow-sdk-mask-premake-web/?locale=en_us
 
