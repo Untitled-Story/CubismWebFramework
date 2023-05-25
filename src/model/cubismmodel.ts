@@ -16,8 +16,31 @@ import { CSM_ASSERT } from '../utils/cubismdebug';
  * その色を保持する構造体
  */
 export class DrawableColorData {
-  isOverwritten = false;
-  Color: CubismTextureColor = new CubismTextureColor();
+  constructor(
+    isOverwritten = false,
+    color: CubismTextureColor = new CubismTextureColor()
+  ) {
+    this.isOverwritten = isOverwritten;
+    this.Color = color;
+  }
+
+  public isOverwritten: boolean;
+  public Color: CubismTextureColor;
+}
+/**
+ * @brief テクスチャの色をRGBAで扱うための構造体
+ */
+export class PartColorData {
+  constructor(
+    isOverwritten = false,
+    color: CubismTextureColor = new CubismTextureColor()
+  ) {
+    this.isOverwritten = isOverwritten;
+    this.Color = color;
+  }
+
+  public isOverwritten: boolean;
+  public Color: CubismTextureColor;
 }
 
 /**
@@ -31,8 +54,8 @@ export class DrawableCullingData {
    * @param isCulling
    */
   public constructor(isOverwritten = false, isCulling = false) {
-    isOverwritten = this.isOverwritten;
-    isCulling = this.isCulling;
+    this.isOverwritten = isOverwritten;
+    this.isCulling = isCulling;
   }
 
   public isOverwritten: boolean;
@@ -210,6 +233,146 @@ export class CubismModel {
     this._userScreenColors[index].Color.B = b;
     this._userScreenColors[index].Color.A = a;
   }
+  /**
+   * partの乗算色を取得する
+   * @param partIndex partのインデックス
+   * @returns 指定したpartの乗算色
+   */
+  public getPartMultiplyColor(partIndex: number): CubismTextureColor {
+    return this._userPartMultiplyColors[partIndex].Color;
+  }
+
+  /**
+   * partのスクリーン色を取得する
+   * @param partIndex partのインデックス
+   * @returns 指定したpartのスクリーン色
+   */
+  public getPartScreenColor(partIndex: number): CubismTextureColor {
+    return this._userPartScreenColors[partIndex].Color;
+  }
+
+  /**
+   * partのOverwriteColor setter関数
+   * @param partIndex partのインデックス
+   * @param r 設定する色のR値
+   * @param g 設定する色のG値
+   * @param b 設定する色のB値
+   * @param a 設定する色のA値
+   * @param partColors 設定するpartのカラーデータ配列
+   * @param drawableColors partに関連するDrawableのカラーデータ配列
+   */
+  public setPartColor(
+    partIndex: number,
+    r: number,
+    g: number,
+    b: number,
+    a: number,
+    partColors: PartColorData[],
+    drawableColors: DrawableColorData[]
+  ) {
+    partColors[partIndex].Color.R = r;
+    partColors[partIndex].Color.G = g;
+    partColors[partIndex].Color.B = b;
+    partColors[partIndex].Color.A = a;
+
+    if (partColors[partIndex].isOverwritten) {
+      for (let i = 0; i < this._partChildDrawables[partIndex].length; ++i) {
+        const drawableIndex = this._partChildDrawables[partIndex][i];
+        drawableColors[drawableIndex].Color.R = r;
+        drawableColors[drawableIndex].Color.G = g;
+        drawableColors[drawableIndex].Color.B = b;
+        drawableColors[drawableIndex].Color.A = a;
+      }
+    }
+  }
+
+  /**
+   * 乗算色をセットする
+   * @param partIndex partのインデックス
+   * @param color 設定する乗算色(CubismTextureColor)
+   */
+  public setPartMultiplyColorByTextureColor(
+    partIndex: number,
+    color: CubismTextureColor
+  ) {
+    this.setPartMultiplyColorByRGBA(
+      partIndex,
+      color.R,
+      color.G,
+      color.B,
+      color.A
+    );
+  }
+
+  /**
+   * 乗算色をセットする
+   * @param partIndex partのインデックス
+   * @param r 設定する乗算色のR値
+   * @param g 設定する乗算色のG値
+   * @param b 設定する乗算色のB値
+   * @param a 設定する乗算色のA値
+   */
+  public setPartMultiplyColorByRGBA(
+    partIndex: number,
+    r: number,
+    g: number,
+    b: number,
+    a: number
+  ) {
+    this.setPartColor(
+      partIndex,
+      r,
+      g,
+      b,
+      a,
+      this._userPartMultiplyColors,
+      this._userMultiplyColors
+    );
+  }
+
+  /**
+   * スクリーン色をセットする
+   * @param partIndex partのインデックス
+   * @param color 設定するスクリーン色(CubismTextureColor)
+   */
+  public setPartScreenColorByTextureColor(
+    partIndex: number,
+    color: CubismTextureColor
+  ) {
+    this.setPartScreenColorByRGBA(
+      partIndex,
+      color.R,
+      color.G,
+      color.B,
+      color.A
+    );
+  }
+
+  /**
+   * スクリーン色をセットする
+   * @param partIndex partのインデックス
+   * @param r 設定するスクリーン色のR値
+   * @param g 設定するスクリーン色のG値
+   * @param b 設定するスクリーン色のB値
+   * @param a 設定するスクリーン色のA値
+   */
+  public setPartScreenColorByRGBA(
+    partIndex: number,
+    r: number,
+    g: number,
+    b: number,
+    a: number
+  ) {
+    this.setPartColor(
+      partIndex,
+      r,
+      g,
+      b,
+      a,
+      this._userPartScreenColors,
+      this._userScreenColors
+    );
+  }
 
   /**
    * SDKから指定したモデルの乗算色を上書きするか
@@ -266,7 +429,7 @@ export class CubismModel {
   public getOverwriteFlagForDrawableScreenColors(
     drawableindex: number
   ): boolean {
-    return this._userMultiplyColors[drawableindex].isOverwritten;
+    return this._userScreenColors[drawableindex].isOverwritten;
   }
 
   /**
@@ -291,6 +454,93 @@ export class CubismModel {
     value: boolean
   ) {
     this._userScreenColors[drawableindex].isOverwritten = value;
+  }
+
+  /**
+   * SDKからpartの乗算色を上書きするか
+   * @param partIndex partのインデックス
+   * @returns true    ->  SDKからの情報を優先する
+   *          false   ->  モデルに設定されている色情報を使用
+   */
+  public getOverwriteColorForPartMultiplyColors(partIndex: number) {
+    return this._userPartMultiplyColors[partIndex].isOverwritten;
+  }
+
+  /**
+   * SDKからpartのスクリーン色を上書きするか
+   * @param partIndex partのインデックス
+   * @returns true    ->  SDKからの情報を優先する
+   *          false   ->  モデルに設定されている色情報を使用
+   */
+  public getOverwriteColorForPartScreenColors(partIndex: number) {
+    return this._userPartScreenColors[partIndex].isOverwritten;
+  }
+
+  /**
+   * partのOverwriteFlag setter関数
+   * @param partIndex partのインデックス
+   * @param value true -> SDKからの情報を優先する
+   *              false -> モデルに設定されている色情報を使用
+   * @param partColors 設定するpartのカラーデータ配列
+   * @param drawableColors partに関連するDrawableのカラーデータ配列
+   */
+  public setOverwriteColorForPartColors(
+    partIndex: number,
+    value: boolean,
+    partColors: PartColorData[],
+    drawableColors: DrawableColorData[]
+  ) {
+    partColors[partIndex].isOverwritten = value;
+
+    for (let i = 0; i < this._partChildDrawables[partIndex].length; ++i) {
+      const drawableIndex = this._partChildDrawables[partIndex][i];
+      drawableColors[drawableIndex].isOverwritten = value;
+
+      if (value) {
+        drawableColors[drawableIndex].Color.R = partColors[partIndex].Color.R;
+        drawableColors[drawableIndex].Color.G = partColors[partIndex].Color.G;
+        drawableColors[drawableIndex].Color.B = partColors[partIndex].Color.B;
+        drawableColors[drawableIndex].Color.A = partColors[partIndex].Color.A;
+      }
+    }
+  }
+
+  /**
+   * SDKからpartのスクリーン色を上書きするかをセットする
+   * @param partIndex partのインデックス
+   * @param value true -> SDKからの情報を優先する
+   *              false -> モデルに設定されている色情報を使用
+   */
+  public setOverwriteColorForPartMultiplyColors(
+    partIndex: number,
+    value: boolean
+  ) {
+    this._userPartMultiplyColors[partIndex].isOverwritten = value;
+    this.setOverwriteColorForPartColors(
+      partIndex,
+      value,
+      this._userPartMultiplyColors,
+      this._userMultiplyColors
+    );
+  }
+
+  /**
+   * SDKからpartのスクリーン色を上書きするかをセットする
+   * @param partIndex partのインデックス
+   * @param value true -> SDKからの情報を優先する
+   *              false -> モデルに設定されている色情報を使用
+   */
+  public setOverwriteColorForPartScreenColors(
+    partIndex: number,
+    value: boolean
+  ) {
+    this._userPartScreenColors[partIndex].isOverwritten = value;
+    this.setOverwriteColorForPartColors(
+      partIndex,
+      value,
+      this._userPartScreenColors,
+      this._userScreenColors
+    );
   }
 
   /**
@@ -367,6 +617,24 @@ export class CubismModel {
   }
 
   /**
+   * モデルの不透明度を取得する
+   *
+   * @returns 不透明度の値
+   */
+  public getModelOapcity(): number {
+    return this._modelOpacity;
+  }
+
+  /**
+   * モデルの不透明度を設定する
+   *
+   * @param value 不透明度の値
+   */
+  public setModelOapcity(value: number) {
+    this._modelOpacity = value;
+  }
+
+  /**
    * モデルを取得
    */
   public getModel(): Live2DCubismCore.Model {
@@ -399,6 +667,16 @@ export class CubismModel {
     this._notExistPartOpacities[partIndex] = 0;
 
     return partIndex;
+  }
+
+  /**
+   * パーツのIDを取得する。
+   *
+   * @param partIndex 取得するパーツのインデックス
+   * @return パーツのID
+   */
+  public getPartId(partIndex: number): string {
+    return this._model.parts.ids[partIndex];
   }
 
   /**
@@ -824,7 +1102,7 @@ export class CubismModel {
 
   /**
    * Drawableの頂点インデックスリストの取得
-   * @param drarableIndex Drawableのインデックス
+   * @param drawableIndex Drawableのインデックス
    * @return drawableの頂点インデックスリスト
    */
   public getDrawableVertexIndices(drawableIndex: number): Uint16Array {
@@ -1087,9 +1365,9 @@ export class CubismModel {
       }
     }
 
+    const partCount: number = this._model.parts.count;
     {
       const partIds: string[] = this._model.parts.ids;
-      const partCount: number = this._model.parts.count;
 
       for (let i = 0; i < partCount; ++i) {
         this._partIds.push(partIds[i]);
@@ -1106,21 +1384,74 @@ export class CubismModel {
         false
       );
 
-      for (let i = 0; i < drawableCount; ++i) {
-        this._userCullings.push(new DrawableCullingData());
+      // Part
+      {
+        for (let i = 0; i < partCount; ++i) {
+          const multiplyColor: CubismTextureColor = new CubismTextureColor(
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          );
+          const screenColor: CubismTextureColor = new CubismTextureColor(
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          );
+
+          const userMultiplyColor: PartColorData = new PartColorData(
+            false,
+            multiplyColor
+          );
+          const userScreenColor: PartColorData = new PartColorData(
+            false,
+            screenColor
+          );
+
+          this._userPartMultiplyColors.push(userMultiplyColor);
+          this._userPartScreenColors.push(userScreenColor);
+          this._partChildDrawables.push([]);
+        }
       }
 
-      for (let i = 0; i < drawableCount; ++i) {
-        this._drawableIds.push(drawableIds[i]);
+      // Drawables
+      {
+        for (let i = 0; i < drawableCount; ++i) {
+          const multiplyColor: CubismTextureColor = new CubismTextureColor(
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          );
+          const screenColor: CubismTextureColor = new CubismTextureColor(
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          );
 
-        this._userMultiplyColors.push(new DrawableColorData());
-        this._userScreenColors.push(new DrawableColorData());
+          const userMultiplyColor: DrawableColorData = new DrawableColorData(
+            false,
+            multiplyColor
+          );
+          const userScreenColor: DrawableColorData = new DrawableColorData(
+            false,
+            screenColor
+          );
 
-        // shaderに影響しない色で初期化
-        this.setMultiplyColorByRGBA(i, 1.0, 1.0, 1.0, 1.0);
-        this.setScreenColorByRGBA(i, 0.0, 0.0, 0.0, 1.0);
+          this._drawableIds.push(drawableIds[i]);
 
-        this._userCullings.push(userCulling);
+          this._userMultiplyColors.push(userMultiplyColor);
+          this._userScreenColors.push(userScreenColor);
+
+          this._userCullings.push(userCulling);
+
+          const parentIndex = this.getDrawableParentPartIndex(i);
+          if (parentIndex >= 0) {
+            this._partChildDrawables[parentIndex].push(i);
+          }
+        }
       }
     }
   }
@@ -1138,9 +1469,14 @@ export class CubismModel {
     this._isOverwrittenModelMultiplyColors = false;
     this._isOverwrittenModelScreenColors = false;
     this._isOverwrittenCullings = false;
+    this._modelOpacity = 1.0;
+
     this._userMultiplyColors = [];
     this._userScreenColors = [];
     this._userCullings = [];
+    this._userPartMultiplyColors = [];
+    this._userPartScreenColors = [];
+    this._partChildDrawables = [];
 
     this._notExistPartId = {};
     this._notExistParameterId = {};
@@ -1170,6 +1506,9 @@ export class CubismModel {
   private _isOverwrittenModelScreenColors: boolean; // SDK上でモデル全体のスクリーン色を上書きするか判定するフラグ
   private _userMultiplyColors: DrawableColorData[]; // Drawableごとに設定する乗算色と上書きフラグを管理するリスト
   private _userScreenColors: DrawableColorData[]; // Drawableごとに設定するスクリーン色と上書きフラグを管理するリスト
+  private _userPartScreenColors: PartColorData[]; // Part 乗算色の配列
+  private _userPartMultiplyColors: PartColorData[]; // Part スクリーン色の配列
+  private _partChildDrawables: number[][]; // Partの子DrawableIndexの配列
 
   private _model: Live2DCubismCore.Model; // モデル
 
@@ -1178,6 +1517,8 @@ export class CubismModel {
   private _parameterMinimumValues!: Float32Array; // パラメータの最小値のリスト
 
   private _partOpacities!: Float32Array; // パーツの不透明度のリスト
+
+  private _modelOpacity: number; // モデルの不透明度
 
   private _parameterIds: string[];
   private _partIds: string[];

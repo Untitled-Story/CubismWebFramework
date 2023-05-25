@@ -16,7 +16,20 @@ export class CubismMoc {
   /**
    * Mocデータの作成
    */
-  public static create(mocBytes: ArrayBuffer): CubismMoc {
+  public static create(
+    mocBytes: ArrayBuffer,
+    shouldCheckMocConsistency: boolean
+  ): CubismMoc {
+    if (shouldCheckMocConsistency) {
+      // .moc3の整合性を確認
+      const consistency = this.hasMocConsistency(mocBytes);
+
+      if (!consistency) {
+        // 整合性が確認できなければ処理しない
+        throw new Error(`Inconsistent MOC3.`);
+      }
+    }
+
     const moc: Live2DCubismCore.Moc =
       Live2DCubismCore.Moc.fromArrayBuffer(mocBytes);
 
@@ -99,9 +112,9 @@ export class CubismMoc {
    * .moc3 の整合性を検証する
    */
   public static hasMocConsistency(mocBytes: ArrayBuffer): boolean {
-    const hasMocConsistency =
+    const isConsistent =
       Live2DCubismCore.Moc.prototype.hasMocConsistency(mocBytes);
-    return hasMocConsistency === 1 ? true : false;
+    return isConsistent === 1 ? true : false;
   }
 
   _moc: Live2DCubismCore.Moc; // Mocデータ

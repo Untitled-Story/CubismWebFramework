@@ -33,6 +33,9 @@ const TargetNameModel = 'Model';
 const TargetNameParameter = 'Parameter';
 const TargetNamePartOpacity = 'PartOpacity';
 
+// Id
+const IdNameOpacity = 'Opacity';
+
 /**
  * Cubism SDK R2 以前のモーションを再現させるなら true 、アニメータのモーションを正しく再現するなら false 。
  */
@@ -281,6 +284,10 @@ export class CubismMotion extends ACubismMotion {
       this._modelCurveIdLipSync = EffectNameLipSync;
     }
 
+    if (this._modelCurveIdOpacity == null) {
+      this._modelCurveIdOpacity = IdNameOpacity;
+    }
+
     let timeOffsetSeconds: number =
       userTimeSeconds - motionQueueEntry.getStartTime();
 
@@ -353,6 +360,9 @@ export class CubismMotion extends ACubismMotion {
         eyeBlinkValue = value;
       } else if (curves[c].id == this._modelCurveIdLipSync) {
         lipSyncValue = value;
+      } else if (curves[c].id == this._modelCurveIdOpacity) {
+        this._modelOpacity = value;
+        model.setModelOapcity(this.getModelOpacityValue());
       }
     }
 
@@ -686,6 +696,7 @@ export class CubismMotion extends ACubismMotion {
     this._isLoop = false; // trueから false へデフォルトを変更
     this._isLoopFadeIn = true; // ループ時にフェードインが有効かどうかのフラグ
     this._lastWeight = 0.0;
+    this._modelOpacity = 1.0;
   }
 
   /**
@@ -949,6 +960,81 @@ export class CubismMotion extends ACubismMotion {
     return this._firedEventValues;
   }
 
+  /**
+   * 透明度のカーブが存在するかどうかを確認する
+   *
+   * @returns true  -> キーが存在する
+   *          false -> キーが存在しない
+   */
+  public isExistModelOpacity(): boolean {
+    for (let i = 0; i < this._motionData.curveCount; i++) {
+      const curve: CubismMotionCurve = this._motionData.curves[i];
+
+      if (curve.type != CubismMotionCurveTarget.CubismMotionCurveTarget_Model) {
+        continue;
+      }
+
+      if (curve.id === IdNameOpacity) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * 透明度のカーブのインデックスを返す
+   *
+   * @returns success:透明度のカーブのインデックス
+   */
+  public getModelOpacityIndex(): number {
+    if (this.isExistModelOpacity()) {
+      for (let i = 0; i < this._motionData.curveCount; i++) {
+        const curve: CubismMotionCurve = this._motionData.curves[i];
+
+        if (
+          curve.type != CubismMotionCurveTarget.CubismMotionCurveTarget_Model
+        ) {
+          continue;
+        }
+
+        if (curve.id === IdNameOpacity) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * 透明度のIdを返す
+   *
+   * @param index モーションカーブのインデックス
+   * @returns success:透明度のカーブのインデックス
+   */
+  public getModelOpacityId(index: number): string | undefined {
+    if (index != -1) {
+      const curve: CubismMotionCurve = this._motionData.curves[index];
+
+      if (curve.type == CubismMotionCurveTarget.CubismMotionCurveTarget_Model) {
+        if (curve.id === IdNameOpacity) {
+          return curve.id;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+  /**
+   * 現在時間の透明度の値を返す
+   *
+   * @returns success:モーションの当該時間におけるOpacityの値
+   */
+  public getModelOpacityValue(): number {
+    return this._modelOpacity;
+  }
+
   public _sourceFrameRate: number; // ロードしたファイルのFPS。記述が無ければデフォルト値15fpsとなる
   public _loopDurationSeconds: number; // mtnファイルで定義される一連のモーションの長さ
   public _isLoop: boolean; // ループするか?
@@ -962,4 +1048,7 @@ export class CubismMotion extends ACubismMotion {
 
   public _modelCurveIdEyeBlink?: string; // モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
   public _modelCurveIdLipSync?: string; // モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+  public _modelCurveIdOpacity?: string; // モデルが持つ不透明度用パラメータIDのハンドル。  モデルとモーションを対応付ける。
+
+  public _modelOpacity: number; // モーションから取得した不透明度
 }

@@ -17,7 +17,6 @@ import { CubismMotionQueueEntry } from './cubismmotionqueueentry';
  */
 export abstract class ACubismMotion {
   /**
->>>>>>> 13ba60d (Update to Cubism SDK for Web R4)
    * コンストラクタ
    */
   public constructor() {
@@ -248,6 +247,46 @@ export abstract class ACubismMotion {
    */
   public getFinishedMotionHandler() {
     return this._onFinishedMotion;
+  }
+
+  /**
+   * 透明度のカーブが存在するかどうかを確認する
+   *
+   * @returns true  -> キーが存在する
+   *          false -> キーが存在しない
+   */
+  public isExistModelOpacity(): boolean {
+    return false;
+  }
+
+  /**
+   * 透明度のカーブのインデックスを返す
+   *
+   * @returns success:透明度のカーブのインデックス
+   */
+  public getModelOpacityIndex(): number {
+    return -1;
+  }
+
+  /**
+   * 透明度のIdを返す
+   *
+   * @param index モーションカーブのインデックス
+   * @returns success:透明度のId
+   */
+  public getModelOpacityId(index: number): string | undefined {
+    return undefined;
+  }
+
+  /**
+   * 指定時間の透明度の値を返す
+   *
+   * @returns success:モーションの現在時間におけるOpacityの値
+   *
+   * @note  更新後の値を取るにはUpdateParameters() の後に呼び出す。
+   */
+  protected getModelOpacityValue(): number {
+    return 1.0;
   }
 
   public _fadeInSeconds: number; // フェードインにかかる時間[秒]

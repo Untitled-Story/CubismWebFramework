@@ -29,55 +29,7 @@ export class CubismExpressionMotion extends ACubismMotion {
     json: CubismSpec.ExpressionJSON
   ): CubismExpressionMotion {
     const expression: CubismExpressionMotion = new CubismExpressionMotion();
-
-    const fadeInTime = json.FadeInTime;
-    const fadeOutTime = json.FadeOutTime;
-
-    expression.setFadeInTime(
-      fadeInTime !== undefined ? fadeInTime : DefaultFadeTime
-    ); // フェードイン
-    expression.setFadeOutTime(
-      fadeOutTime !== undefined ? fadeOutTime : DefaultFadeTime
-    ); // フェードアウト
-
-    // 各パラメータについて
-    const parameters = json.Parameters || [];
-
-    for (let i = 0; i < parameters.length; ++i) {
-      const param = parameters[i];
-      const parameterId: string = param.Id; // パラメータID
-
-      const value: number = param.Value; // 値
-
-      // 計算方法の設定
-      let blendType: ExpressionBlendType;
-
-      switch (param.Blend) {
-        case 'Multiply':
-          blendType = ExpressionBlendType.ExpressionBlendType_Multiply;
-          break;
-
-        case 'Overwrite':
-          blendType = ExpressionBlendType.ExpressionBlendType_Overwrite;
-          break;
-
-        case 'Add':
-        // その他 仕様にない値を設定した時は加算モードにすることで復旧
-        default:
-          blendType = ExpressionBlendType.ExpressionBlendType_Add;
-          break;
-      }
-
-      // 設定オブジェクトを作成してリストに追加する
-      const item: ExpressionParameter = {
-        parameterId: parameterId,
-        blendType: blendType,
-        value: value,
-      };
-
-      expression._parameters.push(item);
-    }
-
+    expression.parse(json);
     return expression;
   }
 
@@ -129,10 +81,52 @@ export class CubismExpressionMotion extends ACubismMotion {
     }
   }
 
+  protected parse(json: CubismSpec.ExpressionJSON) {
+    this.setFadeInTime(
+      json.FadeInTime != undefined ? json.FadeInTime : DefaultFadeTime
+    ); // フェードイン
+    this.setFadeOutTime(
+      json.FadeOutTime != undefined ? json.FadeOutTime : DefaultFadeTime
+    ); // フェードアウト
+
+    // 各パラメータについて
+    const parameterCount = (json.Parameters || []).length;
+
+    for (let i = 0; i < parameterCount; ++i) {
+      const param = json.Parameters[i];
+      const parameterId = param.Id; // パラメータID
+
+      const value = param.Value; // 値
+
+      // 計算方法の設定
+      let blendType: ExpressionBlendType;
+
+      if (!param.Blend || param.Blend === 'Add') {
+        blendType = ExpressionBlendType.ExpressionBlendType_Add;
+      } else if (param.Blend === 'Multiply') {
+        blendType = ExpressionBlendType.ExpressionBlendType_Multiply;
+      } else if (param.Blend === 'Overwrite') {
+        blendType = ExpressionBlendType.ExpressionBlendType_Overwrite;
+      } else {
+        // その他 仕様にない値を設定した時は加算モードにすることで復旧
+        blendType = ExpressionBlendType.ExpressionBlendType_Add;
+      }
+
+      // 設定オブジェクトを作成してリストに追加する
+      const item: ExpressionParameter = {
+        parameterId,
+        blendType,
+        value,
+      };
+
+      this._parameters.push(item);
+    }
+  }
+
   /**
    * コンストラクタ
    */
-  constructor() {
+  protected constructor() {
     super();
 
     this._parameters = [];
