@@ -146,7 +146,6 @@ export class CubismPhysics {
       // Output
       setting.outputCount = json.getOutputCount(i);
       setting.baseOutputIndex = outputIndex;
-      outputIndex += setting.outputCount;
 
       const currentRigOutput = new PhysicsOutput();
       const previousRigOutput = new PhysicsOutput();
@@ -156,7 +155,12 @@ export class CubismPhysics {
         currentRigOutput.output[j] = 0.0;
         previousRigOutput.output[j] = 0.0;
 
-        const output = new CubismPhysicsOutput();
+        let output = this._physicsRig.outputs[outputIndex + j];
+
+        if (!output) {
+          output = new CubismPhysicsOutput();
+          this._physicsRig.outputs[outputIndex + j] = output;
+        }
 
         output.destinationParameterIndex = -1;
         output.vertexIndex = json.getOutputVertexIndex(i, j);
@@ -188,12 +192,12 @@ export class CubismPhysics {
         }
 
         output.reflect = json.getOutputReflect(i, j);
-
-        this._physicsRig.outputs.push(output);
       }
 
       this._currentRigOutputs.push(currentRigOutput);
       this._previousRigOutputs.push(previousRigOutput);
+
+      outputIndex += setting.outputCount;
 
       // Particle
       setting.particleCount = json.getParticleCount(i);
