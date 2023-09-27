@@ -394,6 +394,10 @@ export namespace CubismSpec {
        */
       VertexCount: number;
       /**
+       * FPS.
+       */
+      Fps: number;
+      /**
        * Settings of gravity and wind.
        */
       EffectiveForces: {
