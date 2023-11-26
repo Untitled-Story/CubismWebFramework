@@ -97,9 +97,7 @@ export namespace CubismSpec {
     /**
      * Target of group.
      */
-    Target: {
-      [k: string]: unknown;
-    };
+    Target: string;
     /**
      * Unique name of group.
      */
