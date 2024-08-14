@@ -7,7 +7,8 @@
 
 import { CubismFramework, LogLevel } from '../live2dcubismframework';
 
-export const CSM_ASSERT =
+export const CSM_ASSERT = 
+  typeof process !== "undefined" && 
   process.env.NODE_ENV === 'production'
     ? () => {}
     : (expr: any) => console.assert(expr);
