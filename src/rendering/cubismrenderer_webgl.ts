@@ -2379,8 +2379,8 @@ export class CubismRenderer_WebGL extends CubismRenderer {
    */
   public release(): void {
     const self = this as Partial<this>;
-
-    this._clippingManager.release();
+    if (this._clippingManager)
+      this._clippingManager.release();
     self._clippingManager = undefined;
 
     this.gl?.deleteBuffer(this._bufferData.vertex);
