@@ -18,8 +18,8 @@ import {
 import { CubismConfig } from '../config';
 
 const ColorChannelCount = 4; // 実験時に1チャンネルの場合は1、RGBだけの場合は3、アルファも含める場合は4
-const ClippingMaskMaxCountOnDefault = 36; // 通常のフレームバッファ一枚あたりのマスク最大数
-const ClippingMaskMaxCountOnMultiRenderTexture = 32; // フレームバッファが2枚以上ある場合のフレームバッファ一枚あたりのマスク最大数
+const ClippingMaskMaxCountOnDefault = 999; // 通常のフレームバッファ一枚あたりのマスク最大数
+const ClippingMaskMaxCountOnMultiRenderTexture = 999; // フレームバッファが2枚以上ある場合のフレームバッファ一枚あたりのマスク最大数
 
 const ShaderCount = 10; // シェーダーの数 = マスク生成用 + (通常用 + 加算 + 乗算) * (マスク無の乗算済アルファ対応版 + マスク有の乗算済アルファ対応版 + マスク有反転の乗算済アルファ対応版)
 let s_instance: CubismShader_WebGL | undefined;
