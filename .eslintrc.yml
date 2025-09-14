@@ -12,44 +12,41 @@ parserOptions:
   ecmaVersion: 2020
   project: ./tsconfig.json
 rules:
-  prettier/prettier:
-    - error
-    - singleQuote: true
-  camelcase: "off"
+  camelcase: 'off'
   '@typescript-eslint/naming-convention':
     - warn
     - selector: default
       format:
-      - camelCase
+        - camelCase
     - selector: variable
       format:
-      - camelCase
-      - UPPER_CASE
+        - camelCase
+        - UPPER_CASE
       leadingUnderscore: allow
       trailingUnderscore: allow
     - selector: class
       format:
-      - PascalCase
+        - PascalCase
       trailingUnderscore: allow
     - selector: parameter
       format:
-      - camelCase
+        - camelCase
       leadingUnderscore: allow
     - selector: memberLike
       modifiers:
-      - private
+        - private
       format:
-      - camelCase
+        - camelCase
       leadingUnderscore: require
     - selector: typeLike
       format:
-      - PascalCase
+        - PascalCase
   '@typescript-eslint/no-use-before-define': off
   no-empty-function: off
   '@typescript-eslint/no-empty-function':
     - error
     - allow:
-      - constructors
+        - constructors
   '@typescript-eslint/no-namespace': warn
   'no-fallthrough': warn
   '@typescript-eslint/unbound-method': off

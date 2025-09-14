@@ -5,17 +5,17 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
-import { Constant } from "../live2dcubismframework";
-import { CubismMatrix44 } from "../math/cubismmatrix44";
-import { CubismModel } from "../model/cubismmodel";
-import { csmRect } from "../type/csmrectf";
-import { CubismLogError, CubismLogWarning } from "../utils/cubismdebug";
+import { Constant } from '../live2dcubismframework';
+import { CubismMatrix44 } from '../math/cubismmatrix44';
+import { CubismModel } from '../model/cubismmodel';
+import { csmRect } from '../type/csmrectf';
+import { CubismLogError, CubismLogWarning } from '../utils/cubismdebug';
 import {
   CubismBlendMode,
   CubismRenderer,
   CubismTextureColor,
-} from "./cubismrenderer";
-import { CubismConfig } from "../config";
+} from './cubismrenderer';
+import { CubismConfig } from '../config';
 
 const ColorChannelCount = 4; // 実験時に1チャンネルの場合は1、RGBだけの場合は3、アルファも含める場合は4
 const ClippingMaskMaxCountOnDefault = 999; // 通常のフレームバッファ一枚あたりのマスク最大数
@@ -324,14 +324,14 @@ export class CubismClippingManager_WebGL {
     // 1以上の整数でない場合はそれぞれ警告を出す
     if (renderTextureCount % 1 != 0) {
       CubismLogWarning(
-        "The number of render textures must be specified as an integer. The decimal point is rounded down and corrected to an integer."
+        'The number of render textures must be specified as an integer. The decimal point is rounded down and corrected to an integer.'
       );
       // 小数点以下を除去
       renderTextureCount = ~~renderTextureCount;
     }
     if (renderTextureCount < 1) {
       CubismLogWarning(
-        "The number of render textures must be an integer greater than or equal to 1. Set the number of render textures to 1."
+        'The number of render textures must be an integer greater than or equal to 1. Set the number of render textures to 1.'
       );
     }
     // 負の値が使われている場合は強制的に1枚と設定する
@@ -686,7 +686,7 @@ export class CubismClippingManager_WebGL {
       if (usingClipCount > useClippingMaskMaxCount) {
         // マスクの制限数の警告を出す
         CubismLogError(
-          "not supported mask count : {0}\n[Details] render texture count : {1}, mask count : {2}",
+          'not supported mask count : {0}\n[Details] render texture count : {1}, mask count : {2}',
           usingClipCount - useClippingMaskMaxCount,
           this._renderTextureCount,
           usingClipCount
@@ -843,7 +843,7 @@ export class CubismClippingManager_WebGL {
         } else {
           // マスクの制限枚数を超えた場合の処理
           CubismLogError(
-            "not supported mask count : {0}\n[Details] render texture count : {1}, mask count : {2}",
+            'not supported mask count : {0}\n[Details] render texture count : {1}, mask count : {2}',
             usingClipCount - useClippingMaskMaxCount,
             this._renderTextureCount,
             usingClipCount
@@ -1273,7 +1273,7 @@ export class CubismShader_WebGL {
     invertedMask: boolean
   ): void {
     if (!isPremultipliedAlpha) {
-      CubismLogError("NoPremultipliedAlpha is not allowed");
+      CubismLogError('NoPremultipliedAlpha is not allowed');
     }
 
     if (this._shaderSets.length == 0) {
@@ -1603,387 +1603,387 @@ export class CubismShader_WebGL {
     // SetupMask
     this._shaderSets[0].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[0].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[0].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[0].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[0].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[0].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[0].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[0].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[0].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[0].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[0].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[0].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 通常（PremultipliedAlpha）
     this._shaderSets[1].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[1].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[1].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[1].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[1].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[1].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[1].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[1].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[1].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[1].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[1].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 通常（クリッピング、PremultipliedAlpha）
     this._shaderSets[2].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[2].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[2].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[2].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[2].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[2].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "s_texture1"
+      's_texture1'
     );
     this._shaderSets[2].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[2].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[2].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[2].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[2].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[2].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[2].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[2].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 通常（クリッピング・反転, PremultipliedAlpha）
     this._shaderSets[3].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[3].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[3].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[3].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[3].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[3].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "s_texture1"
+      's_texture1'
     );
     this._shaderSets[3].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[3].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[3].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[3].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[3].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[3].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[3].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[3].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 加算（PremultipliedAlpha）
     this._shaderSets[4].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[4].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[4].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[4].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[4].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[4].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[4].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[4].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[4].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[4].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[4].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 加算（クリッピング、PremultipliedAlpha）
     this._shaderSets[5].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[5].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[5].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[5].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[5].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[5].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "s_texture1"
+      's_texture1'
     );
     this._shaderSets[5].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[5].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[5].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[5].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[5].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[5].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[5].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[5].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 加算（クリッピング・反転、PremultipliedAlpha）
     this._shaderSets[6].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[6].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[6].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[6].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[6].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[6].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "s_texture1"
+      's_texture1'
     );
     this._shaderSets[6].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[6].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[6].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[6].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[6].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[6].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[6].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[6].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 乗算（PremultipliedAlpha）
     this._shaderSets[7].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[7].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[7].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[7].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[7].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[7].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[7].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[7].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[7].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[7].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[7].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 乗算（クリッピング、PremultipliedAlpha）
     this._shaderSets[8].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[8].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[8].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[8].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[8].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[8].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "s_texture1"
+      's_texture1'
     );
     this._shaderSets[8].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[8].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[8].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[8].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[8].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[8].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[8].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[8].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
 
     // 乗算（クリッピング・反転、PremultipliedAlpha）
     this._shaderSets[9].attributePositionLocation = this.gl.getAttribLocation(
       this._shaderSets[9].shaderProgram,
-      "a_position"
+      'a_position'
     );
     this._shaderSets[9].attributeTexCoordLocation = this.gl.getAttribLocation(
       this._shaderSets[9].shaderProgram,
-      "a_texCoord"
+      'a_texCoord'
     );
     this._shaderSets[9].samplerTexture0Location = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "s_texture0"
+      's_texture0'
     );
     this._shaderSets[9].samplerTexture1Location = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "s_texture1"
+      's_texture1'
     );
     this._shaderSets[9].uniformMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "u_matrix"
+      'u_matrix'
     );
     this._shaderSets[9].uniformClipMatrixLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "u_clipMatrix"
+      'u_clipMatrix'
     );
     this._shaderSets[9].uniformChannelFlagLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "u_channelFlag"
+      'u_channelFlag'
     );
     this._shaderSets[9].uniformBaseColorLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "u_baseColor"
+      'u_baseColor'
     );
     this._shaderSets[9].uniformMultiplyColorLocation =
       this.gl.getUniformLocation(
         this._shaderSets[9].shaderProgram,
-        "u_multiplyColor"
+        'u_multiplyColor'
       );
     this._shaderSets[9].uniformScreenColorLocation = this.gl.getUniformLocation(
       this._shaderSets[9].shaderProgram,
-      "u_screenColor"
+      'u_screenColor'
     );
   }
 
@@ -2006,7 +2006,7 @@ export class CubismShader_WebGL {
     );
 
     if (!vertShader) {
-      CubismLogError("Vertex shader compile error!");
+      CubismLogError('Vertex shader compile error!');
       return 0;
     }
 
@@ -2015,7 +2015,7 @@ export class CubismShader_WebGL {
       fragmentShaderSource
     );
     if (!fragShader) {
-      CubismLogError("Vertex shader compile error!");
+      CubismLogError('Vertex shader compile error!');
       return 0;
     }
 
@@ -2034,7 +2034,7 @@ export class CubismShader_WebGL {
 
     // リンクに失敗したらシェーダーを削除
     if (!linkStatus) {
-      CubismLogError("Failed to link program: {0}", shaderProgram);
+      CubismLogError('Failed to link program: {0}', shaderProgram);
 
       this.gl.deleteShader(vertShader);
 
@@ -2073,7 +2073,7 @@ export class CubismShader_WebGL {
 
     if (!shader) {
       const log = this.gl.getShaderInfoLog(shader);
-      CubismLogError("Shader compile log: {0} ", log);
+      CubismLogError('Shader compile log: {0} ', log);
     }
 
     const status: any = this.gl.getShaderParameter(
@@ -2134,128 +2134,128 @@ export enum ShaderNames {
 }
 
 export const vertexShaderSrcSetupMask =
-  "attribute vec4     a_position;" +
-  "attribute vec2     a_texCoord;" +
-  "varying vec2       v_texCoord;" +
-  "varying vec4       v_myPos;" +
-  "uniform mat4       u_clipMatrix;" +
-  "void main()" +
-  "{" +
-  "   gl_Position = u_clipMatrix * a_position;" +
-  "   v_myPos = u_clipMatrix * a_position;" +
-  "   v_texCoord = a_texCoord;" +
-  "   v_texCoord.y = 1.0 - v_texCoord.y;" +
-  "}";
+  'attribute vec4     a_position;' +
+  'attribute vec2     a_texCoord;' +
+  'varying vec2       v_texCoord;' +
+  'varying vec4       v_myPos;' +
+  'uniform mat4       u_clipMatrix;' +
+  'void main()' +
+  '{' +
+  '   gl_Position = u_clipMatrix * a_position;' +
+  '   v_myPos = u_clipMatrix * a_position;' +
+  '   v_texCoord = a_texCoord;' +
+  '   v_texCoord.y = 1.0 - v_texCoord.y;' +
+  '}';
 export const fragmentShaderSrcsetupMask =
-  "precision mediump float;" +
-  "varying vec2       v_texCoord;" +
-  "varying vec4       v_myPos;" +
-  "uniform vec4       u_baseColor;" +
-  "uniform vec4       u_channelFlag;" +
-  "uniform sampler2D  s_texture0;" +
-  "void main()" +
-  "{" +
-  "   float isInside = " +
-  "       step(u_baseColor.x, v_myPos.x/v_myPos.w)" +
-  "       * step(u_baseColor.y, v_myPos.y/v_myPos.w)" +
-  "       * step(v_myPos.x/v_myPos.w, u_baseColor.z)" +
-  "       * step(v_myPos.y/v_myPos.w, u_baseColor.w);" +
-  "   gl_FragColor = u_channelFlag * texture2D(s_texture0, v_texCoord).a * isInside;" +
-  "}";
+  'precision mediump float;' +
+  'varying vec2       v_texCoord;' +
+  'varying vec4       v_myPos;' +
+  'uniform vec4       u_baseColor;' +
+  'uniform vec4       u_channelFlag;' +
+  'uniform sampler2D  s_texture0;' +
+  'void main()' +
+  '{' +
+  '   float isInside = ' +
+  '       step(u_baseColor.x, v_myPos.x/v_myPos.w)' +
+  '       * step(u_baseColor.y, v_myPos.y/v_myPos.w)' +
+  '       * step(v_myPos.x/v_myPos.w, u_baseColor.z)' +
+  '       * step(v_myPos.y/v_myPos.w, u_baseColor.w);' +
+  '   gl_FragColor = u_channelFlag * texture2D(s_texture0, v_texCoord).a * isInside;' +
+  '}';
 
 //----- バーテックスシェーダプログラム -----
 // Normal & Add & Mult 共通
 export const vertexShaderSrc =
-  "attribute vec4     a_position;" + //v.vertex
-  "attribute vec2     a_texCoord;" + //v.texcoord
-  "varying vec2       v_texCoord;" + //v2f.texcoord
-  "uniform mat4       u_matrix;" +
-  "void main()" +
-  "{" +
-  "   gl_Position = u_matrix * a_position;" +
-  "   v_texCoord = a_texCoord;" +
-  "   v_texCoord.y = 1.0 - v_texCoord.y;" +
-  "}";
+  'attribute vec4     a_position;' + //v.vertex
+  'attribute vec2     a_texCoord;' + //v.texcoord
+  'varying vec2       v_texCoord;' + //v2f.texcoord
+  'uniform mat4       u_matrix;' +
+  'void main()' +
+  '{' +
+  '   gl_Position = u_matrix * a_position;' +
+  '   v_texCoord = a_texCoord;' +
+  '   v_texCoord.y = 1.0 - v_texCoord.y;' +
+  '}';
 
 // Normal & Add & Mult 共通（クリッピングされたものの描画用）
 export const vertexShaderSrcMasked =
-  "attribute vec4     a_position;" +
-  "attribute vec2     a_texCoord;" +
-  "varying vec2       v_texCoord;" +
-  "varying vec4       v_clipPos;" +
-  "uniform mat4       u_matrix;" +
-  "uniform mat4       u_clipMatrix;" +
-  "void main()" +
-  "{" +
-  "   gl_Position = u_matrix * a_position;" +
-  "   v_clipPos = u_clipMatrix * a_position;" +
-  "   v_texCoord = a_texCoord;" +
-  "   v_texCoord.y = 1.0 - v_texCoord.y;" +
-  "}";
+  'attribute vec4     a_position;' +
+  'attribute vec2     a_texCoord;' +
+  'varying vec2       v_texCoord;' +
+  'varying vec4       v_clipPos;' +
+  'uniform mat4       u_matrix;' +
+  'uniform mat4       u_clipMatrix;' +
+  'void main()' +
+  '{' +
+  '   gl_Position = u_matrix * a_position;' +
+  '   v_clipPos = u_clipMatrix * a_position;' +
+  '   v_texCoord = a_texCoord;' +
+  '   v_texCoord.y = 1.0 - v_texCoord.y;' +
+  '}';
 
 //----- フラグメントシェーダプログラム -----
 // Normal & Add & Mult 共通 （PremultipliedAlpha）
 export const fragmentShaderSrcPremultipliedAlpha =
-  "precision mediump float;" +
-  "varying vec2       v_texCoord;" + //v2f.texcoord
-  "uniform vec4       u_baseColor;" +
-  "uniform sampler2D  s_texture0;" + //_MainTex
-  "uniform vec4       u_multiplyColor;" +
-  "uniform vec4       u_screenColor;" +
-  "void main()" +
-  "{" +
-  "   vec4 texColor = texture2D(s_texture0, v_texCoord);" +
-  "   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;" +
-  "   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);" +
-  "   vec4 color = texColor * u_baseColor;" +
-  "   gl_FragColor = vec4(color.rgb, color.a);" +
-  "}";
+  'precision mediump float;' +
+  'varying vec2       v_texCoord;' + //v2f.texcoord
+  'uniform vec4       u_baseColor;' +
+  'uniform sampler2D  s_texture0;' + //_MainTex
+  'uniform vec4       u_multiplyColor;' +
+  'uniform vec4       u_screenColor;' +
+  'void main()' +
+  '{' +
+  '   vec4 texColor = texture2D(s_texture0, v_texCoord);' +
+  '   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;' +
+  '   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);' +
+  '   vec4 color = texColor * u_baseColor;' +
+  '   gl_FragColor = vec4(color.rgb, color.a);' +
+  '}';
 
 // Normal （クリッピングされたものの描画用、PremultipliedAlpha兼用）
 export const fragmentShaderSrcMaskPremultipliedAlpha =
-  "precision mediump float;" +
-  "varying vec2       v_texCoord;" +
-  "varying vec4       v_clipPos;" +
-  "uniform vec4       u_baseColor;" +
-  "uniform vec4       u_channelFlag;" +
-  "uniform sampler2D  s_texture0;" +
-  "uniform sampler2D  s_texture1;" +
-  "uniform vec4       u_multiplyColor;" +
-  "uniform vec4       u_screenColor;" +
-  "void main()" +
-  "{" +
-  "   vec4 texColor = texture2D(s_texture0, v_texCoord);" +
-  "   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;" +
-  "   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);" +
-  "   vec4 col_formask = texColor * u_baseColor;" +
-  "   vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;" +
-  "   float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;" +
-  "   col_formask = col_formask * maskVal;" +
-  "   gl_FragColor = col_formask;" +
-  "}";
+  'precision mediump float;' +
+  'varying vec2       v_texCoord;' +
+  'varying vec4       v_clipPos;' +
+  'uniform vec4       u_baseColor;' +
+  'uniform vec4       u_channelFlag;' +
+  'uniform sampler2D  s_texture0;' +
+  'uniform sampler2D  s_texture1;' +
+  'uniform vec4       u_multiplyColor;' +
+  'uniform vec4       u_screenColor;' +
+  'void main()' +
+  '{' +
+  '   vec4 texColor = texture2D(s_texture0, v_texCoord);' +
+  '   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;' +
+  '   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);' +
+  '   vec4 col_formask = texColor * u_baseColor;' +
+  '   vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;' +
+  '   float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;' +
+  '   col_formask = col_formask * maskVal;' +
+  '   gl_FragColor = col_formask;' +
+  '}';
 
 // Normal & Add & Mult 共通（クリッピングされて反転使用の描画用、PremultipliedAlphaの場合）
 export const fragmentShaderSrcMaskInvertedPremultipliedAlpha =
-  "precision mediump float;" +
-  "varying vec2      v_texCoord;" +
-  "varying vec4      v_clipPos;" +
-  "uniform sampler2D s_texture0;" +
-  "uniform sampler2D s_texture1;" +
-  "uniform vec4      u_channelFlag;" +
-  "uniform vec4      u_baseColor;" +
-  "uniform vec4      u_multiplyColor;" +
-  "uniform vec4      u_screenColor;" +
-  "void main()" +
-  "{" +
-  "   vec4 texColor = texture2D(s_texture0, v_texCoord);" +
-  "   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;" +
-  "   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);" +
-  "   vec4 col_formask = texColor * u_baseColor;" +
-  "   vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;" +
-  "   float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;" +
-  "   col_formask = col_formask * (1.0 - maskVal);" +
-  "   gl_FragColor = col_formask;" +
-  "}";
+  'precision mediump float;' +
+  'varying vec2      v_texCoord;' +
+  'varying vec4      v_clipPos;' +
+  'uniform sampler2D s_texture0;' +
+  'uniform sampler2D s_texture1;' +
+  'uniform vec4      u_channelFlag;' +
+  'uniform vec4      u_baseColor;' +
+  'uniform vec4      u_multiplyColor;' +
+  'uniform vec4      u_screenColor;' +
+  'void main()' +
+  '{' +
+  '   vec4 texColor = texture2D(s_texture0, v_texCoord);' +
+  '   texColor.rgb = texColor.rgb * u_multiplyColor.rgb;' +
+  '   texColor.rgb = (texColor.rgb + u_screenColor.rgb * texColor.a) - (texColor.rgb * u_screenColor.rgb);' +
+  '   vec4 col_formask = texColor * u_baseColor;' +
+  '   vec4 clipMask = (1.0 - texture2D(s_texture1, v_clipPos.xy / v_clipPos.w)) * u_channelFlag;' +
+  '   float maskVal = clipMask.r + clipMask.g + clipMask.b + clipMask.a;' +
+  '   col_formask = col_formask * (1.0 - maskVal);' +
+  '   gl_FragColor = col_formask;' +
+  '}';
 
 /**
  * WebGL用の描画命令を実装したクラス
@@ -2746,9 +2746,9 @@ export class CubismRenderer_WebGL extends CubismRenderer {
 
     // 異方性フィルタリングが使用できるかチェック
     this._extension =
-      this.gl.getExtension("EXT_texture_filter_anisotropic") ||
-      this.gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic") ||
-      this.gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
+      this.gl.getExtension('EXT_texture_filter_anisotropic') ||
+      this.gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic') ||
+      this.gl.getExtension('MOZ_EXT_texture_filter_anisotropic');
   }
 
   _textures: Record<number, WebGLTexture>; // モデルが参照するテクスチャとレンダラでバインドしているテクスチャとのマップ
